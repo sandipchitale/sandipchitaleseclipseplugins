@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FeaturesPluginsFragments Plug-in
+Bundle-SymbolicName: FeaturesPluginsFragments;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: featurespluginsfragments.Activator
+Bundle-Vendor: Sandip V. Chitale
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.console,
+ org.eclipse.update.configurator
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Eclipse-LazyStart: true
