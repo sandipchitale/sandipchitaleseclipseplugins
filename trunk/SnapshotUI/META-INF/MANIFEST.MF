@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Snapshot UI Plug-in
+Bundle-SymbolicName: SnapshotUI;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: snapshotui.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
