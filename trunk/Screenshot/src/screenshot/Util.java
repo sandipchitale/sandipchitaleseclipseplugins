@@ -195,10 +195,11 @@ public class Util {
 								}			
 								imageLoader.save(fileName, format);
 								try {
+									// Refresh after save
 									file.refreshLocal(IResource.DEPTH_ZERO, null);
 								} catch (CoreException e) {
 								}
-;								UIJob uiJob = new UIJob("") {
+								UIJob uiJob = new UIJob("") {
 									public IStatus runInUIThread(IProgressMonitor monitor) {
 										selectAndReveal(file);
 										return Status.OK_STATUS;
