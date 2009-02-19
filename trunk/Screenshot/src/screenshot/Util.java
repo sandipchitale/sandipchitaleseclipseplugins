@@ -1,11 +1,17 @@
 package screenshot;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.ImageTransfer;
@@ -29,6 +35,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWizard;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.eclipse.ui.progress.UIJob;
+import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
 public class Util {
 	
@@ -85,6 +96,16 @@ public class Util {
 			saveInWorkspaceButton.setText("Save in Workspace...");
 			GridData saveInWorkspaceButtonGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 			saveInWorkspaceButton.setLayoutData(saveInWorkspaceButtonGridData);
+			saveInWorkspaceButton.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+					widgetSelected(e);
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+					saveInWorkspace(getShell(), image);
+				}
+
+			});
 			
 			Button copyToClipboardButton = new Button(composite, SWT.PUSH);
 			copyToClipboardButton.setText("Copy to Clipboard...");
@@ -126,7 +147,7 @@ public class Util {
 			if (fileName != null) {
 				final ImageLoader imageLoader = new ImageLoader();
 				imageLoader.data = new ImageData[] {image.getImageData()};
-				Job job = new Job("Save screenshot") {
+				Job job = new Job("Save to File") {
 					protected IStatus run(IProgressMonitor monitor) {
 						int format = SWT.IMAGE_PNG;
 						String lowerCaseFileName = fileName.toLowerCase();
@@ -146,6 +167,58 @@ public class Util {
 				};
 				job.schedule();
 			}
+		}
+
+		private void saveInWorkspace(Shell shell, final Image image) {
+			IWorkbenchWizard wizard = new BasicNewFileResourceWizard() {
+				public boolean performFinish() {
+					final IFile file = ((WizardNewFileCreationPage) getPages()[0]).createNewFile();
+					if (file == null) {
+						return false;
+					}
+					final String fileName = file.getLocation().toOSString();
+					if (fileName != null) {
+						final ImageLoader imageLoader = new ImageLoader();
+						imageLoader.data = new ImageData[] {image.getImageData()};
+						Job job = new Job("Save in Workspace") {
+							protected IStatus run(IProgressMonitor monitor) {
+								int format = SWT.IMAGE_PNG;
+								String lowerCaseFileName = fileName.toLowerCase();
+								if (lowerCaseFileName.endsWith(".gif")) {
+									format = SWT.IMAGE_GIF;
+								} else if (lowerCaseFileName.endsWith(".jpg")) {
+									format = SWT.IMAGE_JPEG;
+								} else if (lowerCaseFileName.endsWith(".bmp")) {
+									format = SWT.IMAGE_BMP;
+								} else if (lowerCaseFileName.endsWith(".ico")) {
+									format = SWT.IMAGE_ICO;
+								}			
+								imageLoader.save(fileName, format);
+								try {
+									file.refreshLocal(IResource.DEPTH_ZERO, null);
+								} catch (CoreException e) {
+								}
+;								UIJob uiJob = new UIJob("") {
+									public IStatus runInUIThread(IProgressMonitor monitor) {
+										selectAndReveal(file);
+										return Status.OK_STATUS;
+									}
+								};
+								uiJob.setSystem(true);
+								uiJob.schedule();
+								return Status.OK_STATUS;
+							}
+
+						};
+						job.schedule();
+					}
+					return true;
+				}
+			};
+			ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
+			wizard.init(PlatformUI.getWorkbench(), (IStructuredSelection)(selection instanceof IStructuredSelection ? selection : null));
+			WizardDialog dialog = new WizardDialog(shell, wizard);
+			dialog.open();
 		}
 		
 		private static void copyToClipboard(Shell shell, Image image) {
