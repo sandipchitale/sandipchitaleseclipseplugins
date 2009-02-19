@@ -11,6 +11,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -171,6 +172,19 @@ public class Util {
 
 		private void saveInWorkspace(Shell shell, final Image image) {
 			IWorkbenchWizard wizard = new BasicNewFileResourceWizard() {
+				public String getWindowTitle() {
+					return "Save screenshot in Workspace";
+				}
+				
+				public void addPage(IWizardPage page) {
+					super.addPage(page);
+					
+					if (page instanceof WizardNewFileCreationPage) {
+						page.setTitle("Screenshot Image File");
+						page.setDescription("Specify the name of Image File" +
+								"\n(allowed extentions .png, .gif, .jpg, .bmp, .ico)");
+					}
+				}
 				public boolean performFinish() {
 					final IFile file = ((WizardNewFileCreationPage) getPages()[0]).createNewFile();
 					if (file == null) {
