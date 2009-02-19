@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="Screenshot.actionSet"
+            label="Screenshot Actions"
+            visible="true">
+         <action
+               class="screenshot.Desktop"
+               icon="icons/desktop.png"
+               id="Screenshot.desktop.action"
+               label="Desktop"
+               menubarPath="window/additions"
+               style="push"
+               toolbarPath="screenshot">
+         </action>
+      </actionSet>
+   </extension>
+
+</plugin>
