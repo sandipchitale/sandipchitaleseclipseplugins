@@ -1,10 +1,13 @@
 package screenshot;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -22,21 +25,34 @@ public class Desktop implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void run(IAction action) {
-		((WorkbenchWindow) window).getStatusLineManager().setMessage("Screenshot in 5 seconds...");
-		UIJob uiJob = new UIJob("Click!") {
+		final AtomicInteger countdown = new AtomicInteger(5);
+		UIJob uiJob = new UIJob("") {
 			public IStatus runInUIThread(IProgressMonitor monitor) {
-				/* Take the screen shot */
+				int current = countdown.decrementAndGet() ;
+				if (current >= 0) {
+					if (current > 0) {
+						((WorkbenchWindow) window).getStatusLineManager().setMessage("Screenshot in " + (current + 1) + " seconds...");
+					} else {
+						((WorkbenchWindow) window).getStatusLineManager().setMessage("");
+					}
+					schedule(1000);
+					return Status.OK_STATUS;
+				}
+				((WorkbenchWindow) window).getStatusLineManager().setMessage("Click!");
 				Shell shell = window.getShell();
 				if (shell == null || shell.isDisposed()) {
 					return Status.CANCEL_STATUS;
 				}
-				Util.processImage(shell, Util.getDesktopImage(shell.getDisplay()));
-				((WorkbenchWindow) window).getStatusLineManager().setMessage("Screenshot in 5 seconds...Done");
+				shell.getDisplay().beep();
+				/* Take the screen shot */
+				Image desktopImage = Util.getDesktopImage(shell.getDisplay());
+				Util.processImage(shell, desktopImage);
 				return Status.OK_STATUS;
 			}			
 		};
 		uiJob.setPriority(UIJob.INTERACTIVE);
-		uiJob.schedule(5000);
+		uiJob.setSystem(true);
+		uiJob.schedule();
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {}
