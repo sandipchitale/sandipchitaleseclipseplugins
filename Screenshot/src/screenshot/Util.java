@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.ImageTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -83,34 +84,22 @@ public class Util {
 			gridLayout.numColumns = 2;
 			
 			Display display = getShell().getDisplay();
-			final Canvas canvas = new Canvas(composite, SWT.NONE);
-			GridData canvasGridData = new GridData();
-			canvasGridData.verticalSpan = 3;
-			canvasGridData.widthHint = display.getBounds().width/4;
-			canvasGridData.heightHint = display.getBounds().height/4;
-			canvas.setLayoutData(canvasGridData);
+			ScrolledComposite scroller = new ScrolledComposite(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+			GridData scrollerGridData = new GridData();
+			scrollerGridData.verticalSpan = 3;
+			scrollerGridData.widthHint = display.getBounds().width/4;
+			scrollerGridData.heightHint = display.getBounds().height/4;
+			scroller.setLayoutData(scrollerGridData);
+			
+			final Canvas canvas = new Canvas(scroller, SWT.NONE);
+			scroller.setContent(canvas);
+			Rectangle bounds = image.getBounds();
+			canvas.setSize(bounds.width, bounds.height);
 			canvas.addPaintListener(new PaintListener() {
 				public void paintControl(PaintEvent e) {
-					Point size = canvas.getSize();
 					Rectangle bounds = image.getBounds();
-					if (bounds.width <= size.x && bounds.height <= size.y) {
-						e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, bounds.width, bounds.height);						
-						e.gc.drawRectangle(0, 0, bounds.width, bounds.height);
-					} else {
-						boolean tall = bounds.height > bounds.width;
-						double scale = 1.0;
-						if (tall) {
-							scale = ((double) size.y) / ((double) bounds.height);
-						} else {
-							scale = ((double) size.x) / ((double) bounds.width);
-						}
-						e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, (int) (bounds.width * scale), (int) (bounds.height * scale));
-						if (tall) {
-							e.gc.drawRectangle(0, 0, Math.min((int) (bounds.width * scale), size.x), Math.min((int) (bounds.height * scale), size.y - 1));							
-						} else {
-							e.gc.drawRectangle(0, 0, Math.min((int) (bounds.width * scale), size.x - 1), Math.min((int) (bounds.height * scale), size.y));
-						}
-					}
+					e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, bounds.width, bounds.height);
+					e.gc.drawRectangle(0, 0, bounds.width-1, bounds.height-1);				
 				}
 			});
 			
