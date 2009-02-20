@@ -79,7 +79,7 @@ public class Util {
 			gridLayout.numColumns = 2;
 			
 			Display display = getShell().getDisplay();
-			final Canvas canvas = new Canvas(composite, SWT.BORDER);
+			final Canvas canvas = new Canvas(composite, SWT.NONE);
 			GridData canvasGridData = new GridData();
 			canvasGridData.verticalSpan = 3;
 			canvasGridData.widthHint = display.getBounds().width/4;
@@ -90,7 +90,8 @@ public class Util {
 					Point size = canvas.getSize();
 					Rectangle bounds = image.getBounds();
 					if (bounds.width <= size.x && bounds.height <= size.y) {
-						e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0,  bounds.width, bounds.height);						
+						e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, bounds.width, bounds.height);						
+						e.gc.drawRectangle(0, 0, bounds.width, bounds.height);
 					} else {
 						boolean tall = bounds.height > bounds.width;
 						double scale = 1.0;
@@ -100,6 +101,11 @@ public class Util {
 							scale = ((double) size.x) / ((double) bounds.width);
 						}
 						e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, (int) (bounds.width * scale), (int) (bounds.height * scale));
+						if (tall) {
+							e.gc.drawRectangle(0, 0, Math.min((int) (bounds.width * scale), size.x), Math.min((int) (bounds.height * scale), size.y - 1));							
+						} else {
+							e.gc.drawRectangle(0, 0, Math.min((int) (bounds.width * scale), size.x - 1), Math.min((int) (bounds.height * scale), size.y));
+						}
 					}
 				}
 			});
@@ -324,6 +330,10 @@ public class Util {
 						Math.min(start.y, end.y),
 						Math.abs(end.x -start.x),
 						Math.abs(end.y -start.y));
+				e.gc.drawString(
+						Math.abs(end.x -start.x) + "," + Math.abs(end.y -start.y),
+						end.x + 2,
+						end.y + 20);
 			}
 		}
 		
