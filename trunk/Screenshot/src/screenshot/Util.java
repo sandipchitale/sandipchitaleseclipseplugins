@@ -59,6 +59,10 @@ public class Util {
 	}
 	
 	public static void processImage(Shell shell, Image image) {
+        if (shell.getMinimized()) {
+        	shell.setMinimized(false);
+        }
+        shell.setActive();
 		new ImageDialog(shell, image).open();
 		image.dispose();
 	}
@@ -344,6 +348,8 @@ public class Util {
 			shell.addListener(SWT.MouseUp, this);
 			shell.addPaintListener(this);
 			shell.setCursor(display.getSystemCursor(SWT.CURSOR_CROSS));
+			shell.forceActive();
+			shell.forceFocus();
 			shell.open();
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch())
