@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
-public class Desktop implements IWorkbenchWindowActionDelegate {
+public class DesktopArea implements IWorkbenchWindowActionDelegate {
 
 	private IWorkbenchWindow window;
 
@@ -17,9 +17,9 @@ public class Desktop implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void run(IAction action) {
-        /* Take the screen shot */
+        /* Take the screen shot of rubberbanded area*/
         Shell shell = window.getShell();
-        Util.processImage(shell, Util.getDesktopImage(shell.getDisplay()));
+        Util.processImage(shell, Util.getImage(shell));
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {}
