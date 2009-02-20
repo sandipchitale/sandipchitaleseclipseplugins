@@ -25,20 +25,20 @@ public class DesktopArea implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void run(IAction action) {
-		final AtomicInteger countdown = new AtomicInteger(5);
+		final int[] countdownFrom = new int[1];
+		countdownFrom[0] = 5;
 		UIJob uiJob = new UIJob("") {
 			public IStatus runInUIThread(IProgressMonitor monitor) {
-				int current = countdown.decrementAndGet();
-				if (current >= 0) {
-					if (current > 0) {
-						((WorkbenchWindow) window).getStatusLineManager().setMessage("Screenshot in " + (current + 1) + " seconds...");
+				if (countdownFrom[0] >= 0) {
+					if (countdownFrom[0] > 0) {
+						((WorkbenchWindow) window).getStatusLineManager().setMessage("Screenshot in " + countdownFrom[0] + " seconds...");
 					} else {
 						((WorkbenchWindow) window).getStatusLineManager().setMessage("");
 					}
+					countdownFrom[0]--;
 					schedule(1000);
 					return Status.OK_STATUS;
 				}
-				((WorkbenchWindow) window).getStatusLineManager().setMessage("Click!");
 				Shell shell = window.getShell();
 				if (shell == null || shell.isDisposed()) {
 					return Status.CANCEL_STATUS;
