@@ -22,6 +22,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
@@ -34,7 +35,9 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
@@ -43,6 +46,17 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
 public class Util {
+	public static Image getImage(Shell parentShell) {
+		return new DesktopAreaImage(parentShell).getImage();
+	}
+	
+	public static Image getDesktopImage(Display display) {
+		GC gc = new GC(display);
+		Image image = new Image(display, display.getBounds());
+        gc.copyArea(image, 0, 0);
+        gc.dispose();
+        return image;
+	}
 	
 	public static void processImage(Shell shell, Image image) {
 		new ImageDialog(shell, image).open();
@@ -75,7 +89,18 @@ public class Util {
 				public void paintControl(PaintEvent e) {
 					Point size = canvas.getSize();
 					Rectangle bounds = image.getBounds();
-					e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, size.x, size.y);
+					if (bounds.width <= size.x && bounds.height <= size.y) {
+						e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0,  bounds.width, bounds.height);						
+					} else {
+						boolean tall = bounds.height > bounds.width;
+						double scale = 1.0;
+						if (tall) {
+							scale = ((double) size.y) / ((double) bounds.height);
+						} else {
+							scale = ((double) size.x) / ((double) bounds.width);
+						}
+						e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, (int) (bounds.width * scale), (int) (bounds.height * scale));
+					}
 				}
 			});
 			
@@ -241,6 +266,80 @@ public class Util {
 			TextTransfer textTransfer = TextTransfer.getInstance();
 			new Clipboard(shell.getDisplay()).setContents(new Object[]{image.getImageData(), "screenshot"}, 
 					new Transfer[]{imageTransfer, textTransfer});
+		}
+	}
+	
+	private static class DesktopAreaImage implements Listener, PaintListener {
+		private Shell shell;
+		private Image image;
+		private Point start;
+		private Point end;
+		private boolean finished;
+		DesktopAreaImage(Shell parentShell) {
+			Display display = parentShell.getDisplay();
+			image = getDesktopImage(display);
+			Rectangle bounds = display.getBounds();
+			shell = new Shell(parentShell, SWT.NO_TRIM | SWT.ON_TOP);
+			shell.setBounds(bounds);
+		}
+
+		public void handleEvent(Event event) {
+			switch (event.type) {
+        	case SWT.MouseDown:
+        		start = new Point(event.x, event.y);
+        		break;
+        	case SWT.MouseMove:
+        		if (start != null) {
+        			end = new Point(event.x, event.y);
+        		}
+        		shell.redraw();
+        		shell.update();
+        		break;
+        	case SWT.MouseUp:
+        		if (start != null) {
+        			end = new Point(event.x, event.y);
+        			finished = true;
+            		shell.redraw();
+            		shell.update();
+        			GC gc = new GC(shell);
+        			image = new Image(shell.getDisplay(), new Rectangle(
+        					0,
+        					0,
+        					Math.abs(end.x -start.x),
+        					Math.abs(end.y -start.y)));
+        			gc.copyArea(image, Math.min(start.x, end.x), Math.min(start.y, end.y));
+        	        gc.dispose();
+        	        shell.close();
+        		}
+        		break;
+        	}
+		}
+
+		public void paintControl(PaintEvent e) {
+			e.gc.drawImage(image, 0, 0);
+			if (start != null && end != null && (!finished)) {
+				e.gc.setForeground(e.gc.getDevice().getSystemColor(SWT.COLOR_DARK_GRAY));
+				e.gc.drawRectangle(
+						Math.min(start.x, end.x),
+						Math.min(start.y, end.y),
+						Math.abs(end.x -start.x),
+						Math.abs(end.y -start.y));
+			}
+		}
+		
+		Image getImage() {
+			Display display = shell.getDisplay();
+			shell.addListener(SWT.MouseDown, this);
+			shell.addListener(SWT.MouseMove, this);
+			shell.addListener(SWT.MouseUp, this);
+			shell.addPaintListener(this);
+			shell.setCursor(display.getSystemCursor(SWT.CURSOR_CROSS));
+			shell.open();
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch())
+					display.sleep();
+			}
+			return image;
 		}
 	}
 }

@@ -8,6 +8,15 @@
             label="Screenshot Actions"
             visible="true">
          <action
+               class="screenshot.DesktopArea"
+               icon="icons/desktoparea.png"
+               id="Screenshot.desktoparea.action"
+               label="Desktop Area"
+               menubarPath="window/additions"
+               style="push"
+               toolbarPath="screenshot">
+         </action>
+         <action
                class="screenshot.Desktop"
                icon="icons/desktop.png"
                id="Screenshot.desktop.action"
