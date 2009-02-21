@@ -316,7 +316,13 @@ public class Util {
 
 		public void paintControl(PaintEvent e) {
 			e.gc.drawImage(image, 0, 0);
-			if (start != null && end != null && (!finished)) {
+			if (start == null) {
+				Point cursorLocation = e.display.getCursorLocation();
+				e.gc.drawString(
+						"Click and drag to select screenshot area",
+						cursorLocation.x + 2,
+						cursorLocation.y + 20);
+			} else if (start != null && end != null && (!finished)) {
 				e.gc.setForeground(e.gc.getDevice().getSystemColor(SWT.COLOR_DARK_GRAY));
 				e.gc.drawRectangle(
 						Math.min(start.x, end.x),
