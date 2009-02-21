@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="Screenshot"
+      label="Screenshot Feature"
+      version="1.0.0"
+      provider-name="Sandip Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      This site hosts Sandip Chitale&apos;s Eclipse plugins.
+   </description>
+
+   <copyright url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      Sandip Chitale
+   </copyright>
+
+   <license url="http://www.opensource.org/licenses/bsd-license.php">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <discovery label="Sandip Chitale&apos;s blog" url="http://sandipchitale.blogspot.com/"/>
+      <discovery label="Sandip Chitale&apos;s Google code projects" url="http://code.google.com/u/sandipchitale/"/>
+   </url>
+
+   <plugin
+         id="screenshot"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
