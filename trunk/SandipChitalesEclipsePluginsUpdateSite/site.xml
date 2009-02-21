@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
    <feature url="features/FeaturesPluginsFragmentsFeature_1.0.0.jar" id="FeaturesPluginsFragmentsFeature" version="1.0.0">
-      <category name="FeaturesPluginsFragments_Category"/>
+      <category name="Features Plugins Fragments"/>
    </feature>
-   <feature url="features/Screenshot_1.0.0.jar" id="Screenshot" version="1.0.0">
-      <category name="Desktop_category"/>
+   <feature url="features/Screenshot_1.0.1.jar" id="Screenshot" version="1.0.1">
+      <category name="Desktop"/>
    </feature>
-   <category-def name="FeaturesPluginsFragments_Category" label="Features Plugins Fragments Information"/>
-   <category-def name="Desktop_category" label="Desktop"/>
+   <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
+   <category-def name="Desktop" label="Desktop Integration"/>
 </site>
