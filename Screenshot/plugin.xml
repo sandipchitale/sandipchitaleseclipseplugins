@@ -13,7 +13,14 @@
                id="Screenshot.workbenchwindow.action"
                label="Workbench Window"
                menubarPath="window/additions"
-               style="push"
+               style="push">
+         </action>
+         <action
+               class="screenshot.WorkbenchWindow"
+               icon="icons/workbenchwindow.png"
+               id="Screenshot.workbenchwindow.action"
+               label="Workbench Window"
+               style="pulldown"
                toolbarPath="screenshot">
          </action>
          <action
