@@ -2,23 +2,29 @@ package screenshot;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IPerspectiveListener;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
@@ -29,6 +35,7 @@ import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.views.IViewDescriptor;
@@ -89,8 +96,15 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 		Menu viewsMenu = new Menu(menu);
 		viewsMenuItem.setMenu(viewsMenu);
 		fillViewsMenu(viewsMenu);
+
+		MenuItem preferencesPagesMenuItem = new MenuItem(menu, SWT.CASCADE);
+		preferencesPagesMenuItem.setText("Preferences Pages");
+		Menu preferencesPagesMenu = new Menu(menu);
+		preferencesPagesMenuItem.setMenu(preferencesPagesMenu);
+		fillPreferencesPagesMenu(preferencesPagesMenu);
 	}
 	
+
 	private void fillPerspectivesMenu(Menu menu) {
 		final IWorkbench workbench = window.getWorkbench();
 		IPerspectiveRegistry perspectiveRegistry = workbench.getPerspectiveRegistry();
@@ -204,4 +218,54 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 		}
 	}
 
+	private void fillPreferencesPagesMenu(Menu menu) {
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipse.ui.preferencePages");
+		IExtension[] extensions = extensionPoint.getExtensions();
+		
+		Map<String, String> nameToId = new TreeMap<String, String>();
+		for (IExtension extension : extensions) {
+			IConfigurationElement[] configurationElements = extension.getConfigurationElements();
+			for (IConfigurationElement configurationElement : configurationElements) {
+				if ("page".equals(configurationElement.getName())) {
+					String name = configurationElement.getAttribute("name");
+					if (name != null) {
+						nameToId.put(name, configurationElement.getAttribute("id"));
+					}
+				}
+			}
+		}
+		
+		Set<String> names = nameToId.keySet();
+		for(String name : names) {
+			String id = nameToId.get(name);
+			// Configure the menu items for each preferences page
+			MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
+			menuItem.setText(name);
+			menuItem.setData(id);
+			// Handle selection
+			menuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					String[] displayedIds = new String[] {(String) e.widget.getData()};
+					final PreferenceDialog preferenceDialog = PreferencesUtil.createPreferenceDialogOn(
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+							displayedIds[0],
+							null,
+							null);
+					UIJob uiJob = new UIJob("") {
+						public IStatus runInUIThread(IProgressMonitor monitor) {
+							Shell shell = preferenceDialog.getShell();
+							Image desktopImage = Util.getDesktopImage(shell.getDisplay(), shell.getBounds());
+							Util.processImage(shell, desktopImage);
+							preferenceDialog.close();
+							return Status.OK_STATUS;
+						}
+					};
+					uiJob.setSystem(true);
+					uiJob.setPriority(UIJob.INTERACTIVE);
+					uiJob.schedule(1000l);
+					preferenceDialog.open();
+				}
+			});
+		}
+	}
 }
