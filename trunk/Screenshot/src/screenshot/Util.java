@@ -52,9 +52,13 @@ public class Util {
 	}
 	
 	public static Image getDesktopImage(Display display) {
+        return getDesktopImage(display, display.getBounds());
+	}
+	
+	public static Image getDesktopImage(Display display, Rectangle bounds) {
 		GC gc = new GC(display);
-		Image image = new Image(display, display.getBounds());
-        gc.copyArea(image, 0, 0);
+		Image image = new Image(display, new Rectangle(0, 0, bounds.width, bounds.height));
+        gc.copyArea(image, bounds.x, bounds.y);
         gc.dispose();
         return image;
 	}

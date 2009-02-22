@@ -8,6 +8,15 @@
             label="Screenshot Actions"
             visible="true">
          <action
+               class="screenshot.WorkbenchWindow"
+               icon="icons/workbenchwindow.png"
+               id="Screenshot.workbenchwindow.action"
+               label="Workbench Window"
+               menubarPath="window/additions"
+               style="push"
+               toolbarPath="screenshot">
+         </action>
+         <action
                class="screenshot.DesktopArea"
                icon="icons/desktoparea.png"
                id="Screenshot.desktoparea.action"
