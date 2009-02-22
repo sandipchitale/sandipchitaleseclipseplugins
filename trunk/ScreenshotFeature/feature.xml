@@ -2,11 +2,11 @@
 <feature
       id="Screenshot"
       label="Screenshot Feature"
-      version="1.0.3"
+      version="1.0.4"
       provider-name="Sandip Chitale">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
-      This site hosts Sandip Chitale&apos;s Eclipse plugins.
+      The feature lets to takes screenshots from within Eclipse.
    </description>
 
    <copyright url="http://code.google.com/p/sandipchitaleseclipseplugins/">
@@ -14,7 +14,7 @@
    </copyright>
 
    <license url="http://www.opensource.org/licenses/bsd-license.php">
-      [Enter License Description here.]
+      BSD
    </license>
 
    <url>
