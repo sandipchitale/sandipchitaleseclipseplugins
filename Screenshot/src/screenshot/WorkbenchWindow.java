@@ -21,21 +21,29 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.internal.EditorReference;
+import org.eclipse.ui.internal.EditorStack;
+import org.eclipse.ui.internal.ILayoutContainer;
+import org.eclipse.ui.internal.PartPane;
 import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.views.IViewDescriptor;
@@ -96,6 +104,12 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 		Menu viewsMenu = new Menu(menu);
 		viewsMenuItem.setMenu(viewsMenu);
 		fillViewsMenu(viewsMenu);
+		
+		MenuItem editorssMenuItem = new MenuItem(menu, SWT.CASCADE);
+		editorssMenuItem.setText("Editors");
+		Menu editorsMenu = new Menu(menu);
+		editorssMenuItem.setMenu(editorsMenu);
+		fillEditorsMenu(editorsMenu);
 
 		MenuItem preferencesPagesMenuItem = new MenuItem(menu, SWT.CASCADE);
 		preferencesPagesMenuItem.setText("Preferences Pages");
@@ -103,7 +117,6 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 		preferencesPagesMenuItem.setMenu(preferencesPagesMenu);
 		fillPreferencesPagesMenu(preferencesPagesMenu);
 	}
-	
 
 	private void fillPerspectivesMenu(Menu menu) {
 		final IWorkbench workbench = window.getWorkbench();
@@ -218,6 +231,64 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 		}
 	}
 
+	private void fillEditorsMenu(Menu menu) {
+		// Get all editors
+		IEditorReference[] editorReferences = window.getActivePage().getEditorReferences();
+		// Determine the active view and use it to enable and check
+		// the menu items
+		IWorkbenchPartReference activePartReference = window.getActivePage().getActivePartReference();
+
+		// Configure the menu items for each View
+		for (IEditorReference editorReference : editorReferences) {
+			MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
+			menuItem.setText((editorReference.isDirty() ? "*" : "") + editorReference.getTitle());
+			menuItem.setImage(editorReference.getTitleImage());
+			menuItem.setData(editorReference);
+			// Handle selection
+			menuItem.addSelectionListener(new SelectionAdapter() {
+				@SuppressWarnings("restriction")
+				public void widgetSelected(SelectionEvent e) {
+					IEditorReference editorReference = (IEditorReference) e.widget.getData();
+					if (editorReference != null) {
+						IWorkbenchPage activePage = window.getActivePage();
+						IEditorPart editorPart = (IEditorPart) editorReference.getPart(true);
+						if (editorPart != null) {
+							activePage.activate(editorPart);
+							if (editorReference instanceof EditorReference) {
+								EditorReference editorReferenceCasted = (EditorReference) editorReference;
+								if (!editorReferenceCasted.isDisposed()) {
+									PartPane pane = editorReferenceCasted.getPane();
+									if (pane != null) {
+										ILayoutContainer container = pane.getContainer();
+										if (container instanceof EditorStack) {
+											final EditorStack editorStack = (EditorStack) container;
+											UIJob uiJob = new UIJob("") {
+												public IStatus runInUIThread(IProgressMonitor monitor) {
+													Control control = editorStack.getControl();
+													Shell shell = window.getShell();
+													Display display = shell.getDisplay();
+													Image desktopImage = Util.getDesktopImage(display, display.map(control, null, control.getBounds()));
+													Util.processImage(shell, desktopImage);
+													return Status.OK_STATUS;
+												}
+											};
+											uiJob.setSystem(true);
+											uiJob.setPriority(UIJob.INTERACTIVE);
+											uiJob.schedule();
+										}
+									}
+								}
+								
+							}
+						}
+					} else {
+						// may be delete this menuItem ?
+					}
+				}
+			});
+		}
+	}
+	
 	private void fillPreferencesPagesMenu(Menu menu) {
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipse.ui.preferencePages");
 		IExtension[] extensions = extensionPoint.getExtensions();
