@@ -2,11 +2,11 @@
 <feature
       id="Screenshot"
       label="Screenshot Feature"
-      version="1.0.6"
+      version="1.0.7"
       provider-name="Sandip Chitale">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
-      The feature lets to takes screenshots from within Eclipse.
+      The feature lets you take screenshots from within Eclipse.
    </description>
 
    <copyright url="http://code.google.com/p/sandipchitaleseclipseplugins/">
