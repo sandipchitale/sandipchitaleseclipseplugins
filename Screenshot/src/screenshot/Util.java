@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tracker;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
@@ -276,8 +277,7 @@ public class Util {
 		private Shell shell;
 		private Image image;
 		private Point start;
-		private Point end;
-		private boolean finished;
+		
 		DesktopAreaImage(Shell parentShell) {
 			Display display = parentShell.getDisplay();
 			image = getDesktopImage(display);
@@ -289,62 +289,59 @@ public class Util {
 		public void handleEvent(Event event) {
 			switch (event.type) {
         	case SWT.MouseDown:
+        		shell.removePaintListener(this);
+    			shell.removeListener(SWT.MouseDown, this);
+    			shell.removeListener(SWT.MouseMove, this);
+        		shell.setBounds(0,0,0,0);
+        		image = null;
+        		final Display display = shell.getDisplay();
         		start = new Point(event.x, event.y);
+        		UIJob uiJob = new UIJob("") {
+					public IStatus runInUIThread(IProgressMonitor monitor) {
+		        		Tracker tracker = new Tracker (display, SWT.RESIZE | SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN);
+		        		tracker.setCursor(display.getSystemCursor(SWT.CURSOR_SIZESE));
+		        		tracker.setStippled(true);
+		    			tracker.setRectangles (new Rectangle [] {new Rectangle(start.x, start.y, 0, 0)});
+		    			if (tracker.open()) {
+		    				Rectangle rectangle = tracker.getRectangles()[0];
+		        			GC gc = new GC(display);
+		        			image = new Image(display, new Rectangle(0, 0, rectangle.width, rectangle.height));
+		        			gc.copyArea(image, rectangle.x, rectangle.y);
+		        	        gc.dispose();
+		    			}
+		    			shell.close();
+						return Status.OK_STATUS;
+					}
+        		};
+        		uiJob.setSystem(true);
+        		uiJob.setPriority(UIJob.INTERACTIVE);
+        		uiJob.schedule(10l);
         		break;
         	case SWT.MouseMove:
-        		if (start != null) {
-        			end = new Point(event.x, event.y);
-        		}
-        		shell.redraw();
-        		shell.update();
-        		break;
-        	case SWT.MouseUp:
-        		if (start != null) {
-        			end = new Point(event.x, event.y);
-        			finished = true;
-            		shell.redraw();
-            		shell.update();
-        			GC gc = new GC(shell);
-        			image = new Image(shell.getDisplay(), new Rectangle(
-        					0,
-        					0,
-        					Math.abs(end.x -start.x),
-        					Math.abs(end.y -start.y)));
-        			gc.copyArea(image, Math.min(start.x, end.x), Math.min(start.y, end.y));
-        	        gc.dispose();
-        	        shell.close();
+        		if (start == null) {
+        			shell.redraw();
         		}
         		break;
-        	}
+			}
 		}
 
 		public void paintControl(PaintEvent e) {
-			e.gc.drawImage(image, 0, 0);
+			if (image != null) {
+				e.gc.drawImage(image, 0, 0);
+			}
 			if (start == null) {
 				Point cursorLocation = e.display.getCursorLocation();
 				e.gc.drawString(
-						"Click and drag to select screenshot area",
+						"Click and drag to select screenshot area. Type ESC to cancel.",
 						cursorLocation.x + 2,
-						cursorLocation.y + 20);
-			} else if (start != null && end != null && (!finished)) {
-				e.gc.setForeground(e.gc.getDevice().getSystemColor(SWT.COLOR_DARK_GRAY));
-				e.gc.drawRectangle(
-						Math.min(start.x, end.x),
-						Math.min(start.y, end.y),
-						Math.abs(end.x -start.x),
-						Math.abs(end.y -start.y));
-				e.gc.drawString(
-						Math.abs(end.x -start.x) + "," + Math.abs(end.y -start.y),
-						end.x + 2,
-						end.y + 20);
+						cursorLocation.y + 10);
 			}
 		}
 		
 		Image getImage() {
-			Display display = shell.getDisplay();
+			final Display display = shell.getDisplay();
 			shell.addListener(SWT.MouseDown, this);
 			shell.addListener(SWT.MouseMove, this);
-			shell.addListener(SWT.MouseUp, this);
 			shell.addPaintListener(this);
 			shell.setCursor(display.getSystemCursor(SWT.CURSOR_CROSS));
 			shell.forceActive();
