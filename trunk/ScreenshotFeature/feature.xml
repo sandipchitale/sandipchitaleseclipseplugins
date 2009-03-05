@@ -2,7 +2,7 @@
 <feature
       id="Screenshot"
       label="Screenshot Feature"
-      version="1.0.10"
+      version="1.0.12"
       provider-name="Sandip Chitale">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">

@@ -49,7 +49,8 @@ import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
 public class Util {
 	public static Image getImage(Shell parentShell) {
-		return new DesktopAreaImage(parentShell).getImage();
+		return getDesktopImage(parentShell.getDisplay(),
+				new DesktopArea(parentShell).getBounds());
 	}
 	
 	public static Image getDesktopImage(Display display) {
@@ -273,70 +274,70 @@ public class Util {
 		}
 	}
 	
-	private static class DesktopAreaImage implements Listener {
+	private static class DesktopArea implements Listener {
 		private Shell shell;
-		private Image image;
 		private Point start;
+		private Rectangle rectangle;
 		
-		DesktopAreaImage(Shell parentShell) {
-			Display display = parentShell.getDisplay();
-			Rectangle bounds = display.getBounds();
-			shell = new Shell(parentShell, SWT.NO_TRIM | SWT.ON_TOP);
-			shell.setBounds(bounds);
+		DesktopArea(Shell parentShell) {
+			// Create transparent shell
+			shell = new Shell(parentShell, SWT.NO_TRIM | SWT.ON_TOP | SWT.APPLICATION_MODAL);
 			shell.setAlpha(0);
 		}
 
-		public void handleEvent(Event event) {
+		public void handleEvent(final Event event) {
 			switch (event.type) {
         	case SWT.MouseDown:
+        		// Remove listener
     			shell.removeListener(SWT.MouseDown, this);
-    			shell.removeListener(SWT.MouseMove, this);
-        		shell.setBounds(0,0,0,0);
-        		final Display display = shell.getDisplay();
-        		start = new Point(event.x, event.y);
-        		UIJob uiJob = new UIJob("") {
-					public IStatus runInUIThread(IProgressMonitor monitor) {
-		        		Tracker tracker = new Tracker (display, SWT.RESIZE | SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN);
-		        		tracker.setCursor(display.getSystemCursor(SWT.CURSOR_SIZESE));
-		        		tracker.setStippled(true);
-		    			tracker.setRectangles (new Rectangle [] {new Rectangle(start.x, start.y, 0, 0)});
-		    			if (tracker.open()) {
-		    				Rectangle rectangle = tracker.getRectangles()[0];
-		        			GC gc = new GC(display);
-		        			image = new Image(display, new Rectangle(0, 0, rectangle.width, rectangle.height));
-		        			gc.copyArea(image, rectangle.x, rectangle.y);
-		        	        gc.dispose();
-		    			}
-		    			shell.close();
-						return Status.OK_STATUS;
-					}
-        		};
-        		uiJob.setSystem(true);
-        		uiJob.setPriority(UIJob.INTERACTIVE);
-        		uiJob.schedule(10l);
-        		break;
-        	case SWT.MouseMove:
-        		if (start == null) {
-        			shell.redraw();
-        		}
+    			final Display display = shell.getDisplay();
+    			// Create a tracker i.e. rubber-band to select the area of desktop
+    			Tracker tracker = new Tracker (display, SWT.RESIZE);
+    			tracker.setCursor(display.getSystemCursor(SWT.CURSOR_SIZESE));
+    			tracker.setStippled(true);
+    			tracker.setRectangles (new Rectangle[] {new Rectangle(event.x, event.y, 0, 0)});
+    			// Show the tracker
+    			if (tracker.open()) {
+    				rectangle = tracker.getRectangles()[0];
+    				shell.setBounds(0, 0, 0, 0);
+    				UIJob uiJob = new UIJob("") {
+						public IStatus runInUIThread(IProgressMonitor monitor) {
+							display.update();
+			    			// Close shell
+			    			shell.close();
+							return Status.OK_STATUS;
+						}
+    				};
+    				uiJob.setSystem(true);
+    				uiJob.setPriority(UIJob.INTERACTIVE);
+    				uiJob.schedule(10l);
+    			}
         		break;
 			}
 		}
-
 		
-		Image getImage() {
-			final Display display = shell.getDisplay();
+		Rectangle getBounds() {
+			// Get display bounds
+			Display display = shell.getDisplay();
+			Rectangle bounds = display.getBounds();
+			// Make the shell same size as the display
+			shell.setBounds(bounds);
+			
+			// Listen to mouse down events
 			shell.addListener(SWT.MouseDown, this);
-			shell.addListener(SWT.MouseMove, this);
+			// Set the cross-hair cursor
 			shell.setCursor(display.getSystemCursor(SWT.CURSOR_CROSS));
+			// Show the shell
+			shell.open();
+
 			shell.forceActive();
 			shell.forceFocus();
-			shell.open();
+			
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch())
 					display.sleep();
 			}
-			return image;
+			return rectangle;
 		}
 	}
 }

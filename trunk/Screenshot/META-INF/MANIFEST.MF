@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Screenshot
 Bundle-SymbolicName: screenshot;singleton:=true
-Bundle-Version: 1.0.10
+Bundle-Version: 1.0.12
 Bundle-Activator: screenshot.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
