@@ -3,7 +3,7 @@
    <feature url="features/FeaturesPluginsFragmentsFeature_1.0.0.jar" id="FeaturesPluginsFragmentsFeature" version="1.0.0">
       <category name="Features Plugins Fragments"/>
    </feature>
-   <feature url="features/Screenshot_1.0.7.jar" id="Screenshot" version="1.0.7">
+   <feature url="features/Screenshot_1.0.9.jar" id="Screenshot" version="1.0.9">
       <category name="Desktop"/>
    </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
