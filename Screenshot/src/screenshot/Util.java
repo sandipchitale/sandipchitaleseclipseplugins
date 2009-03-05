@@ -273,27 +273,25 @@ public class Util {
 		}
 	}
 	
-	private static class DesktopAreaImage implements Listener, PaintListener {
+	private static class DesktopAreaImage implements Listener {
 		private Shell shell;
 		private Image image;
 		private Point start;
 		
 		DesktopAreaImage(Shell parentShell) {
 			Display display = parentShell.getDisplay();
-			image = getDesktopImage(display);
 			Rectangle bounds = display.getBounds();
 			shell = new Shell(parentShell, SWT.NO_TRIM | SWT.ON_TOP);
 			shell.setBounds(bounds);
+			shell.setAlpha(0);
 		}
 
 		public void handleEvent(Event event) {
 			switch (event.type) {
         	case SWT.MouseDown:
-        		shell.removePaintListener(this);
     			shell.removeListener(SWT.MouseDown, this);
     			shell.removeListener(SWT.MouseMove, this);
         		shell.setBounds(0,0,0,0);
-        		image = null;
         		final Display display = shell.getDisplay();
         		start = new Point(event.x, event.y);
         		UIJob uiJob = new UIJob("") {
@@ -325,24 +323,11 @@ public class Util {
 			}
 		}
 
-		public void paintControl(PaintEvent e) {
-			if (image != null) {
-				e.gc.drawImage(image, 0, 0);
-			}
-			if (start == null) {
-				Point cursorLocation = e.display.getCursorLocation();
-				e.gc.drawString(
-						"Click and drag to select screenshot area. Type ESC to cancel.",
-						cursorLocation.x + 2,
-						cursorLocation.y + 10);
-			}
-		}
 		
 		Image getImage() {
 			final Display display = shell.getDisplay();
 			shell.addListener(SWT.MouseDown, this);
 			shell.addListener(SWT.MouseMove, this);
-			shell.addPaintListener(this);
 			shell.setCursor(display.getSystemCursor(SWT.CURSOR_CROSS));
 			shell.forceActive();
 			shell.forceFocus();
