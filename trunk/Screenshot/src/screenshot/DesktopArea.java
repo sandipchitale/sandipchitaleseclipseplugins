@@ -22,33 +22,38 @@ public class DesktopArea implements IWorkbenchWindowActionDelegate {
 		this.window = window;
 	}
 
-	public void run(IAction action) {
+	public void run(final IAction action) {
+		action.setEnabled(false);
 		final int[] countdownFrom = new int[1];
 		countdownFrom[0] = 5;
 		UIJob uiJob = new UIJob("") {
 			public IStatus runInUIThread(IProgressMonitor monitor) {
-				if (countdownFrom[0] >= 0) {
-					if (countdownFrom[0] > 0) {
-						((WorkbenchWindow) window).getStatusLineManager().setMessage("Screenshot in " + countdownFrom[0] + " seconds...");
-					} else {
-						((WorkbenchWindow) window).getStatusLineManager().setMessage("");
+				try {
+					if (countdownFrom[0] >= 0) {
+						if (countdownFrom[0] > 0) {
+							((WorkbenchWindow) window).getStatusLineManager().setMessage("Screenshot in " + countdownFrom[0] + " seconds...");
+						} else {
+							((WorkbenchWindow) window).getStatusLineManager().setMessage("");
+						}
+						countdownFrom[0]--;
+						schedule(1000);
+						return Status.OK_STATUS;
 					}
-					countdownFrom[0]--;
-					schedule(1000);
+					Shell shell = window.getShell();
+					if (shell == null || shell.isDisposed()) {
+						return Status.CANCEL_STATUS;
+					}
+					shell.getDisplay().beep();
+					/* Take the screen shot */
+					Image image = Util.getImage(shell);
+					if (image == null) {
+						return Status.CANCEL_STATUS;
+					}
+					Util.processImage(shell, image);
 					return Status.OK_STATUS;
+				} finally {
+					action.setEnabled(true);
 				}
-				Shell shell = window.getShell();
-				if (shell == null || shell.isDisposed()) {
-					return Status.CANCEL_STATUS;
-				}
-				shell.getDisplay().beep();
-				/* Take the screen shot */
-				Image image = Util.getImage(shell);
-				if (image == null) {
-					return Status.CANCEL_STATUS;
-				}
-				Util.processImage(shell, image);
-				return Status.OK_STATUS;
 			}			
 		};
 		uiJob.setPriority(UIJob.INTERACTIVE);
