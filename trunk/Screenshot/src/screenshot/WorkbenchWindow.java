@@ -66,7 +66,7 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 	public void run(IAction action) {
 		/* Take the screen shot */
 		Shell shell = window.getShell();
-		Image desktopImage = Util.getDesktopImage(shell.getDisplay(), shell.getBounds());
+		Image desktopImage = Util.getShellImage(shell);
 		Util.processImage(shell, desktopImage);
 	}
 
@@ -153,7 +153,7 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 							UIJob uiJob = new UIJob("") {
 								public IStatus runInUIThread(IProgressMonitor monitor) {
 									Shell shell = window.getShell();
-									Image desktopImage = Util.getDesktopImage(shell.getDisplay(), shell.getBounds());
+									Image desktopImage = Util.getShellImage(shell);
 									Util.processImage(shell, desktopImage);
 									return Status.OK_STATUS;
 								}
@@ -211,7 +211,7 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 								UIJob uiJob = new UIJob("") {
 									public IStatus runInUIThread(IProgressMonitor monitor) {
 										Shell shell = view.getViewSite().getShell();
-										Image desktopImage = Util.getDesktopImage(shell.getDisplay(), shell.getBounds());
+										Image desktopImage = Util.getShellImage(shell);
 										Util.processImage(shell, desktopImage);
 										((WorkbenchPage)activePage).attachView(viewReference);
 										return Status.OK_STATUS;
@@ -267,7 +267,7 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 													Control control = editorStack.getControl();
 													Shell shell = window.getShell();
 													Display display = shell.getDisplay();
-													Image desktopImage = Util.getDesktopImage(display, display.map(control, null, control.getBounds()));
+													Image desktopImage = Util.getControlImage(control);
 													Util.processImage(shell, desktopImage);
 													return Status.OK_STATUS;
 												}
@@ -325,7 +325,7 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 					UIJob uiJob = new UIJob("") {
 						public IStatus runInUIThread(IProgressMonitor monitor) {
 							Shell shell = preferenceDialog.getShell();
-							Image desktopImage = Util.getDesktopImage(shell.getDisplay(), shell.getBounds());
+							Image desktopImage = Util.getShellImage(shell);
 							Util.processImage(shell, desktopImage);
 							preferenceDialog.close();
 							return Status.OK_STATUS;

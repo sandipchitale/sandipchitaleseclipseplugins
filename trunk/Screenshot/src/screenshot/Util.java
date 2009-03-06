@@ -48,21 +48,23 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
 public class Util {
-	public static Image getImage(Shell parentShell) {
-		return getDesktopImage(parentShell.getDisplay(),
-				new DesktopArea(parentShell).getBounds());
-	}
-	
 	public static Image getDesktopImage(Display display) {
-        return getDesktopImage(display, display.getBounds());
+		return Desktop.getDesktopImage(display);
 	}
 	
-	public static Image getDesktopImage(Display display, Rectangle bounds) {
-		GC gc = new GC(display);
-		Image image = new Image(display, new Rectangle(0, 0, bounds.width, bounds.height));
-        gc.copyArea(image, bounds.x, bounds.y);
-        gc.dispose();
-        return image;
+	public static Image getDesktopAreaImage(Shell parentShell) {
+		Display display = parentShell.getDisplay();
+		return Desktop.getDesktopAreaImage(display);
+	}
+	
+	public static Image getShellImage(Shell shell) {
+		Display display = shell.getDisplay();
+		return Desktop.getDesktopAreaImage(display, shell.getBounds());
+	}
+	
+	public static Image getControlImage(Control control) {
+		Display display = control.getDisplay();
+		return Desktop.getDesktopAreaImage(display, display.map(control, null, control.getBounds()));
 	}
 	
 	public static void processImage(Shell shell, Image image) {
@@ -274,57 +276,91 @@ public class Util {
 		}
 	}
 	
-	private static class DesktopArea implements Listener {
-		private Shell shell;
-		private Point start;
-		private Rectangle rectangle;
+	/**
+	 * This class provides utility methods to get bounds
+	 * or image of rectangular area of the desktop in a
+	 * interactive fashion.
+	 *  
+	 * @author Sandip V. chitale
+	 *
+	 */
+	public static class Desktop {
 		
-		DesktopArea(Shell parentShell) {
-			// Create transparent shell
-			shell = new Shell(parentShell, SWT.NO_TRIM | SWT.ON_TOP | SWT.APPLICATION_MODAL);
-			shell.setAlpha(0);
+		/**
+		 * Return image of selected area of the desktop.
+		 * 
+		 * @param display display corresponding to the desktop
+		 * @return Image of the selected reactangular area of the desktop
+		 */
+		public static Image getDesktopAreaImage(Display display) {
+			Rectangle bounds = getBounds(display);
+			if (bounds != null) {
+				return getDesktopAreaImage(display, bounds);
+			}
+			return null;
+		}
+		
+		public static Image getDesktopImage(Display display) {
+			return getDesktopAreaImage(display, display.getBounds());
 		}
 
-		public void handleEvent(final Event event) {
-			switch (event.type) {
-        	case SWT.MouseDown:
-        		// Remove listener
-    			shell.removeListener(SWT.MouseDown, this);
-    			final Display display = shell.getDisplay();
-    			// Create a tracker i.e. rubber-band to select the area of desktop
-    			Tracker tracker = new Tracker (display, SWT.RESIZE);
-    			tracker.setCursor(display.getSystemCursor(SWT.CURSOR_SIZESE));
-    			tracker.setStippled(true);
-    			tracker.setRectangles (new Rectangle[] {new Rectangle(event.x, event.y, 0, 0)});
-    			// Show the tracker
-    			if (tracker.open()) {
-    				rectangle = tracker.getRectangles()[0];
-    				shell.setBounds(0, 0, 0, 0);
-    				UIJob uiJob = new UIJob("") {
-						public IStatus runInUIThread(IProgressMonitor monitor) {
-							display.update();
-			    			// Close shell
-			    			shell.close();
-							return Status.OK_STATUS;
-						}
-    				};
-    				uiJob.setSystem(true);
-    				uiJob.setPriority(UIJob.INTERACTIVE);
-    				uiJob.schedule(10l);
-    			}
-        		break;
-			}
+		public static Image getDesktopAreaImage(Display display, Rectangle bounds) {
+			GC gc = new GC(display);
+			Image image = new Image(display, new Rectangle(0, 0, bounds.width, bounds.height));
+	        gc.copyArea(image, bounds.x, bounds.y);
+	        gc.dispose();
+	        return image;
+		}
+
+		/**
+		 * Return the bounds of selected area of the desktop.
+		 * 
+		 * @param display display corresponding to the desktop
+		 * @return
+		 */
+		public static Rectangle getBounds(Display display) {
+			return getRectangle(display);
 		}
 		
-		Rectangle getBounds() {
-			// Get display bounds
-			Display display = shell.getDisplay();
-			Rectangle bounds = display.getBounds();
-			// Make the shell same size as the display
-			shell.setBounds(bounds);
+		private static Rectangle getRectangle(final Display display) {
+			final Rectangle[] rectangle = new Rectangle[1];
 			
+			// Create transparent shell
+			final Shell shell = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
+			shell.setAlpha(0);
+
+			// Make the shell same size as the display
+			shell.setBounds(display.getBounds());
+
 			// Listen to mouse down events
-			shell.addListener(SWT.MouseDown, this);
+			shell.addListener(SWT.MouseDown, new Listener() {
+				public void handleEvent(Event event) {
+					switch (event.type) {
+					case SWT.MouseDown:
+						// Remove listener
+						shell.removeListener(SWT.MouseDown, this);
+						final Display display = shell.getDisplay();
+						// Create a tracker i.e. rubber-band to select the area of desktop
+						Tracker tracker = new Tracker (display, SWT.RESIZE);
+						tracker.setCursor(display.getSystemCursor(SWT.CURSOR_SIZESE));
+						tracker.setStippled(true);
+						tracker.setRectangles (new Rectangle[] {new Rectangle(event.x, event.y, 0, 0)});
+						// Show the tracker
+						if (tracker.open()) {
+							rectangle[0] = tracker.getRectangles()[0];
+							shell.setBounds(0, 0, 0, 0);
+							display.asyncExec(new Runnable(){
+								public void run() {
+									display.update();
+									// Close shell
+									shell.close();
+								}
+							});
+						}
+						break;
+					}
+				}
+			});
 			// Set the cross-hair cursor
 			shell.setCursor(display.getSystemCursor(SWT.CURSOR_CROSS));
 			// Show the shell
@@ -332,12 +368,12 @@ public class Util {
 
 			shell.forceActive();
 			shell.forceFocus();
-			
+
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch())
 					display.sleep();
 			}
-			return rectangle;
+			return rectangle[0];
 		}
 	}
 }
