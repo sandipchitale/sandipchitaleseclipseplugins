@@ -2,7 +2,7 @@
 <feature
       id="Screenshot"
       label="Screenshot Feature"
-      version="1.0.12"
+      version="1.0.13"
       provider-name="Sandip Chitale">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
@@ -18,6 +18,7 @@
    </license>
 
    <url>
+      <update label="Sandip Chitale&apos;s Eclipse Plug-ins" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/"/>
       <discovery label="Sandip Chitale&apos;s blog" url="http://sandipchitale.blogspot.com/"/>
       <discovery label="Sandip Chitale&apos;s Google code projects" url="http://code.google.com/u/sandipchitale/"/>
    </url>

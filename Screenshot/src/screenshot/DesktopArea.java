@@ -45,7 +45,7 @@ public class DesktopArea implements IWorkbenchWindowActionDelegate {
 					}
 					shell.getDisplay().beep();
 					/* Take the screen shot */
-					Image image = Util.getImage(shell);
+					Image image = Util.getDesktopAreaImage(shell);
 					if (image == null) {
 						return Status.CANCEL_STATUS;
 					}
