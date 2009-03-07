@@ -31,6 +31,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.printing.PrintDialog;
+import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -94,7 +97,7 @@ public class Util {
 			Display display = getShell().getDisplay();
 			ScrolledComposite scroller = new ScrolledComposite(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 			GridData scrollerGridData = new GridData();
-			scrollerGridData.verticalSpan = 3;
+			scrollerGridData.verticalSpan = 4;
 			scrollerGridData.widthHint = display.getBounds().width/4;
 			scrollerGridData.heightHint = display.getBounds().height/4;
 			scroller.setLayoutData(scrollerGridData);
@@ -154,6 +157,21 @@ public class Util {
 				}
 			});
 
+
+			Button printButton = new Button(composite, SWT.PUSH);
+			printButton.setText("Print...");
+			GridData printButtonGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
+			printButton.setLayoutData(printButtonGridData);
+			printButton.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+					widgetSelected(e);
+				}
+				
+				public void widgetSelected(SelectionEvent e) {
+					print(getShell(), image);
+				}
+			});
+			
 			return composite;
 		}
 		
@@ -273,6 +291,45 @@ public class Util {
 			TextTransfer textTransfer = TextTransfer.getInstance();
 			new Clipboard(shell.getDisplay()).setContents(new Object[]{image.getImageData(), "screenshot"}, 
 					new Transfer[]{imageTransfer, textTransfer});
+		}
+		
+		private static void print(Shell shell, final Image image) {
+			PrintDialog printDialog = new PrintDialog(shell);
+			final PrinterData printerData = printDialog.open();
+			if (printerData == null) return;
+			final Printer printer = new Printer(printerData);
+			final ImageData imageData = image.getImageData();
+			final Image printerImage = new Image(printer, imageData);
+			Thread printThread = new Thread(new Runnable() {
+				public void run() {
+					// Determine the bounds of the entire area of the printer
+					Rectangle trim = printer.computeTrim(0, 0, 0, 0);
+
+					// Start the print job
+					if (printer.startJob("Screenshot")) {
+						if (printer.startPage()) {
+							GC gc = new GC(printer);
+							// Draw the image
+							gc.drawImage(printerImage, 0, 0, imageData.width,
+									imageData.height,
+									-trim.x, -trim.y, 
+									imageData.width, 
+									imageData.height);
+
+							// Clean up
+							printer.endPage();
+							gc.dispose();
+						}
+					}
+					// Dispose the image
+					printerImage.dispose();
+					// End the job and dispose the printer
+					printer.endJob();
+					printer.dispose();
+
+				}
+			}, "Printing Screenshot");
+			printThread.start();
 		}
 	}
 	
