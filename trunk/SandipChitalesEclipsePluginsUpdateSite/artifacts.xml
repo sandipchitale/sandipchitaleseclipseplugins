@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
-<repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
+<repository name='file:/C:/Users/sandip/professional/eclipse/workspaces/eclipse3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1236565035374'/>
+    <property name='p2.timestamp' value='1236753220663'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
@@ -18,16 +18,16 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='Screenshot' version='1.0.15'>
+    <artifact classifier='org.eclipse.update.feature' id='Screenshot' version='1.0.16'>
       <properties size='2'>
-        <property name='artifact.size' value='866'/>
-        <property name='download.size' value='866'/>
+        <property name='artifact.size' value='868'/>
+        <property name='download.size' value='868'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='screenshot' version='1.0.15'>
+    <artifact classifier='osgi.bundle' id='screenshot' version='1.0.16'>
       <properties size='3'>
-        <property name='artifact.size' value='40642'/>
-        <property name='download.size' value='40642'/>
+        <property name='artifact.size' value='40643'/>
+        <property name='download.size' value='40643'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
