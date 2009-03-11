@@ -3,6 +3,10 @@ package clickit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.ImageTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -90,6 +94,23 @@ public class Util {
 					Rectangle bounds = image.getBounds();
 					e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, bounds.width, bounds.height);
 					e.gc.drawRectangle(0, 0, bounds.width - 1, bounds.height - 1);
+				}
+			});
+			canvas.setToolTipText("You can drag and drop the image.");
+			
+			Transfer[] types = new Transfer[] {ImageTransfer.getInstance()};
+			int operations = DND.DROP_COPY;
+			
+			final DragSource source = new DragSource (canvas, operations);
+			source.setTransfer(types);
+			source.addDragListener (new DragSourceListener () {
+				public void dragStart(DragSourceEvent event) {
+					event.doit = (image != null);
+				}
+				public void dragSetData (DragSourceEvent event) {
+					event.data = image.getImageData();
+				}
+				public void dragFinished(DragSourceEvent event) {
 				}
 			});
 
