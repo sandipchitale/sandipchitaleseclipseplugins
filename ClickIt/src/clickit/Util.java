@@ -297,7 +297,7 @@ public class Util {
 
 			// Create transparent shell
 			final Shell shell = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
-			shell.setAlpha(0);
+			shell.setAlpha(1);
 
 			// Make the shell same size as the display
 			shell.setBounds(display.getBounds());
