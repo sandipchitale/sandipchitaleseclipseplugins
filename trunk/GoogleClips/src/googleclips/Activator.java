@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.PlatformUI;
@@ -70,6 +72,17 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(GOOGLE_ID) || 
+						event.getProperty().equals(SPREADSHEET_NAME) ||
+						event.getProperty().equals(WORKSHEET_NAME) ||
+						event.getProperty().equals(COLUMN_NAME)) {
+					spreadsheetService = null;
+				}
+			}
+			
+		});
 	}
 
 	/*
@@ -272,7 +285,7 @@ public class Activator extends AbstractUIPlugin {
 				if (headerEntry == null) {
 					clipsWorksheetEntry.setColCount(clipsWorksheetEntry.getColCount() + 1);
 					clipsWorksheetEntry = clipsWorksheetEntry.update();
-					headerEntry = new CellEntry(1, clipsWorksheetEntry.getColCount(), columnName);
+					headerEntry = new CellEntry(1, 1, columnName);
 					spreadsheetService.insert(clipsWorksheetEntry.getCellFeedUrl(), headerEntry);
 				}
 			} catch (Exception exception) {
