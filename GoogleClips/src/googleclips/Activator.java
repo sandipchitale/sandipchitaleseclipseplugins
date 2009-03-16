@@ -195,6 +195,8 @@ public class Activator extends AbstractUIPlugin {
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
 						"Enter Password",
 						"Password required to access Google Spreadsheet '" + getSpreadsheetName() + "'.\n" +
+						"You can edit Google Clips settings by visiting\n" +
+						"Preferences > General > Google Clips page.\n" +
 						"Enter password for '" + getGoogleId() + "' :",
 						"",
 						null) {
