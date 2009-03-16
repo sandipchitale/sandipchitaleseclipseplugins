@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="googleclips.CutCopyExecutionListenerAdder">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.preferencePages.Workbench"
+            class="googleclips.preferences.GoogleClipsPreferencesPage"
+            id="GoogleClips.page"
+            name="Google Clips">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="GoogleClips.category"
+            name="Google Clips">
+      </category>
+      <command
+            categoryId="GoogleClips.category"
+            defaultHandler="googleclips.commands.PasteCommand"
+            id="GoogleClips.pasteCommand"
+            name="Paste from Google">
+      </command>
+      <command
+            categoryId="GoogleClips.category"
+            defaultHandler="googleclips.commands.PasteFromPopupCommand"
+            id="GoogleClips.pasteFromPopupCommand"
+            name="Paste from Google (Popup)">
+      </command>
+	  <command
+            categoryId="GoogleClips.category"
+            defaultHandler="googleclips.commands.ToggleAutoClipCutCopyCommand"
+            id="GoogleClips.toggleAutoClipCutCopyCommand"
+            name="Toggle Auto Clip Cut and Copy to Google">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="GoogleClips.pasteCommand"
+            contextId="org.eclipse.ui.textEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+M3+G V">
+      </key>
+      <key
+            commandId="GoogleClips.pasteFromPopupCommand"
+            contextId="org.eclipse.ui.textEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+M3+G P">
+      </key>
+      <key
+            commandId="GoogleClips.toggleAutoClipCutCopyCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+M3+G T">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            description="Google Clips Actions"
+            id="GoogleClips.actionSet"
+            label="Google Clips Actions"
+            visible="true">
+         <action
+               class="googleclips.actions.PasteFromGoogleAction"
+               definitionId="GoogleClips.pasteCommand"
+               icon="icons/googleclips.png"
+               id="GoogleClips.toolbar.pasteAction"
+               label="Paste from Google"
+               menubarPath="Edit/additions"
+               style="pulldown"
+               toolbarPath="Normal/additions">
+         </action>
+      </actionSet>
+   </extension>
+</plugin>
