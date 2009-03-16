@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -17,6 +18,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 {
@@ -154,6 +157,22 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
 				Activator activator = Activator.getDefault();
 				activator.setAutoClipCutCopy(!activator.isAutoClipCutCopy());
 			}
+		});
+		MenuItem preferences = new MenuItem(menu, SWT.PUSH);
+		preferences.setText("Preferences...");
+		preferences.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				String[] displayedIds = new String[] {"GoogleClips.page"};
+				PreferenceDialog pathToolsPreferenceDialog = PreferencesUtil.createPreferenceDialogOn(
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+						displayedIds[0],
+						displayedIds,
+						null);
+				pathToolsPreferenceDialog.open();}
 		});
 	}
 

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Google Clips Plug-in
 Bundle-SymbolicName: GoogleClips;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: googleclips.Activator
 Bundle-Vendor: Sandip Chitale
 Require-Bundle: org.eclipse.ui,
