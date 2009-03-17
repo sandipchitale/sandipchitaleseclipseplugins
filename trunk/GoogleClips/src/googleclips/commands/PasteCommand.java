@@ -2,6 +2,8 @@ package googleclips.commands;
 
 import googleclips.Activator;
 
+import java.util.List;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -14,13 +16,24 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class PasteCommand implements IHandler {
+    private int candidateInsertIndex = 0;
+    private long lastPasteTimeInMillis = -1L;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		if (window == null) {
 			return null;
 		}
-		String textToInsert = Activator.getDefault().getGoogleClip();
+        long currentTimeMillis = System.currentTimeMillis();
+        if ((lastPasteTimeInMillis == -1)
+                || (currentTimeMillis - lastPasteTimeInMillis) > 2000L) {
+            candidateInsertIndex = 0;
+        } else {
+            candidateInsertIndex++;
+        }
+        lastPasteTimeInMillis = currentTimeMillis;
+        List<String> googleClips = Activator.getDefault().getGoogleClips();        
+		String textToInsert = googleClips.get(candidateInsertIndex % googleClips.size());
 		if (textToInsert != null) {
 			IEditorPart activeEditor = window.getActivePage().getActiveEditor();
 			if (activeEditor instanceof ITextEditor) {

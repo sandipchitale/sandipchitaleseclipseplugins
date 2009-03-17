@@ -34,6 +34,14 @@
             id="GoogleClips.pasteFromPopupCommand"
             name="Paste from Google (Popup)">
       </command>
+      <!--
+      <command
+            categoryId="GoogleClips.category"
+            defaultHandler="googleclips.commands.ClearCommand"
+            id="GoogleClips.clearCommand"
+            name="Clear">
+      </command>
+      -->
 	  <command
             categoryId="GoogleClips.category"
             defaultHandler="googleclips.commands.ToggleAutoClipCutCopyCommand"
@@ -47,7 +55,7 @@
             commandId="GoogleClips.pasteCommand"
             contextId="org.eclipse.ui.textEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M2+M3+G V">
+            sequence="M2+M3+G M2+M3+V">
       </key>
       <key
             commandId="GoogleClips.pasteFromPopupCommand"
@@ -55,6 +63,14 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M2+M3+G P">
       </key>
+      <!--
+      <key
+            commandId="GoogleClips.clearCommand"
+            contextId="org.eclipse.ui.textEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+M3+G M2+M3+O">
+      </key>
+      -->
       <key
             commandId="GoogleClips.toggleAutoClipCutCopyCommand"
             contextId="org.eclipse.ui.contexts.window"

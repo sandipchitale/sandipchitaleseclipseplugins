@@ -2,7 +2,6 @@ package googleclips.commands;
 
 import googleclips.Activator;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -77,7 +76,6 @@ public class PasteFromPopupCommand implements IHandler {
 					listDialog.setContentProvider(new ArrayContentProvider());
 					listDialog.setLabelProvider(new ClipLabelProvider());
 					List<String> googleClips = Activator.getDefault().getGoogleClips();
-					Collections.reverse(googleClips);
 					listDialog.setInput(googleClips);
 					listDialog.setTitle("Select a clip to insert");
 					if (listDialog.open() == Window.OK) {
