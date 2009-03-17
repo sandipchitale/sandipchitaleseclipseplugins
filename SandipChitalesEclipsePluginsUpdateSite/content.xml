@@ -3,50 +3,19 @@
 <repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1237178050858'/>
+    <property name='p2.timestamp' value='1237269074802'/>
   </properties>
   <references size='8'>
-    <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='0' options='0'/>
-    <repository url='http://code.google.com/u/sandipchitale/' type='0' options='0'/>
-    <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='1' options='0'/>
     <repository url='http://sandipchitale.blogspot.com/' type='1' options='0'/>
     <repository url='http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/' type='0' options='0'/>
+    <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='1' options='0'/>
+    <repository url='http://code.google.com/u/sandipchitale/' type='1' options='0'/>
     <repository url='http://sandipchitale.blogspot.com/' type='0' options='0'/>
     <repository url='http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/' type='1' options='0'/>
-    <repository url='http://code.google.com/u/sandipchitale/' type='1' options='0'/>
+    <repository url='http://code.google.com/u/sandipchitale/' type='0' options='0'/>
+    <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='0' options='0'/>
   </references>
   <units size='15'>
-    <unit id='GoogleClipsFeature.feature.group' version='1.0.0' singleton='false'>
-      <update id='GoogleClipsFeature.feature.group' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='5'>
-        <property name='org.eclipse.equinox.p2.name' value='Google Clip Feature'/>
-        <property name='org.eclipse.equinox.p2.description' value='Google Clips Feature'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='GoogleClipsFeature.feature.group' version='1.0.0'/>
-      </provides>
-      <requires size='3'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='GoogleClips' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='GoogleDocsLibraries' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='GoogleClipsFeature.feature.jar' range='[1.0.0,1.0.0]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license url='http://www.opensource.org/licenses/bsd-license.php'>
-          BSD&#xA;&#xA;Additional licenses:&#xA;&#xA;GData Java Client Library - http://www.apache.org/licenses/LICENSE-2.0&#xA;Java Mail - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start&#xA;Java Activation Framework - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start
-        </license>
-      </licenses>
-      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
-        Sandip V. Chitale
-      </copyright>
-    </unit>
     <unit id='tooling.source.default' version='1.0.0' singleton='false'>
       <hostRequirements size='1'>
         <required namespace='org.eclipse.equinox.p2.eclipse.type' name='source' range='0.0.0' optional='true' multiple='true' greedy='false'/>
@@ -72,6 +41,73 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='GoogleClipsFeature.feature.jar' version='1.0.2'>
+      <update id='GoogleClipsFeature.feature.jar' range='[0.0.0,1.0.2)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Google Clip Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Google Clips Feature'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='GoogleClipsFeature.feature.jar' version='1.0.2'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='GoogleClipsFeature' version='1.0.2'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='GoogleClipsFeature' version='1.0.2'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.opensource.org/licenses/bsd-license.php'>
+          BSD&#xA;&#xA;Additional licenses:&#xA;&#xA;GData Java Client Library - http://www.apache.org/licenses/LICENSE-2.0&#xA;Java Mail - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start&#xA;Java Activation Framework - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start
+        </license>
+      </licenses>
+      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
+        Sandip V. Chitale
+      </copyright>
+    </unit>
+    <unit id='GoogleClipsFeature.feature.group' version='1.0.2' singleton='false'>
+      <update id='GoogleClipsFeature.feature.group' range='[0.0.0,1.0.2)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Google Clip Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Google Clips Feature'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='GoogleClipsFeature.feature.group' version='1.0.2'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='GoogleClips' range='[1.0.2,1.0.2]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='GoogleDocsLibraries' range='[1.0.0,1.0.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='GoogleClipsFeature.feature.jar' range='[1.0.2,1.0.2]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.opensource.org/licenses/bsd-license.php'>
+          BSD&#xA;&#xA;Additional licenses:&#xA;&#xA;GData Java Client Library - http://www.apache.org/licenses/LICENSE-2.0&#xA;Java Mail - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start&#xA;Java Activation Framework - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start
+        </license>
+      </licenses>
+      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
+        Sandip V. Chitale
+      </copyright>
     </unit>
     <unit id='screenshot' version='1.0.16'>
       <update id='screenshot' range='[0.0.0,1.0.16)' severity='0'/>
@@ -101,42 +137,6 @@
           </instruction>
         </instructions>
       </touchpointData>
-    </unit>
-    <unit id='GoogleClipsFeature.feature.jar' version='1.0.0'>
-      <update id='GoogleClipsFeature.feature.jar' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Google Clip Feature'/>
-        <property name='org.eclipse.equinox.p2.description' value='Google Clips Feature'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='GoogleClipsFeature.feature.jar' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='GoogleClipsFeature' version='1.0.0'/>
-      </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='GoogleClipsFeature' version='1.0.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
-      <licenses size='1'>
-        <license url='http://www.opensource.org/licenses/bsd-license.php'>
-          BSD&#xA;&#xA;Additional licenses:&#xA;&#xA;GData Java Client Library - http://www.apache.org/licenses/LICENSE-2.0&#xA;Java Mail - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start&#xA;Java Activation Framework - https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start
-        </license>
-      </licenses>
-      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
-        Sandip V. Chitale
-      </copyright>
     </unit>
     <unit id='tooling.osgi.bundle.default' version='1.0.0' singleton='false'>
       <hostRequirements size='1'>
@@ -199,6 +199,36 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='GoogleClips' version='1.0.2'>
+      <update id='GoogleClips' range='[0.0.0,1.0.2)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Google Clips Plug-in'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='GoogleClips' version='1.0.2'/>
+        <provided namespace='osgi.bundle' name='GoogleClips' version='1.0.2'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='5'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='GoogleDocsLibraries' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='GoogleClips' version='1.0.2'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-Vendor: Sandip Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: googleclips.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.editors,org.eclipse.jface.text,GoogleDocsLibraries&#xA;Bundle-Name: Google Clips Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: GoogleClips;singleton:=true&#xA;Bundle-Version: 1.0.2&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='FeaturesPluginsFragments' version='1.0.0'>
       <update id='FeaturesPluginsFragments' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='2'>
@@ -224,36 +254,6 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: featurespluginsfragments.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.console,org.eclipse.update.configurator&#xA;Bundle-Name: FeaturesPluginsFragments Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: FeaturesPluginsFragments;singleton:=true&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='GoogleClips' version='1.0.0'>
-      <update id='GoogleClips' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='2'>
-        <property name='org.eclipse.equinox.p2.name' value='Google Clips Plug-in'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip Chitale'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='GoogleClips' version='1.0.0'/>
-        <provided namespace='osgi.bundle' name='GoogleClips' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='5'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='GoogleDocsLibraries' range='0.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='GoogleClips' version='1.0.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-Vendor: Sandip Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: googleclips.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.editors,org.eclipse.jface.text,GoogleDocsLibraries&#xA;Bundle-Name: Google Clips Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: GoogleClips;singleton:=true&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;
           </instruction>
         </instructions>
       </touchpointData>
