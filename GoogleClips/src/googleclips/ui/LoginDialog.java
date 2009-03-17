@@ -1,5 +1,7 @@
 package googleclips.ui;
 
+import googleclips.Activator;
+
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -27,6 +29,13 @@ public class LoginDialog extends TrayDialog {
 		GridLayout layout = (GridLayout) composite.getLayout();
 		layout.numColumns = 2;
 
+		Label message = new Label(composite, SWT.NONE);
+		GridData messageData = new GridData(GridData.FILL_HORIZONTAL);
+		messageData.horizontalSpan = 2;
+		message.setLayoutData(messageData);
+		message.setText("Enter Google credentials to access\nspreadsheet: "
+				+ Activator.getDefault().getSpreadsheetName());
+		
 		Label usernameLabel = new Label(composite, SWT.RIGHT);
 		usernameLabel.setText("Google ID: ");
 
@@ -42,6 +51,13 @@ public class LoginDialog extends TrayDialog {
 		passwordField = new Text(composite, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		passwordField.setLayoutData(data);
+		
+		Label prefsMessage = new Label(composite, SWT.NONE);
+		GridData prefsMessageData = new GridData(GridData.FILL_HORIZONTAL);
+		prefsMessageData.horizontalSpan = 2;
+		prefsMessage.setLayoutData(prefsMessageData);
+		prefsMessage.setText("You can edit settings at\n" +
+				"Preferences > General > Google Clips");
 		return composite;
 	}
 	
