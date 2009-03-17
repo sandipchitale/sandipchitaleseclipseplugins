@@ -61,6 +61,16 @@ public class LoginDialog extends TrayDialog {
 		return composite;
 	}
 	
+	public int open() {
+		boolean autoClipCutCopy = Activator.getDefault().isAutoClipCutCopy();
+		try {
+			Activator.getDefault().setAutoClipCutCopy(false);
+			return super.open();
+		} finally {
+			Activator.getDefault().setAutoClipCutCopy(autoClipCutCopy);
+		}
+	}
+	
 	@Override
 	protected void okPressed() {
 		googleId = googleIdField.getText();

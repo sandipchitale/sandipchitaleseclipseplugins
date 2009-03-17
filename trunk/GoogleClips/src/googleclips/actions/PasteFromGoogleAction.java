@@ -2,6 +2,7 @@ package googleclips.actions;
 
 import googleclips.Activator;
 
+import java.net.URL;
 import java.util.List;
 
 import org.eclipse.jface.action.IAction;
@@ -11,6 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -168,6 +170,25 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
 //				Activator.getDefault().clearGoogleClips();
 //			}
 //		});
+		new MenuItem(menu, SWT.SEPARATOR);
+		MenuItem gotoSpreadsheet = new MenuItem(menu, SWT.PUSH);
+		gotoSpreadsheet.setText("Browse " + Activator.getDefault().getSpreadsheetName() + " spreadsheet");
+		gotoSpreadsheet.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				Activator activator = Activator.getDefault();
+				activator.getGoogleClips();
+				URL listFeedUrl = activator.getListFeedUrl();
+				if (listFeedUrl != null) {
+					String externalForm = listFeedUrl.toExternalForm().substring("http://spreadsheets.google.com/feeds/list/".length());
+					externalForm = "http://spreadsheets.google.com/ccc?key=" + externalForm.substring(0, externalForm.indexOf("/"));
+					Program.launch(externalForm);
+				}
+			}
+		});
 		
 		new MenuItem(menu, SWT.SEPARATOR);
 		MenuItem toggleAutoClipCutCopy = new MenuItem(menu, SWT.CHECK);
