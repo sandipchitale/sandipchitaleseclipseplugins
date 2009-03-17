@@ -148,6 +148,10 @@ public class Activator extends AbstractUIPlugin {
 		return getPreferenceStore().getString(COLUMN_NAME);
 	}
 
+	public URL getListFeedUrl() {
+		return listFeedUrl;
+	}
+	
 	public void copyGoogleClip(String clip) {
 		SpreadsheetService spreadsheetService = getSpreadsheetService();
 		if (spreadsheetService != null) {
