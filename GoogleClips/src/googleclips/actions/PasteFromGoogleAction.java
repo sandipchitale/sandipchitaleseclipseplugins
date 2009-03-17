@@ -2,7 +2,6 @@ package googleclips.actions;
 
 import googleclips.Activator;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.IAction;
@@ -22,10 +21,15 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+/*
+ * 
+ */
 public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 {
 
 	private IWorkbenchWindow window;
-
+    private int candidateInsertIndex = 0;
+    private long lastPasteTimeInMillis = -1L;
+    
 	public void dispose() {
 		if (menu != null) {
 			menu.dispose();
@@ -37,7 +41,16 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
 	}
 
 	public void run(IAction action) {
-		String textToInsert = Activator.getDefault().getGoogleClip();
+        long currentTimeMillis = System.currentTimeMillis();
+        if ((lastPasteTimeInMillis == -1)
+                || (currentTimeMillis - lastPasteTimeInMillis) > 2000L) {
+            candidateInsertIndex = 0;
+        } else {
+            candidateInsertIndex++;
+        }
+        lastPasteTimeInMillis = currentTimeMillis;
+        List<String> googleClips = Activator.getDefault().getGoogleClips();        
+		String textToInsert = googleClips.get(candidateInsertIndex % googleClips.size());
 		if (textToInsert != null) {
 			IEditorPart activeEditor = window.getActivePage().getActiveEditor();
 			if (activeEditor instanceof ITextEditor) {
@@ -98,7 +111,6 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
 
 	private void fillMenu(Menu menu) {
 		List<String> googleClips = Activator.getDefault().getGoogleClips();
-		Collections.reverse(googleClips);
 		int clipsCount = 0;
 		for (String googleClip : googleClips) {
 			MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
@@ -143,6 +155,20 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
 				break;
 			}
 		}
+		
+//		new MenuItem(menu, SWT.SEPARATOR);
+//		MenuItem clearClips = new MenuItem(menu, SWT.PUSH);
+//		clearClips.setText("Clear");
+//		clearClips.addSelectionListener(new SelectionListener() {
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				widgetSelected(e);
+//			}
+//
+//			public void widgetSelected(SelectionEvent e) {
+//				Activator.getDefault().clearGoogleClips();
+//			}
+//		});
+		
 		new MenuItem(menu, SWT.SEPARATOR);
 		MenuItem toggleAutoClipCutCopy = new MenuItem(menu, SWT.CHECK);
 		toggleAutoClipCutCopy.setText("Auto clip Cut and Copy");
@@ -172,7 +198,8 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
 						displayedIds[0],
 						displayedIds,
 						null);
-				pathToolsPreferenceDialog.open();}
+				pathToolsPreferenceDialog.open();
+			}
 		});
 	}
 

@@ -1,17 +1,17 @@
 package googleclips;
 
+import googleclips.ui.LoginDialog;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -131,6 +131,10 @@ public class Activator extends AbstractUIPlugin {
 	public String getGoogleId() {
 		return getPreferenceStore().getString(GOOGLE_ID);
 	}
+	
+	private void setGoogleId(String googleId) {
+		getPreferenceStore().setValue(GOOGLE_ID, googleId);
+	}
 
 	public String getSpreadsheetName() {
 		return getPreferenceStore().getString(SPREADSHEET_NAME);
@@ -152,27 +156,28 @@ public class Activator extends AbstractUIPlugin {
 				listEntry.getCustomElements().setValueLocal(getColumnName(), clip);
 				spreadsheetService.insert(listFeedUrl, listEntry);
 			} catch (IOException e) {
+				e.printStackTrace();
 			} catch (ServiceException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-
-	public String getGoogleClip() {
-		SpreadsheetService spreadsheetService = getSpreadsheetService();
-		if (spreadsheetService != null) {
-			try {
-				ListFeed listFeed = spreadsheetService.getFeed(listFeedUrl, ListFeed.class);
-				List<ListEntry> listEntries = listFeed.getEntries();
-				if (listEntries.size() > 0) {
-					ListEntry listEntry = listEntries.get(listEntries.size() - 1);
-					return listEntry.getCustomElements().getValue(getColumnName());
-				}
-			} catch (IOException e) {
-			} catch (ServiceException e) {
-			}
-		}
-		return null;
-	}
+	
+//	public void clearGoogleClips() {
+//		SpreadsheetService spreadsheetService = getSpreadsheetService();
+//		if (spreadsheetService != null) {
+//			try {
+//				ListFeed listFeed = spreadsheetService.getFeed(listFeedUrl, ListFeed.class);
+//				List<ListEntry> listEntries = listFeed.getEntries();
+//				for (ListEntry listEntry : listEntries) {
+//					listEntry.getCustomElements().setValueLocal(getColumnName(), "");
+//					listEntry.update();
+//				}
+//			} catch (IOException e) {
+//			} catch (ServiceException e) {
+//			}
+//		}
+//	}
 
 	public List<String> getGoogleClips() {
 		SpreadsheetService spreadsheetService = getSpreadsheetService();
@@ -189,7 +194,8 @@ public class Activator extends AbstractUIPlugin {
 							clips.add(clip);
 						}
 					}
-					return clips;
+					Collections.reverse(clips);
+					return Collections.unmodifiableList(clips);
 				}
 			} catch (IOException e) {
 			} catch (ServiceException e) {
@@ -204,24 +210,16 @@ public class Activator extends AbstractUIPlugin {
 	SpreadsheetService getSpreadsheetService() {
 		if (spreadsheetService == null) {
 			try {
-				InputDialog inputDialog = new InputDialog(
+				LoginDialog loginDialog = new LoginDialog(
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-						"Enter Password",
-						"Password required to access Google Spreadsheet '" + getSpreadsheetName() + "'.\n" +
-						"You can edit Google Clips settings by visiting\n" +
-						"Preferences > General > Google Clips page.\n" +
-						"Enter password for '" + getGoogleId() + "' :",
-						"",
-						null) {
-					protected int getInputTextStyle() {
-						return super.getInputTextStyle() | SWT.PASSWORD;
-					}
-				};
-				if (inputDialog.open() != Window.OK) {
+						getGoogleId());
+				loginDialog.setHelpAvailable(false);
+				if (loginDialog.open() != Window.OK) {
 					throw new SecurityException("Must specify password!");
 				}
+				setGoogleId(loginDialog.getGoogleId());
 				spreadsheetService = new SpreadsheetService(PLUGIN_ID);
-				spreadsheetService.setUserCredentials(getGoogleId(), inputDialog.getValue());
+				spreadsheetService.setUserCredentials(getGoogleId(), loginDialog.getPassword());
 				SpreadsheetFeed spreadsheetFeed = spreadsheetService.getFeed(new URL("http://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
 
 				String spreadsheetName = getSpreadsheetName();
