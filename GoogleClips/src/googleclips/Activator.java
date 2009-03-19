@@ -8,10 +8,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -27,6 +29,7 @@ import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -213,13 +216,14 @@ public class Activator extends AbstractUIPlugin {
 
 	SpreadsheetService getSpreadsheetService() {
 		if (spreadsheetService == null) {
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			try {
 				LoginDialog loginDialog = new LoginDialog(
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+						shell,
 						getGoogleId());
 				loginDialog.setHelpAvailable(false);
 				if (loginDialog.open() != Window.OK) {
-					throw new SecurityException("Must specify password!");
+					throw new AuthenticationException("Must specify password!");
 				}
 				setGoogleId(loginDialog.getGoogleId());
 				spreadsheetService = new SpreadsheetService(PLUGIN_ID);
@@ -290,8 +294,13 @@ public class Activator extends AbstractUIPlugin {
 					headerEntry = new CellEntry(1, 1, columnName);
 					spreadsheetService.insert(clipsWorksheetEntry.getCellFeedUrl(), headerEntry);
 				}
-			} catch (Exception exception) {
-				throw new RuntimeException(exception);
+			} catch (AuthenticationException e) {
+				spreadsheetService = null;
+				MessageDialog.openError(shell, "Authentication Failure", e.getMessage());
+			} catch (IOException e) {
+				MessageDialog.openError(shell, "Error", e.getMessage());
+			} catch (ServiceException e) {
+				MessageDialog.openError(shell, "Error", e.getMessage());
 			}
 		}
 		return spreadsheetService;

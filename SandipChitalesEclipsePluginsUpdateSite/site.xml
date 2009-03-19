@@ -6,7 +6,7 @@
    <feature url="features/Screenshot_1.0.16.jar" id="Screenshot" version="1.0.16">
       <category name="Desktop"/>
    </feature>
-   <feature url="features/GoogleClipsFeature_1.0.3.jar" id="GoogleClipsFeature" version="1.0.3">
+   <feature url="features/GoogleClipsFeature_1.0.4.jar" id="GoogleClipsFeature" version="1.0.4">
       <category name="Google Clips"/>
    </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
