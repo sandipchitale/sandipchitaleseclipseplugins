@@ -10,6 +10,8 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.program.Program;
@@ -33,8 +35,11 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
     private long lastPasteTimeInMillis = -1L;
     
 	public void dispose() {
-		if (menu != null) {
-			menu.dispose();
+		if (googleClipsInEditMenu != null) {
+			googleClipsInEditMenu.dispose();
+		}
+		if (googleClipsMenu != null) {
+			googleClipsMenu.dispose();
 		}
 	}
 
@@ -89,26 +94,34 @@ public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 
 		}
 	}
 
-	private Menu menu;
+	private Menu googleClipsInEditMenu;
 
 	public Menu getMenu(Menu parent) {
-		if (menu != null) {
-			menu.dispose();
+		if (googleClipsInEditMenu == null) {
+			googleClipsInEditMenu = new Menu(parent);
+			googleClipsInEditMenu.addMenuListener(new MenuListener() {
+				public void menuHidden(MenuEvent e) {}
+				public void menuShown(MenuEvent e) {
+					for (MenuItem item : googleClipsInEditMenu.getItems()) {
+						item.dispose();
+					}
+					fillMenu(googleClipsInEditMenu);
+				}
+			});
 		}
-		menu = new Menu(parent);
-		fillMenu(menu);
-		return menu;
+		return googleClipsInEditMenu;
 	}
 
+	private Menu googleClipsMenu;
 	public Menu getMenu(Control parent) {
-		if (menu != null) {
-			menu.dispose();
+		if (googleClipsMenu != null) {
+			googleClipsMenu.dispose();
 		}
-		menu = new Menu(parent);
+		googleClipsMenu = new Menu(parent);
 
-		fillMenu(menu);
+		fillMenu(googleClipsMenu);
 
-		return menu;
+		return googleClipsMenu;
 	}
 
 	private void fillMenu(Menu menu) {
