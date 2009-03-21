@@ -3,7 +3,7 @@
 <repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1237615086340'/>
+    <property name='p2.timestamp' value='1237654620005'/>
   </properties>
   <references size='8'>
     <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='1' options='0'/>
@@ -101,6 +101,42 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='ReverseTextSelectionFeature.feature.jar' version='1.0.1'>
+      <update id='ReverseTextSelectionFeature.feature.jar' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Reverse Text Selection Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Reverse Text Selection'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelectionFeature.feature.jar' version='1.0.1'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='ReverseTextSelectionFeature' version='1.0.1'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='ReverseTextSelectionFeature' version='1.0.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.opensource.org/licenses/bsd-license.php'>
+          BSD
+        </license>
+      </licenses>
+      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
+        Sandip V. Chitale
+      </copyright>
+    </unit>
     <unit id='tooling.osgi.bundle.default' version='1.0.0' singleton='false'>
       <hostRequirements size='1'>
         <required namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' range='0.0.0' multiple='true' greedy='false'/>
@@ -133,41 +169,33 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='ReverseTextSelectionFeature.feature.jar' version='1.0.0'>
-      <update id='ReverseTextSelectionFeature.feature.jar' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Reverse Text Selection Feature'/>
-        <property name='org.eclipse.equinox.p2.description' value='Reverse Text Selection'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
+    <unit id='ReverseTextSelection' version='1.0.1'>
+      <update id='ReverseTextSelection' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='ReverseTextSelection Plug-in'/>
         <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
       </properties>
       <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelectionFeature.feature.jar' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='ReverseTextSelectionFeature' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelection' version='1.0.1'/>
+        <provided namespace='osgi.bundle' name='ReverseTextSelection' version='1.0.1'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
       </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
+      <requires size='3'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+      </requires>
       <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='ReverseTextSelectionFeature' version='1.0.0'/>
+        <artifact classifier='osgi.bundle' id='ReverseTextSelection' version='1.0.1'/>
       </artifacts>
       <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
       <touchpointData size='1'>
         <instructions size='1'>
-          <instruction key='zipped'>
-            true
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.workbench.texteditor&#xA;Bundle-Activator: reversetextselection.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.1&#xA;Bundle-SymbolicName: ReverseTextSelection;singleton:=true&#xA;Bundle-Name: ReverseTextSelection Plug-in&#xA;Bundle-Vendor: Sandip V. Chitale&#xA;Eclipse-LazyStart: true&#xA;
           </instruction>
         </instructions>
       </touchpointData>
-      <licenses size='1'>
-        <license url='http://www.opensource.org/licenses/bsd-license.php'>
-          BSD
-        </license>
-      </licenses>
-      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
-        Sandip V. Chitale
-      </copyright>
     </unit>
     <unit id='tooling.org.eclipse.update.feature.default' version='1.0.0' singleton='false'>
       <hostRequirements size='1'>
@@ -349,36 +377,6 @@
       </provides>
       <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
     </unit>
-    <unit id='ReverseTextSelectionFeature.feature.group' version='1.0.0' singleton='false'>
-      <update id='ReverseTextSelectionFeature.feature.group' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='5'>
-        <property name='org.eclipse.equinox.p2.name' value='Reverse Text Selection Feature'/>
-        <property name='org.eclipse.equinox.p2.description' value='Reverse Text Selection'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelectionFeature.feature.group' version='1.0.0'/>
-      </provides>
-      <requires size='2'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelection' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelectionFeature.feature.jar' range='[1.0.0,1.0.0]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license url='http://www.opensource.org/licenses/bsd-license.php'>
-          BSD
-        </license>
-      </licenses>
-      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
-        Sandip V. Chitale
-      </copyright>
-    </unit>
     <unit id='FeaturesPluginsFragmentsFeature.feature.jar' version='1.0.0'>
       <update id='FeaturesPluginsFragmentsFeature.feature.jar' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='4'>
@@ -444,34 +442,6 @@
       <copyright url='http://www.example.com/copyright'>
         [Enter Copyright Description here.]
       </copyright>
-    </unit>
-    <unit id='ReverseTextSelection' version='1.0.0'>
-      <update id='ReverseTextSelection' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='2'>
-        <property name='org.eclipse.equinox.p2.name' value='ReverseTextSelection Plug-in'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelection' version='1.0.0'/>
-        <provided namespace='osgi.bundle' name='ReverseTextSelection' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='3'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='ReverseTextSelection' version='1.0.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.workbench.texteditor&#xA;Bundle-Activator: reversetextselection.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.0&#xA;Bundle-SymbolicName: ReverseTextSelection;singleton:=true&#xA;Bundle-Name: ReverseTextSelection Plug-in&#xA;Bundle-Vendor: Sandip V. Chitale&#xA;Eclipse-LazyStart: true&#xA;
-          </instruction>
-        </instructions>
-      </touchpointData>
     </unit>
     <unit id='GoogleDocsLibraries' version='1.0.0' singleton='false'>
       <update id='GoogleDocsLibraries' range='[0.0.0,1.0.0)' severity='0'/>
@@ -563,6 +533,36 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='ReverseTextSelectionFeature.feature.group' version='1.0.1' singleton='false'>
+      <update id='ReverseTextSelectionFeature.feature.group' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Reverse Text Selection Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Reverse Text Selection'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelectionFeature.feature.group' version='1.0.1'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelection' range='[1.0.1,1.0.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='ReverseTextSelectionFeature.feature.jar' range='[1.0.1,1.0.1]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.opensource.org/licenses/bsd-license.php'>
+          BSD
+        </license>
+      </licenses>
+      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
+        Sandip V. Chitale
+      </copyright>
     </unit>
     <unit id='GoogleClipsFeature.feature.group' version='1.0.6' singleton='false'>
       <update id='GoogleClipsFeature.feature.group' range='[0.0.0,1.0.6)' severity='0'/>

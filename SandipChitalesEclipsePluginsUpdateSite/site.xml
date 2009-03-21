@@ -9,7 +9,7 @@
    <feature url="features/GoogleClipsFeature_1.0.6.jar" id="GoogleClipsFeature" version="1.0.6">
       <category name="Google Clips"/>
    </feature>
-   <feature url="features/ReverseTextSelectionFeature_1.0.0.jar" id="ReverseTextSelectionFeature" version="1.0.0">
+   <feature url="features/ReverseTextSelectionFeature_1.0.1.jar" id="ReverseTextSelectionFeature" version="1.0.1">
       <category name="Text Editor"/>
    </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
