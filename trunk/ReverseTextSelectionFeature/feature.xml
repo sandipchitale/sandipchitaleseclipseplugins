@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ReverseTextSelectionFeature"
+      label="Reverse Text Selection Feature"
+      version="1.0.0"
+      provider-name="Sandip V. Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      Reverse Text Selection
+   </description>
+
+   <copyright url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      Sandip V. Chitale
+   </copyright>
+
+   <license url="http://www.opensource.org/licenses/bsd-license.php">
+      BSD
+   </license>
+
+   <url>
+      <update label="Sandip Chitale&apos;s Eclipse Plug-ins Update Site" url="http://code.google.com/p/sandipchitaleseclipseplugins/"/>
+      <discovery label="Sandip Chitale&apos;s Eclipse Plug-ins" url="http://code.google.com/p/sandipchitaleseclipseplugins/"/>
+      <discovery label="Sandip Chitale&apos;s Blog" url="http://sandipchitale.blogspot.com/"/>
+   </url>
+
+   <plugin
+         id="ReverseTextSelection"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
