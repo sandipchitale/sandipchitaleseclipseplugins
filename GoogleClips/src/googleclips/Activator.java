@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -34,6 +35,9 @@ import com.google.gdata.util.ServiceException;
 
 /**
  * The activator class controls the plug-in life cycle static main
+ * 
+ * @author Sandip V. Chitale
+ *
  */
 public class Activator extends AbstractUIPlugin {
 
@@ -59,6 +63,18 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 
+	IPropertyChangeListener listener = new IPropertyChangeListener() {
+		public void propertyChange(PropertyChangeEvent event) {
+			if (event.getProperty().equals(GOOGLE_ID) || 
+					event.getProperty().equals(SPREADSHEET_NAME) ||
+					event.getProperty().equals(WORKSHEET_NAME) ||
+					event.getProperty().equals(COLUMN_NAME)) {
+				disconnect();
+			}
+		}
+
+	};
+
 	/**
 	 * The constructor
 	 */
@@ -69,23 +85,13 @@ public class Activator extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
+1	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getProperty().equals(GOOGLE_ID) || 
-						event.getProperty().equals(SPREADSHEET_NAME) ||
-						event.getProperty().equals(WORKSHEET_NAME) ||
-						event.getProperty().equals(COLUMN_NAME)) {
-					spreadsheetService = null;
-				}
-			}
-			
-		});
+		getPreferenceStore().addPropertyChangeListener(listener);
 	}
 
 	/*
@@ -97,6 +103,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		getPreferenceStore().removePropertyChangeListener(listener);
 		super.stop(context);
 	}
 
@@ -163,9 +170,9 @@ public class Activator extends AbstractUIPlugin {
 				listEntry.getCustomElements().setValueLocal(getColumnName(), clip);
 				spreadsheetService.insert(listFeedUrl, listEntry);
 			} catch (IOException e) {
-				e.printStackTrace();
+				log(e.getMessage(), e);
 			} catch (ServiceException e) {
-				e.printStackTrace();
+				log(e.getMessage(), e);
 			}
 		}
 	}
@@ -205,7 +212,9 @@ public class Activator extends AbstractUIPlugin {
 					return Collections.unmodifiableList(clips);
 				}
 			} catch (IOException e) {
+				log(e.getMessage(), e);
 			} catch (ServiceException e) {
+				log(e.getMessage(), e);
 			}
 		}
 		return Collections.emptyList();
@@ -225,7 +234,7 @@ public class Activator extends AbstractUIPlugin {
 				if (loginDialog.open() != Window.OK) {
 					throw new AuthenticationException("Must specify password!");
 				}
-				setGoogleId(loginDialog.getGoogleId());
+				setGoogleId(loginDialog.getUsername());
 				spreadsheetService = new SpreadsheetService(PLUGIN_ID);
 				spreadsheetService.setUserCredentials(getGoogleId(), loginDialog.getPassword());
 				SpreadsheetFeed spreadsheetFeed = spreadsheetService.getFeed(new URL("http://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
@@ -305,9 +314,21 @@ public class Activator extends AbstractUIPlugin {
 		}
 		return spreadsheetService;
 	}
+	
+	private void disconnect() {
+		spreadsheetService = null;
+	}
 
 	public static String abbreviate(String clip) {
 		int length = clip.length();
 		return clip.replaceAll("\n", "\u00B6").replaceAll("\t", "\u21E5").substring(0, Math.min(length, 40)) + (length < 40 ? "" : "...");
 	}
+	
+	public void log(String message) {
+		log(message, null);
+	}
+	public void log(String message, Exception e) {
+		getLog().log(new Status(Status.INFO, PLUGIN_ID, Status.OK, message, e));
+	}
+
 }

@@ -10,6 +10,11 @@ import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 
+/**
+ * 
+ * @author Sandip V. Chitale
+ *
+ */
 public class CutCopyExecutionListenerAdder implements IStartup {
 	public void earlyStartup() {
 		// Add listener to monitor Cut and Copy commands

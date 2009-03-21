@@ -25,8 +25,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-/*
+/**
  * 
+ * @author Sandip V. Chitale
+ *
  */
 public class PasteFromGoogleAction implements IWorkbenchWindowPulldownDelegate2 {
 

@@ -3,7 +3,7 @@
 <repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1237557771762'/>
+    <property name='p2.timestamp' value='1237609808501'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
@@ -15,13 +15,6 @@
       <properties size='3'>
         <property name='artifact.size' value='1017955'/>
         <property name='download.size' value='1017955'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='GoogleClips' version='1.0.5'>
-      <properties size='3'>
-        <property name='artifact.size' value='29667'/>
-        <property name='download.size' value='29667'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -38,6 +31,13 @@
         <property name='download.size' value='868'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='GoogleClips' version='1.0.6'>
+      <properties size='3'>
+        <property name='artifact.size' value='33164'/>
+        <property name='download.size' value='33164'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='screenshot' version='1.0.16'>
       <properties size='3'>
         <property name='artifact.size' value='40643'/>
@@ -51,7 +51,7 @@
         <property name='download.size' value='712'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='GoogleClipsFeature' version='1.0.5'>
+    <artifact classifier='org.eclipse.update.feature' id='GoogleClipsFeature' version='1.0.6'>
       <properties size='2'>
         <property name='artifact.size' value='1000'/>
         <property name='download.size' value='1000'/>
