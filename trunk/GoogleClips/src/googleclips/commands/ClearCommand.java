@@ -7,6 +7,11 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 
+/**
+ * 
+ * @author Sandip V. Chitale
+ *
+ */
 public class ClearCommand implements IHandler {
 
 

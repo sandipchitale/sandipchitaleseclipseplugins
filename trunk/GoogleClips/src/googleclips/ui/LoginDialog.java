@@ -2,7 +2,7 @@ package googleclips.ui;
 
 import googleclips.Activator;
 
-import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,38 +12,51 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class LoginDialog extends TrayDialog {
-	private Text googleIdField;
+/**
+ * 
+ * @author Sandip V. Chitale
+ *
+ */
+public class LoginDialog extends TitleAreaDialog {
+	private Text usernameField;
 	private Text passwordField;
-	private String googleId;
+	private String username;
 	private String password;
 
-	public LoginDialog(Shell parentShell, String googleId) {
+	public LoginDialog(Shell parentShell, String username) {
 		super(parentShell);
-		this.googleId = googleId;
+		this.username = username;
+	}
+	
+	@Override
+	protected Control createContents(Composite parent) {
+		Control contents = super.createContents(parent);
+		setTitle("Google credentials");
+		setMessage("Enter Google credentials to access spreadsheet: " + Activator.getDefault().getSpreadsheetName() 
+				+ "\nYou can edit settings at Preferences > General > Google Clips\n");
+		return contents;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		Composite composite = (Composite) super.createDialogArea(parent);
-		GridLayout layout = (GridLayout) composite.getLayout();
+		Composite compositeParent = (Composite) super.createDialogArea(parent);
+		
+		Composite composite = new Composite(compositeParent, SWT.NONE);
+		GridData compositeData = new GridData(GridData.FILL_BOTH);
+		composite.setLayoutData(compositeData);
+		
+		GridLayout layout = new GridLayout();
+		composite.setLayout(layout);
 		layout.numColumns = 2;
-
-		Label message = new Label(composite, SWT.NONE);
-		GridData messageData = new GridData(GridData.FILL_HORIZONTAL);
-		messageData.horizontalSpan = 2;
-		message.setLayoutData(messageData);
-		message.setText("Enter Google credentials to access\nspreadsheet: "
-				+ Activator.getDefault().getSpreadsheetName());
 		
 		Label usernameLabel = new Label(composite, SWT.RIGHT);
 		usernameLabel.setText("Google ID: ");
 
-		googleIdField = new Text(composite, SWT.SINGLE | SWT.BORDER);
+		usernameField = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		googleIdField.setLayoutData(data);
-		googleIdField.setText(googleId);
-		googleId = null;
+		usernameField.setLayoutData(data);
+		usernameField.setText(username);
+		username = null;
 
 		Label passwordLabel = new Label(composite, SWT.RIGHT);
 		passwordLabel.setText("Password: ");
@@ -52,12 +65,6 @@ public class LoginDialog extends TrayDialog {
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		passwordField.setLayoutData(data);
 		
-		Label prefsMessage = new Label(composite, SWT.NONE);
-		GridData prefsMessageData = new GridData(GridData.FILL_HORIZONTAL);
-		prefsMessageData.horizontalSpan = 2;
-		prefsMessage.setLayoutData(prefsMessageData);
-		prefsMessage.setText("You can edit settings at\n" +
-				"Preferences > General > Google Clips");
 		return composite;
 	}
 	
@@ -73,13 +80,13 @@ public class LoginDialog extends TrayDialog {
 	
 	@Override
 	protected void okPressed() {
-		googleId = googleIdField.getText();
+		username = usernameField.getText();
 		password = passwordField.getText();
 		super.okPressed();
 	}
 	
-	public String getGoogleId() {
-		return googleId;
+	public String getUsername() {
+		return username;
 	}
 	
 	public String getPassword() {

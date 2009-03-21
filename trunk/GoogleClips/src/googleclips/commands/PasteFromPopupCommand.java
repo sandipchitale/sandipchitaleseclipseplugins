@@ -28,6 +28,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+/**
+ * 
+ * @author Sandip V. Chitale
+ *
+ */
 public class PasteFromPopupCommand implements IHandler {
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {

@@ -15,6 +15,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+/**
+ * 
+ * @author Sandip V. Chitale
+ *
+ */
 public class PasteCommand implements IHandler {
     private int candidateInsertIndex = 0;
     private long lastPasteTimeInMillis = -1L;
