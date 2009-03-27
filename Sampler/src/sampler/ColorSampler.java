@@ -5,6 +5,8 @@ import java.awt.Robot;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.dnd.Clipboard;
@@ -15,6 +17,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -52,7 +55,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 	}
 
 	protected Control createControl(Composite parent) {
-		Font monospaced = new Font(parent.getDisplay(), "Monospace", 8, SWT.NORMAL);
 		formatString = formatsMap.keySet().iterator().next();
 		Image dropper = Activator.getDefault().getImageRegistry().get(Activator.DROPPER);
 		Image colorchooser = Activator.getDefault().getImageRegistry().get(Activator.COLOR_CHOOSER);
@@ -118,7 +120,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 				}
 			}
 		}
-		;
 
 		Listener listener = new SamplerListener();
 		sampler.addListener(SWT.MouseDown, listener);
@@ -126,20 +127,45 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		sampler.addListener(SWT.MouseUp, listener);
 
 		color = new Text(composite, SWT.BORDER | SWT.SINGLE);
-		color.setFont(monospaced);
+		Font textFont = null;
+		FontDescriptor textFontDescriptor = JFaceResources.getTextFontDescriptor();
+		if (textFontDescriptor != null) {
+			FontData[] fontData = textFontDescriptor.getFontData();
+			if (fontData != null) {
+				for (FontData fontDatum : fontData) {
+					fontDatum.setHeight(8);
+				}
+				textFont = new Font(color.getDisplay(), fontData);
+			}
+		}
+		
+		if (textFont != null) {
+			color.setFont(textFont);
+		}
 		
 		GridData colorGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		color.setLayoutData(colorGridData);
 		color.setText("                      ");
 		color.setEditable(false);
-		color.addListener(SWT.MouseDown, new Listener() {
+		color.addListener(SWT.FocusIn, new Listener() {
 			public void handleEvent(Event event) {
 				color.setBackground(null);
+				color.selectAll();
+			}
+		});
+		color.addListener(SWT.FocusOut, new Listener() {
+			public void handleEvent(Event event) {
+				if (lastColor != null) {
+					color.setBackground(lastColor);
+				}
+				color.clearSelection();
 			}
 		});
 		
 		final CCombo formats = new CCombo(composite, SWT.BORDER);
-		formats.setFont(monospaced);
+		if (textFont != null) {
+			formats.setFont(textFont);
+		}
 		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		formats.setLayoutData(comboGridData);
 		formats.setEditable(false);
