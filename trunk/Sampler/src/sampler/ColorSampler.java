@@ -5,7 +5,6 @@ import java.awt.Robot;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.dnd.Clipboard;
@@ -53,7 +52,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 	}
 
 	protected Control createControl(Composite parent) {
-		FontRegistry fontRegistry = new FontRegistry(parent.getDisplay());
 		formatString = formatsMap.keySet().iterator().next();
 		Image dropper = Activator.getDefault().getImageRegistry().get(Activator.DROPPER);
 		Image colorchooser = Activator.getDefault().getImageRegistry().get(Activator.COLOR_CHOOSER);
