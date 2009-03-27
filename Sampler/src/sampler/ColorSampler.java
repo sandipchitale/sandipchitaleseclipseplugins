@@ -15,7 +15,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -126,13 +125,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		sampler.addListener(SWT.MouseUp, listener);
 
 		color = new Text(composite, SWT.BORDER | SWT.SINGLE);
-		
-//		Font font = color.getFont();
-//		FontData[] fontData = font.getFontData();
-//		for (int i = 0; i < fontData.length; i++) {
-//			fontData[i].setHeight(fontData[i].getHeight() - 1);
-//		}
-//		Font newFont = new Font(parent.getDisplay(), fontData);
 		color.setFont(monospaced);
 		
 		GridData colorGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -146,12 +138,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		});
 		
 		final CCombo formats = new CCombo(composite, SWT.BORDER);
-//		font = formats.getFont();
-//		fontData = font.getFontData();
-//		for (int i = 0; i < fontData.length; i++) {
-//			fontData[i].setHeight(fontData[i].getHeight() - 2);
-//		}
-//		newFont = new Font(parent.getDisplay(), fontData);
 		formats.setFont(monospaced);
 		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		formats.setLayoutData(comboGridData);
@@ -169,7 +155,9 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 			public void widgetSelected(SelectionEvent e) {
 				formatString = formats.getItem(formats.getSelectionIndex());
 				formats.clearSelection();
-				showColor(e.display, lastColor);
+				if (lastColor != null) {
+					showColor(e.display, lastColor);
+				}
 			}
 		});
 
