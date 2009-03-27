@@ -52,6 +52,7 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 	}
 
 	protected Control createControl(Composite parent) {
+		Font monospaced = new Font(parent.getDisplay(), "Monospace", 8, SWT.NORMAL);
 		formatString = formatsMap.keySet().iterator().next();
 		Image dropper = Activator.getDefault().getImageRegistry().get(Activator.DROPPER);
 		Image colorchooser = Activator.getDefault().getImageRegistry().get(Activator.COLOR_CHOOSER);
@@ -126,13 +127,13 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 
 		color = new Text(composite, SWT.BORDER | SWT.SINGLE);
 		
-		Font font = color.getFont();
-		FontData[] fontData = font.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(fontData[i].getHeight() - 1);
-		}
-		Font newFont = new Font(parent.getDisplay(), fontData);
-		color.setFont(newFont);
+//		Font font = color.getFont();
+//		FontData[] fontData = font.getFontData();
+//		for (int i = 0; i < fontData.length; i++) {
+//			fontData[i].setHeight(fontData[i].getHeight() - 1);
+//		}
+//		Font newFont = new Font(parent.getDisplay(), fontData);
+		color.setFont(monospaced);
 		
 		GridData colorGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		color.setLayoutData(colorGridData);
@@ -145,13 +146,13 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		});
 		
 		final CCombo formats = new CCombo(composite, SWT.BORDER);
-		font = formats.getFont();
-		fontData = font.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(fontData[i].getHeight() - 2);
-		}
-		newFont = new Font(parent.getDisplay(), fontData);
-		formats.setFont(newFont);
+//		font = formats.getFont();
+//		fontData = font.getFontData();
+//		for (int i = 0; i < fontData.length; i++) {
+//			fontData[i].setHeight(fontData[i].getHeight() - 2);
+//		}
+//		newFont = new Font(parent.getDisplay(), fontData);
+		formats.setFont(monospaced);
 		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		formats.setLayoutData(comboGridData);
 		formats.setEditable(false);
@@ -166,8 +167,8 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				formats.clearSelection();
 				formatString = formats.getItem(formats.getSelectionIndex());
+				formats.clearSelection();
 				showColor(e.display, lastColor);
 			}
 		});
