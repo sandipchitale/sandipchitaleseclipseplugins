@@ -38,9 +38,10 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 
 	private static Map<String, String> formatsMap = new LinkedHashMap<String, String>();
 	static {
-		formatsMap.put("#RRGGBB", "#%1$02x%2$02x%3$02x");
-		formatsMap.put("rgb(r,g,b)", "rgb(%1$d, %2$d, %3$d)");
-		formatsMap.put("new Color(r,g,b)", "new Color(%1$d, %1$d, %1$d)");
+		formatsMap.put("HTML/CSS #RRGGBB", "#%1$02x%2$02x%3$02x");
+		formatsMap.put("CSS rgb(r,g,b)", "rgb(%1$d, %2$d, %3$d)");
+		formatsMap.put("AWT new Color(r,g,b)", "new Color(%1$d, %1$d, %1$d)");
+		formatsMap.put("SWT new Color(display, r,g,b)", "new Color(display, %1$d, %1$d, %1$d)");
 	}
 
 	public ColorSampler() {
@@ -188,6 +189,7 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 	private void showColor(Display display, Color pixelColor, boolean background) {
 		String formattedColor = String.format(formatsMap.get(formatString), pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue());
 		color.setText(formattedColor);
+		color.setToolTipText(formattedColor);
 		if (background) {
 			color.setBackground(pixelColor);
 		}
