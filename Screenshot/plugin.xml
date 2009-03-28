@@ -10,16 +10,9 @@
          <action
                class="screenshot.WorkbenchWindow"
                icon="icons/workbenchwindow.png"
-               id="Screenshot.workbenchwindow.action"
-               label="Workbench Window"
+               id="Screenshot.workbenchwindow.toolbar.action"
+               label="Screenshot"
                menubarPath="window/additions"
-               style="push">
-         </action>
-         <action
-               class="screenshot.WorkbenchWindow"
-               icon="icons/workbenchwindow.png"
-               id="Screenshot.workbenchwindow.action"
-               label="Workbench Window"
                style="pulldown"
                toolbarPath="screenshot">
          </action>

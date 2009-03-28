@@ -93,6 +93,16 @@ public class WorkbenchWindow implements IWorkbenchWindowPulldownDelegate2 {
 	}
 	
 	private void buildMenu(Menu menu) {
+		MenuItem windowMenuItem = new MenuItem(menu, SWT.PUSH);
+		windowMenuItem.setText("Workbench Window");
+		windowMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Shell shell = window.getShell();
+				Image desktopImage = Util.getShellImage(shell);
+				Util.processImage(shell, desktopImage);
+			}
+		});
+		
 		MenuItem perspectivesMenuItem = new MenuItem(menu, SWT.CASCADE);
 		perspectivesMenuItem.setText("Perspectives");
 		Menu perspectivesMenu = new Menu(menu);
