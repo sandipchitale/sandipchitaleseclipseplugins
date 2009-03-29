@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sampler Plug-in
 Bundle-SymbolicName: Sampler;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: sampler.Activator
 Bundle-Vendor: Sandip V. Chitale
 Require-Bundle: org.eclipse.ui,
