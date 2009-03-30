@@ -42,7 +42,7 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 	static {
 		formatsMap.put("HTML/CSS #RRGGBB", "#%1$02x%2$02x%3$02x");
 		formatsMap.put("CSS rgb(r,g,b)", "rgb(%1$d, %2$d, %3$d)");
-		formatsMap.put("AWT new Color(r,g,b)", "new Color(%1$d, %1$d, %1$d)");
+		formatsMap.put("AWT new Color(r,g,b)", "new Color(%1$d, %2$d, %3$d)");
 	}
 
 	public ColorSampler() {
@@ -62,7 +62,7 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 			FontData[] fontData = textFontDescriptor.getFontData();
 			if (fontData != null) {
 				for (FontData fontDatum : fontData) {
-					fontDatum.setHeight(8);
+					fontDatum.setHeight(fontDatum.getHeight()-1);
 				}
 				textFont = new Font(parent.getDisplay(), fontData);
 			}
@@ -92,7 +92,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 			public void handleEvent(Event event) {
 				switch (event.type) {
 				case SWT.MouseDown:
-					System.out.println(event.stateMask);
 					if (event.button == 1 && event.stateMask == 0) {
 						sampler.setCursor(dropperCursor);
 						dragging = true;
@@ -109,6 +108,7 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 						dragging = false;
 						sampler.setCursor(sampler.getShell().getDisplay().getSystemCursor(SWT.CURSOR_ARROW));
 						sampleColor(sampler.getDisplay().map(sampler, null, new Point(event.x, event.y)));
+						refreshClipboard();
 					}
 					break;
 				}
@@ -130,7 +130,8 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 			menuItem.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					formatString = format;
-					refreshColorDisplay(sampler.getDisplay());
+					refreshColorDisplay();
+					refreshClipboard();
 				}
 			});
 		}
@@ -143,9 +144,7 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		copyToClipboardMenuItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				copyToClipboard = copyToClipboardMenuItem.getSelection();
-				if (copyToClipboard) {
-					copyToClipboard(sampler.getDisplay(), formatColor(lastColor));
-				}
+				refreshClipboard();
 			}
 		});
 		
@@ -166,9 +165,15 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		}
 	}
 
-	private void refreshColorDisplay(Display display) {
+	private void refreshColorDisplay() {
 		if (lastColor != null) {
-			showColor(display, lastColor);
+			showColor(sampler.getDisplay(), lastColor);
+		}
+	}
+	
+	private void refreshClipboard() {
+		if (copyToClipboard && lastColor != null) {
+			copyToClipboard(sampler.getDisplay(), formatColor(lastColor));
 		}
 	}
 	
@@ -179,9 +184,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		sampler.setBackground(pixelColor);
 		sampler.redraw();
 		sampler.update();
-		if (copyToClipboard) {
-			copyToClipboard(display, formattedColor);
-		}
 		if (lastColor != pixelColor) {
 			if (lastColor != null) {
 				lastColor.dispose();
@@ -191,12 +193,12 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 
 	}
 
-	private String formatColor(Color pixelColor) {
-		return String.format(formatString, pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue());
-	}
-
 	private void copyToClipboard(Display display, String formattedColor) {
 		clipboard.setContents(new Object[] { formattedColor }, new Transfer[] { TextTransfer.getInstance() });
+	}
+
+	private String formatColor(Color pixelColor) {
+		return String.format(formatString, pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue());
 	}
 
 	private static Robot robot;
