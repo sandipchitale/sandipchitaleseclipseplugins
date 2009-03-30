@@ -19,9 +19,6 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "Sampler";
-	
-	static final String DROPPER = "dropper";
-	static final String COLOR_CHOOSER = "colorchooser";
 
 	// The shared instance
 	private static Activator plugin;
@@ -58,17 +55,5 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-	
-    protected void initializeImageRegistry(ImageRegistry registry) {
-        Bundle bundle = Platform.getBundle(PLUGIN_ID);
-        IPath path = new Path("icons/dropper.png");
-        URL url = FileLocator.find(bundle, path, null);
-        ImageDescriptor desc = ImageDescriptor.createFromURL(url);
-        registry.put(DROPPER, desc);
-        path = new Path("icons/colorchooser.png");
-        url = FileLocator.find(bundle, path, null);
-        desc = ImageDescriptor.createFromURL(url);
-        registry.put(COLOR_CHOOSER, desc);
-     }
 
 }
