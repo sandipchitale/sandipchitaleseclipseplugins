@@ -1,12 +1,10 @@
-package sampler;
+package sampler.widget;
 
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.dnd.Clipboard;
@@ -16,75 +14,48 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 
-public class ColorSampler extends WorkbenchWindowControlContribution {
-	private CLabel sampler;
+public class ColorSampler extends CLabel {
+	private Clipboard clipboard;
+	private Image dropper;
 	private Cursor dropperCursor;
 	private Color lastColor;
 	private String formatString;
+
+	private MenuItem copyToClipboardMenuItem;
 	
 	private boolean copyToClipboard = true;
 
 	private static Map<String, String> formatsMap = new LinkedHashMap<String, String>();
 	static {
 		formatsMap.put("HTML/CSS #RRGGBB", "#%1$02x%2$02x%3$02x");
-		formatsMap.put("CSS rgb(r,g,b)", "rgb(%1$d, %2$d, %3$d)");
-		formatsMap.put("AWT new Color(r,g,b)", "new Color(%1$d, %2$d, %3$d)");
+		formatsMap.put("CSS      rgb(r,g,b)", "rgb(%1$d, %2$d, %3$d)");
+		formatsMap.put("AWT      new Color(r,g,b)", "new Color(%1$d, %2$d, %3$d)");
 	}
 
-	public ColorSampler() {
-	}
-
-	public ColorSampler(String id) {
-		super(id);
-	}
-
-	protected Control createControl(Composite parent) {
+	public ColorSampler(Composite parent) {
+		super(parent, SWT.LEFT | SWT.BORDER);
+	
 		formatString = formatsMap.values().iterator().next();
 
-		// Fonts
-		Font textFont = null;
-		FontDescriptor textFontDescriptor = JFaceResources.getTextFontDescriptor();
-		if (textFontDescriptor != null) {
-			FontData[] fontData = textFontDescriptor.getFontData();
-			if (fontData != null) {
-				for (FontData fontDatum : fontData) {
-					fontDatum.setHeight(fontDatum.getHeight()-1);
-				}
-				textFont = new Font(parent.getDisplay(), fontData);
-			}
-		}
-
-		Image dropper = Activator.getDefault().getImageRegistry().get(Activator.DROPPER);
-		dropperCursor = new Cursor(parent.getDisplay(), dropper.getImageData(), 3, 15);
+		ImageData dropperImageData = new ImageData(getClass().getResourceAsStream("dropper.png"));
+		dropperCursor = new Cursor(parent.getDisplay(), dropperImageData, 3, 15);
+		dropper = new Image(getDisplay(), dropperImageData);
 		
 		clipboard = new Clipboard(parent.getDisplay());
 
-		sampler = new CLabel(parent, SWT.LEFT | SWT.BORDER);
-
-		if (textFont != null) {
-			sampler.setFont(textFont);
-		}
-		
-		sampler.setImage(dropper);
-		sampler.setText("                          ");
-		sampler.setToolTipText("Drag to sample color at mouse location on the desktop");
-		
-		GridData samplerGridData = new GridData(SWT.LEFT, SWT.TOP, false, false);
-		sampler.setLayoutData(samplerGridData);
+		setImage(dropper);
+		setText("                          ");
+		setToolTipText("Drag to sample color at mouse location on the desktop");
 
 		class SamplerListener implements Listener {
 			boolean dragging;
@@ -93,21 +64,21 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 				switch (event.type) {
 				case SWT.MouseDown:
 					if (event.button == 1 && event.stateMask == 0) {
-						sampler.setCursor(dropperCursor);
+						setCursor(dropperCursor);
 						dragging = true;
-						sampleColor(sampler.getDisplay().map(sampler, null, new Point(event.x, event.y)));
+						sampleColor(getDisplay().map(ColorSampler.this, null, new Point(event.x, event.y)));
 					}
 					break;
 				case SWT.MouseMove:
 					if (dragging) {
-						sampleColor(sampler.getDisplay().map(sampler, null, new Point(event.x, event.y)));
+						sampleColor(getDisplay().map(ColorSampler.this, null, new Point(event.x, event.y)));
 					}
 					break;
 				case SWT.MouseUp:
 					if (dragging) {
 						dragging = false;
-						sampler.setCursor(sampler.getShell().getDisplay().getSystemCursor(SWT.CURSOR_ARROW));
-						sampleColor(sampler.getDisplay().map(sampler, null, new Point(event.x, event.y)));
+						setCursor(getShell().getDisplay().getSystemCursor(SWT.CURSOR_ARROW));
+						sampleColor(getDisplay().map(ColorSampler.this, null, new Point(event.x, event.y)));
 						refreshClipboard();
 					}
 					break;
@@ -116,12 +87,12 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		}
 
 		Listener listener = new SamplerListener();
-		sampler.addListener(SWT.MouseDown, listener);
-		sampler.addListener(SWT.MouseMove, listener);
-		sampler.addListener(SWT.MouseUp, listener);
+		addListener(SWT.MouseDown, listener);
+		addListener(SWT.MouseMove, listener);
+		addListener(SWT.MouseUp, listener);
 
 		// Pop-up menu
-		Menu menu = new Menu(sampler.getShell(), SWT.POP_UP);
+		Menu menu = new Menu(getShell(), SWT.POP_UP);
 		for(String displayFormat : formatsMap.keySet()) {
 			final String format = formatsMap.get(displayFormat);
 			MenuItem menuItem = new MenuItem(menu, SWT.RADIO);
@@ -138,7 +109,7 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 		
 		new MenuItem(menu, SWT.SEPARATOR);
 		
-		final MenuItem copyToClipboardMenuItem = new MenuItem(menu, SWT.CHECK);
+		copyToClipboardMenuItem = new MenuItem(menu, SWT.CHECK);
 		copyToClipboardMenuItem.setText("Copy to Clipboard");
 		copyToClipboardMenuItem.setSelection(copyToClipboard);
 		copyToClipboardMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -148,18 +119,40 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 			}
 		});
 		
-		sampler.setMenu(menu);
+		setMenu(menu);
 		
-		lastColor =  sampler.getBackground();
-		
-		return sampler;
+		lastColor =  getBackground();
+	}
+	
+	public String getFormatString() {
+		return formatString;
+	}
+	
+	public boolean isCopyToClipboard() {
+		return copyToClipboard;
+	}
+	
+	public void setCopyToClipboard(boolean copyToClipboard) {
+		this.copyToClipboard = copyToClipboard;
+		copyToClipboardMenuItem.setSelection(copyToClipboard);
+		refreshClipboard();
+	}
+	
+	public void dispose() {
+		super.dispose();
+		if (!dropper.isDisposed()) {
+			dropper.dispose();
+		}
+		if (!dropperCursor.isDisposed()) {
+			dropperCursor.dispose();
+		}
 	}
 
 	private void sampleColor(Point cursorAt) {
 		Robot robot = getRobot();
 		if (robot != null) {
 			java.awt.Color pixelColor = robot.getPixelColor(cursorAt.x, cursorAt.y);
-			Display display = sampler.getShell().getDisplay();
+			Display display = getShell().getDisplay();
 			Color newColor = new Color(display, pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue());
 			showColor(display, newColor);
 		}
@@ -167,23 +160,23 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 
 	private void refreshColorDisplay() {
 		if (lastColor != null) {
-			showColor(sampler.getDisplay(), lastColor);
+			showColor(getDisplay(), lastColor);
 		}
 	}
 	
 	private void refreshClipboard() {
 		if (copyToClipboard && lastColor != null) {
-			copyToClipboard(sampler.getDisplay(), formatColor(lastColor));
+			copyToClipboard(getDisplay(), formatColor(lastColor));
 		}
 	}
 	
 	private void showColor(Display display, Color pixelColor) {
 		String formattedColor = formatColor(pixelColor);
-		sampler.setText(formattedColor);
-		sampler.setToolTipText(formattedColor);
-		sampler.setBackground(pixelColor);
-		sampler.redraw();
-		sampler.update();
+		setText(formattedColor);
+		setToolTipText(formattedColor);
+		setBackground(pixelColor);
+		redraw();
+		update();
 		if (lastColor != pixelColor) {
 			if (lastColor != null) {
 				lastColor.dispose();
@@ -203,7 +196,6 @@ public class ColorSampler extends WorkbenchWindowControlContribution {
 
 	private static Robot robot;
 	private static boolean failedRobot;
-	private Clipboard clipboard;
 
 	public static Robot getRobot() {
 		if (failedRobot) {
