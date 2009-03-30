@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="SamplerFeature"
+      label="Sampler Feature"
+      version="1.0.3"
+      provider-name="Sandip Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      Sampler Feature
+   </description>
+
+   <copyright url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      Sandip V. Chitale
+   </copyright>
+
+   <license url="http://www.opensource.org/licenses/bsd-license.php">
+      BSD
+   </license>
+
+   <url>
+      <discovery label="Sandip Chitale&apos;s Blog" url="http://sandipchitale.blogspot.com/"/>
+   </url>
+
+   <plugin
+         id="Sampler"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
