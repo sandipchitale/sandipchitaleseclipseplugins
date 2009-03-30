@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?metadataRepository class='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'?>
-<repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
+<repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1238280909143'/>
+    <property name='p2.timestamp' value='1238388158736'/>
   </properties>
   <references size='8'>
-    <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='1' options='0'/>
+    <repository url='http://code.google.com/u/sandipchitale/' type='0' options='0'/>
     <repository url='http://sandipchitale.blogspot.com/' type='1' options='0'/>
     <repository url='http://sandipchitale.blogspot.com/' type='0' options='0'/>
-    <repository url='http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/' type='1' options='0'/>
+    <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='1' options='0'/>
     <repository url='http://code.google.com/p/sandipchitaleseclipseplugins/' type='0' options='0'/>
-    <repository url='http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/' type='0' options='0'/>
-    <repository url='http://code.google.com/u/sandipchitale/' type='0' options='0'/>
+    <repository url='http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/' type='1' options='0'/>
     <repository url='http://code.google.com/u/sandipchitale/' type='1' options='0'/>
+    <repository url='http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/' type='0' options='0'/>
   </references>
-  <units size='18'>
+  <units size='21'>
     <unit id='GoogleClips' version='1.0.6'>
       <update id='GoogleClips' range='[0.0.0,1.0.6)' severity='0'/>
       <properties size='2'>
@@ -41,10 +41,46 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-Vendor: Sandip Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: googleclips.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.editors,org.eclipse.jface.text,GoogleDocsLibraries&#xA;Bundle-Name: Google Clips Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: GoogleClips;singleton:=true&#xA;Bundle-Version: 1.0.6&#xA;Eclipse-LazyStart: true&#xA;
+            Bundle-Vendor: Sandip Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: googleclips.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.editors,org.eclipse.jface.text,GoogleDocsLibraries&#xA;Bundle-Name: Google Clips Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: GoogleClips;singleton:=true&#xA;Bundle-Version: 1.0.6&#xA;Eclipse-LazyStart: true
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='SamplerFeature.feature.jar' version='1.0.3'>
+      <update id='SamplerFeature.feature.jar' range='[0.0.0,1.0.3)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Sampler Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Sampler Feature'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='SamplerFeature.feature.jar' version='1.0.3'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='SamplerFeature' version='1.0.3'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='SamplerFeature' version='1.0.3'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.opensource.org/licenses/bsd-license.php'>
+          BSD
+        </license>
+      </licenses>
+      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
+        Sandip V. Chitale
+      </copyright>
     </unit>
     <unit id='tooling.source.default' version='1.0.0' singleton='false'>
       <hostRequirements size='1'>
@@ -163,7 +199,7 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.workbench.texteditor&#xA;Bundle-Activator: reversetextselection.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.1&#xA;Bundle-SymbolicName: ReverseTextSelection;singleton:=true&#xA;Bundle-Name: ReverseTextSelection Plug-in&#xA;Bundle-Vendor: Sandip V. Chitale&#xA;Eclipse-LazyStart: true&#xA;
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.workbench.texteditor&#xA;Bundle-Activator: reversetextselection.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.1&#xA;Bundle-SymbolicName: ReverseTextSelection;singleton:=true&#xA;Bundle-Name: ReverseTextSelection Plug-in&#xA;Bundle-Vendor: Sandip V. Chitale&#xA;Eclipse-LazyStart: true
           </instruction>
         </instructions>
       </touchpointData>
@@ -197,6 +233,36 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='SamplerFeature.feature.group' version='1.0.3' singleton='false'>
+      <update id='SamplerFeature.feature.group' range='[0.0.0,1.0.3)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Sampler Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='Sampler Feature'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/sandipchitaleseclipseplugins/'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip Chitale'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='SamplerFeature.feature.group' version='1.0.3'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='Sampler' range='[1.0.3,1.0.3]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='SamplerFeature.feature.jar' range='[1.0.3,1.0.3]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.opensource.org/licenses/bsd-license.php'>
+          BSD
+        </license>
+      </licenses>
+      <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
+        Sandip V. Chitale
+      </copyright>
+    </unit>
     <unit id='FeaturesPluginsFragments' version='1.0.0'>
       <update id='FeaturesPluginsFragments' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='2'>
@@ -221,7 +287,7 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: featurespluginsfragments.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.console,org.eclipse.update.configurator&#xA;Bundle-Name: FeaturesPluginsFragments Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: FeaturesPluginsFragments;singleton:=true&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;
+            Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: featurespluginsfragments.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.console,org.eclipse.update.configurator&#xA;Bundle-Name: FeaturesPluginsFragments Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: FeaturesPluginsFragments;singleton:=true&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true
           </instruction>
         </instructions>
       </touchpointData>
@@ -480,6 +546,33 @@
         [Enter Copyright Description here.]
       </copyright>
     </unit>
+    <unit id='Sampler' version='1.0.3'>
+      <update id='Sampler' range='[0.0.0,1.0.3)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Sampler Plug-in'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Sampler' version='1.0.3'/>
+        <provided namespace='osgi.bundle' name='Sampler' version='1.0.3'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='Sampler' version='1.0.3'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime&#xA;Bundle-Activator: sampler.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.3&#xA;Bundle-SymbolicName: Sampler;singleton:=true&#xA;Bundle-Name: Sampler Plug-in&#xA;Bundle-Vendor: Sandip V. Chitale&#xA;Eclipse-LazyStart: true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='GoogleDocsLibraries' version='1.0.0' singleton='false'>
       <update id='GoogleDocsLibraries' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='2'>
@@ -508,36 +601,7 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-ClassPath: libs/gdata-base-1.0.jar,libs/gdata-core-1.0.jar,libs/gdata-spreadsheet-2.0.jar,libs/gdata-spreadsheet-meta-2.0.jar,libs/activation.jar,libs/mail.jar,.&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime&#xA;Bundle-Name: GoogleDocsLibraries Plug-in&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: GoogleDocsLibraries&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;Export-Package: com.google.api.gbase.client,com.google.gdata.client,com.google.gdata.client.spreadsheet,com.google.gdata.data,com.google.gdata.data.spreadsheet,com.google.gdata.util&#xA;
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='screenshot' version='1.0.17'>
-      <update id='screenshot' range='[0.0.0,1.0.17)' severity='0'/>
-      <properties size='2'>
-        <property name='org.eclipse.equinox.p2.name' value='Screenshot'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='screenshot' version='1.0.17'/>
-        <provided namespace='osgi.bundle' name='screenshot' version='1.0.17'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='4'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='screenshot' version='1.0.17'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.ui.ide&#xA;Bundle-Activator: screenshot.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.17&#xA;Bundle-SymbolicName: screenshot;singleton:=true&#xA;Bundle-Name: Screenshot&#xA;Bundle-Vendor: Sandip V. Chitale&#xA;Eclipse-LazyStart: true&#xA;
+            Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-ClassPath: libs/gdata-base-1.0.jar,libs/gdata-core-1.0.jar,libs/gdata-spreadsheet-2.0.jar,libs/gdata-spreadsheet-meta-2.0.jar,libs/activation.jar,libs/mail.jar,.&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime&#xA;Bundle-Name: GoogleDocsLibraries Plug-in&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: GoogleDocsLibraries&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;Export-Package: com.google.api.gbase.client,com.google.gdata.client,com.google.gdata.client.spreadsheet,com.google.gdata.data,com.google.gdata.data.spreadsheet,com.google.gdata.util
           </instruction>
         </instructions>
       </touchpointData>
@@ -577,6 +641,35 @@
       <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
         Sandip V. Chitale
       </copyright>
+    </unit>
+    <unit id='screenshot' version='1.0.17'>
+      <update id='screenshot' range='[0.0.0,1.0.17)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Screenshot'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='screenshot' version='1.0.17'/>
+        <provided namespace='osgi.bundle' name='screenshot' version='1.0.17'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='screenshot' version='1.0.17'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.ui.ide&#xA;Bundle-Activator: screenshot.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.17&#xA;Bundle-SymbolicName: screenshot;singleton:=true&#xA;Bundle-Name: Screenshot&#xA;Bundle-Vendor: Sandip V. Chitale&#xA;Eclipse-LazyStart: true
+          </instruction>
+        </instructions>
+      </touchpointData>
     </unit>
     <unit id='config.a.jre' version='1.6.0' singleton='false'>
       <hostRequirements size='1'>
