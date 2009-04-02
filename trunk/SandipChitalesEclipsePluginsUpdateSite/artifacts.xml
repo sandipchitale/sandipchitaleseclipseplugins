@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
-<repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
+<repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1238388158735'/>
+    <property name='p2.timestamp' value='1238685830787'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='11'>
+  <artifacts size='13'>
     <artifact classifier='osgi.bundle' id='GoogleDocsLibraries' version='1.0.0'>
       <properties size='3'>
         <property name='artifact.size' value='1017955'/>
@@ -18,18 +18,10 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='Sampler' version='1.0.3'>
-      <properties size='3'>
-        <property name='artifact.size' value='9341'/>
-        <property name='download.size' value='9341'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='FeaturesPluginsFragments' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='25484'/>
-        <property name='download.size' value='25484'/>
-        <property name='download.contentType' value='application/zip'/>
+    <artifact classifier='org.eclipse.update.feature' id='ReorderFeature' version='1.0.4'>
+      <properties size='2'>
+        <property name='artifact.size' value='1288'/>
+        <property name='download.size' value='1288'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='ReverseTextSelection' version='1.0.1'>
@@ -65,16 +57,37 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='GoogleClipsFeature' version='1.0.6'>
+      <properties size='2'>
+        <property name='artifact.size' value='1000'/>
+        <property name='download.size' value='1000'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='Sampler' version='1.0.3'>
+      <properties size='3'>
+        <property name='artifact.size' value='9341'/>
+        <property name='download.size' value='9341'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='FeaturesPluginsFragments' version='1.0.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='25484'/>
+        <property name='download.size' value='25484'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
     <artifact classifier='org.eclipse.update.feature' id='FeaturesPluginsFragmentsFeature' version='1.0.0'>
       <properties size='2'>
         <property name='artifact.size' value='712'/>
         <property name='download.size' value='712'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='GoogleClipsFeature' version='1.0.6'>
-      <properties size='2'>
-        <property name='artifact.size' value='1000'/>
-        <property name='download.size' value='1000'/>
+    <artifact classifier='osgi.bundle' id='Reorder' version='1.0.4'>
+      <properties size='3'>
+        <property name='artifact.size' value='15269'/>
+        <property name='download.size' value='15269'/>
+        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='Screenshot' version='1.0.17'>
