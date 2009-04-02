@@ -15,8 +15,12 @@
    <feature url="features/SamplerFeature_1.0.3.jar" id="SamplerFeature" version="1.0.3">
       <category name="Desktop"/>
    </feature>
+   <feature url="features/ReorderFeature_1.0.4.jar" id="ReorderFeature" version="1.0.4">
+      <category name="Java Editor"/>
+   </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
    <category-def name="Desktop" label="Desktop Integration"/>
    <category-def name="Google Clips" label="Google Clips"/>
    <category-def name="Text Editor" label="Text Editor"/>
+   <category-def name="Java Editor" label="Java Editor"/>
 </site>
