@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="Reorder.editorContribution"
+            targetID="org.eclipse.jdt.ui.CompilationUnitEditor">
+         <action
+               class="reorder.SwapForwardAction"
+               definitionId="Reorder.swapForwardCommand"
+               icon="icons/swapforward.png"
+               id="Reorder.swapForwardAction"
+               label="Swap Forward"
+               style="push"
+               toolbarPath="Normal/additions">
+         </action>
+         <action
+               class="reorder.SwapBackwardAction"
+               definitionId="Reorder.swapBackwardCommand"
+               icon="icons/swapbackward.png"
+               id="Reorder.swapBackwardAction"
+               label="Swap Backward"
+               style="push"
+               toolbarPath="Normal/additions">
+         </action>
+      </editorContribution>
+   </extension>
+   <extension
+         id="Reorder.swapCommands"
+         name="Swap Commands"
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.jdt.ui.category.source"
+            id="Reorder.swapForwardCommand"
+            name="Swap Forward">
+      </command>
+      <command
+            categoryId="org.eclipse.jdt.ui.category.source"
+            id="Reorder.swapBackwardCommand"
+            name="Swap Backward">
+      </command>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.bindings">
+      <!--  win32:  M1=CTRL,    M2=SHIFT, M3=ALT, M4=-
+            carbon: M1=COMMAND, M2=SHIFT, M3=ALT, M4=CTRL -->
+      
+<!-- edit -->
+      <key
+            sequence="M1+,"
+            contextId="org.eclipse.jdt.ui.javaEditorScope"
+            commandId="Reorder.swapBackwardCommand"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+."
+            contextId="org.eclipse.jdt.ui.javaEditorScope"
+            commandId="Reorder.swapForwardCommand"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+   </extension>
+
+</plugin>

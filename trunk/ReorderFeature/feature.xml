@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ReorderFeature"
+      label="Reorder Feature"
+      version="1.0.4"
+      provider-name="Sandip V. Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/#Reorder_Plug-in">
+      The assymetry in the way , (comma) is used to separate the items
+in parameter and arguments lists always causes problem when one
+wants to reorder that list in Java editor. Is that why Java allows
+trailing commas in array initializer? ;) may be.
+The Reorder plug-in adds the following actions to the Java editor
+tool bar.
+
+* Swap backward (Ctrl+,)
+* Swap forward (Ctrl+.)
+
+Basically the actions reorder the:
+* arguments of a class instance creation invocation
+* arguments of a method invocation
+* parameters of a method declaration
+* members of array initializer 
+
+and automatically adjust the &apos;,&apos; separator.
+
+For example with caret at | in:
+
+void method(int iii, String |sss, boolean bbb){}
+
+pressing Ctrl+. (i.e. Control+period) or clicking on Swap forward tool bar button yields:
+
+void method(int iii, boolean bbb, String |sss){}
+
+or pressing CTRL+, (i.e. Control+comma) or clicking on Swap backward tool bar button with the original source yields:
+
+void method(String |sss, int iii, boolean bbb){}
+   </description>
+
+   <copyright>
+      Sandip V. Chitale
+   </copyright>
+
+   <license url="http://www.opensource.org/licenses/bsd-license.php">
+      BSD
+   </license>
+
+   <url>
+      <update label="Sandip Chitale&apos;s Eclipse Plug-ins" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/"/>
+      <discovery label="Sandip Chitale&apos;s Blog" url="http://sandipchitale.blogspot.com/"/>
+      <discovery label="Sandip Chitale&apos;s Eclipse Plug-ins" url="http://code.google.com/p/sandipchitaleseclipseplugins/"/>
+   </url>
+
+   <plugin
+         id="Reorder"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
