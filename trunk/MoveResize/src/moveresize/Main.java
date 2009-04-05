@@ -4,10 +4,6 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class Main {
 	public static void main(String[] args) {
-		try {
-			Thread.sleep(500L);
-		} catch (InterruptedException e) {
-		}
 		boolean resize = true;
 		if (args.length == 0 || args.length > 2) {
 			usage();
