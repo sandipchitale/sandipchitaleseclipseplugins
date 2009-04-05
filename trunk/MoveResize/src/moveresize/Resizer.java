@@ -4,17 +4,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 
 public class Resizer extends Delta {
 	static final int BORDER_THICKNESS = 4;
 	
-	public Resizer(Shell shell) {
-		super(shell);
-	}
-	
-	private Shell getShell() {
-		return (Shell) super.getControl();
+	public Resizer(Control control) {
+		super(control);
 	}
 	
 	private Point location = null;
@@ -22,16 +17,16 @@ public class Resizer extends Delta {
 	private int operation = SWT.CURSOR_ARROW;
 
 	protected void process(int deltaX, int deltaY, STATE state, int x, int y) {
-		Shell shell = getShell();
+		Control control = getControl();
 		
-		if (shell.isDisposed()) {
+		if (control.isDisposed()) {
 			return;
 		}
 		switch (state) {
 		case BEGIN:
-			operation = operation(shell, x, y);
-			location = shell.getLocation();
-			size = shell.getSize();
+			operation = operation(control, x, y);
+			location = control.getLocation();
+			size = control.getSize();
 			resize(location, size, operation, deltaX, deltaY);
 			break;
 		case IN_PROGRESS:

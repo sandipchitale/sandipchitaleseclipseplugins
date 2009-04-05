@@ -8,6 +8,8 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -20,20 +22,39 @@ class MoveResize {
 		final Rectangle[] rectangle = new Rectangle[1];
 		Display display = new Display();
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
-		shell.setBounds(bounds);
-		shell.addKeyListener(new KeyListener() {
+		shell.setBounds(display.getBounds());
+		/* Take the screen shot */
+        GC gc = new GC(display);
+        final Image desktopImage = new Image(display, shell.getBounds());
+        gc.copyArea(desktopImage, shell.getBounds().x, shell.getBounds().y);
+        gc.dispose();
+        final PaintListener paintListener = new ImagePainter(desktopImage, MODE.MOVE);
+        shell.addPaintListener(paintListener);
+        shell.setLayout(null);
+		final Canvas canvas = new Canvas(shell, SWT.NONE);
+		configure(display, canvas, bounds, mode);
+		canvas.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
 				if (e.keyCode == SWT.ESC) {
 					shell.close();
 				} else if (e.keyCode == SWT.CR) {
-					Rectangle bounds = shell.getBounds(); 
-					rectangle[0] = bounds;
+					rectangle[0] = canvas.getBounds();
 					shell.close();
 				}
 			}
 		});
-		configureShell(display, shell, bounds, mode);
+        shell.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				if (e.keyCode == SWT.ESC) {
+					shell.close();
+				} else if (e.keyCode == SWT.CR) {
+					rectangle[0] = canvas.getBounds();
+					shell.close();
+				}
+			}
+		});
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
@@ -43,21 +64,21 @@ class MoveResize {
 		return rectangle[0];
 	}
 
-	private static void configureShell(Display display, Shell shell, Rectangle bounds, MODE mode) {
+	private static void configure(Display display, Control control, Rectangle bounds, MODE mode) {
 		/* Take the screen shot */
         GC gc = new GC(display);
         final Image image = new Image(display, bounds);
         gc.copyArea(image, bounds.x, bounds.y);
         gc.dispose();
         final PaintListener paintListener = new ImagePainter(image, mode);
-        shell.addPaintListener(paintListener);
-		shell.setBounds(bounds);
+        control.addPaintListener(paintListener);
+		control.setBounds(bounds);
 		switch(mode) {
 		case RESIZE:
-			new Resizer(shell).attach();
+			new Resizer(control).attach();
 			break;
 		case MOVE:			
-	        new Mover(shell).attach();
+	        new Mover(control).attach();
 			break;
 		}
 	}
@@ -72,21 +93,18 @@ class MoveResize {
 		}
 		public void paintControl(PaintEvent e) {
 			e.gc.drawImage(image, 0, 0);
-			switch (mode) {
-			case RESIZE:
-				if (e.widget instanceof Shell) {
-					Shell shell = (Shell) e.widget;
-					e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLACK));
-					Rectangle bounds = shell.getBounds();
-					for (int i = 0; i < Resizer.BORDER_THICKNESS; i++) {
-						e.gc.drawRectangle(
-								i,
-								i,
-								bounds.width -1 - (2*i),
-								bounds.height -1 - (2*i));				
-					}
+			if (e.widget instanceof Control) {
+				Control control = (Control) e.widget;
+				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLACK));
+				Rectangle bounds = control.getBounds();
+				int times = (mode == MODE.RESIZE ? Resizer.BORDER_THICKNESS : 1);
+				for (int i = 0; i < times; i++) {
+					e.gc.drawRectangle(
+							i,
+							i,
+							bounds.width -1 - (2*i),
+							bounds.height -1 - (2*i));				
 				}
-				break;
 			}
 		}		
 	};
