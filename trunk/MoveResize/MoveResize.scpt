@@ -16,7 +16,7 @@ tell application "System Events"
     set _height to item 2 of _size
     
     try
-        set newBounds to do shell script "java -jar ~/Desktop/MoveResize.jar -move " & _x & ":" & _y & ":" & _width & ":" & _height
+        set newBounds to do shell script "java -XstartOnFirstThread -jar ~/Desktop/MoveResize.jar -move " & _x & ":" & _y & ":" & _width & ":" & _height
         if (length of newBounds is greater than 0) then
             set newBounds to my split(newBounds, ":")
             
