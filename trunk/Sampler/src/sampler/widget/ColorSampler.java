@@ -37,9 +37,9 @@ public class ColorSampler extends CLabel {
 
 	private static Map<String, String> formatsMap = new LinkedHashMap<String, String>();
 	static {
-		formatsMap.put("HTML/CSS #RRGGBB", "#%1$02x%2$02x%3$02x");
-		formatsMap.put("CSS      rgb(r,g,b)", "rgb(%1$d, %2$d, %3$d)");
-		formatsMap.put("AWT      new Color(r,g,b)", "new Color(%1$d, %2$d, %3$d)");
+		formatsMap.put("#RRGGBB (HTML/CSS)", "#%1$02x%2$02x%3$02x");
+		formatsMap.put("rgb(r,g,b) (CSS)", "rgb(%1$d, %2$d, %3$d)");
+		formatsMap.put("new Color(r,g,b) (AWT)", "new Color(%1$d, %2$d, %3$d)");
 	}
 
 	public ColorSampler(Composite parent) {
