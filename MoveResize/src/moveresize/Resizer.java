@@ -100,8 +100,9 @@ public class Resizer extends Delta {
 		bounds.height = Math.max(2*BORDER_THICKNESS, bounds.height);
 		
 		control.setBounds(bounds);
-		
 		control.setCursor(control.getDisplay().getSystemCursor(operation));
+		control.redraw();
+		control.getShell().update();
 	}
 
 	private static int operation(Control control, int x, int y) {

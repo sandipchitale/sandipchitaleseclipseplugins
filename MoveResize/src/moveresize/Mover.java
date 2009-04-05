@@ -36,6 +36,7 @@ public class Mover extends Delta {
 			return;
 		}
 		control.setLocation(new Point(location.x + deltaX, location.y + deltaY));
+		control.getShell().update();
 	}
 	
 	protected void setCursor(Point xy) {
