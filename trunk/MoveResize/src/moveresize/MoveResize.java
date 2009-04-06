@@ -97,7 +97,7 @@ class MoveResize {
 				Control control = (Control) e.widget;
 				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLACK));
 				Rectangle bounds = control.getBounds();
-				int times = (mode == MODE.RESIZE ? Resizer.BORDER_THICKNESS : 1);
+				int times = (mode == MODE.RESIZE ? 2 : 1);
 				for (int i = 0; i < times; i++) {
 					e.gc.drawRectangle(
 							i,
