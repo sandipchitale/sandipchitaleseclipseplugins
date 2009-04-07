@@ -12,11 +12,11 @@
    <feature url="features/Screenshot_1.0.17.jar" id="Screenshot" version="1.0.17">
       <category name="Desktop"/>
    </feature>
-   <feature url="features/SamplerFeature_1.0.3.jar" id="SamplerFeature" version="1.0.3">
-      <category name="Desktop"/>
-   </feature>
    <feature url="features/ReorderFeature_1.0.4.jar" id="ReorderFeature" version="1.0.4">
       <category name="Java Editor"/>
+   </feature>
+   <feature url="features/SamplerFeature_1.0.4.jar" id="SamplerFeature" version="1.0.4">
+      <category name="Desktop"/>
    </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
    <category-def name="Desktop" label="Desktop Integration"/>
