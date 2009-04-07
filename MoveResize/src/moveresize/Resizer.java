@@ -45,7 +45,7 @@ public class Resizer extends Delta {
 		if (control == null || control.isDisposed()) {
 			return;
 		}
-		control.setCursor(control.getDisplay().getSystemCursor(operation(control, xy.x, xy.y)));
+		control.setCursor(MoveResize.getCursor(operation(control, xy.x, xy.y)));
 	}
 	
 	void resize(Point location, Point size, int operation, int deltaX, int deltaY) {
