@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Control;
 public class Mover extends Delta {
 	public Mover(Control control) {
 		super(control);
-		control.setCursor(control.getDisplay().getSystemCursor(SWT.CURSOR_SIZEALL));
+		control.setCursor(MoveResize.getCursor(SWT.CURSOR_SIZEALL));
 	}
 
 	private Point location = null;
