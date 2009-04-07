@@ -1,10 +1,17 @@
 package moveresize;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -48,7 +55,11 @@ class MoveResize {
 			}
 		});
 
-		canvas.setToolTipText("Drag borders to resize. Drag window to move.");
+		canvas.setToolTipText(
+				(mode == MODE.RESIZE ? "Drag borders to resize.\n" : "") +
+				"Drag area to move.\n" +
+				"Type ENTER to accept bounds.\n" +
+				"Type ESCAPE to cancel.");
 		
         shell.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
@@ -61,6 +72,20 @@ class MoveResize {
 				}
 			}
 		});
+        shell.addMouseListener(new MouseAdapter() {
+        	public void mouseUp(MouseEvent e) {
+				shell.close();				
+			}        	
+        });
+        shell.addShellListener(new ShellAdapter() {
+        	private int count = 0;
+			public void shellDeactivated(ShellEvent e) {
+				if (count > 1) {
+					shell.close();
+				}
+				count++;
+			}        	
+        });
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
