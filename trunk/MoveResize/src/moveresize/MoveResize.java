@@ -20,11 +20,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 class MoveResize {
-	static enum  MODE {MOVE, RESIZE};
-
 	static final int BORDER_THICKNESS = 4;
 
-	static Rectangle to(Rectangle bounds, final MODE mode) {
+	static Rectangle to(Rectangle bounds) {
 		final Rectangle[] rectangle = new Rectangle[1];
 		Display display = new Display();
 		initCursors(display);
@@ -35,11 +33,11 @@ class MoveResize {
         final Image desktopImage = new Image(display, shell.getBounds());
         gc.copyArea(desktopImage, shell.getBounds().x, shell.getBounds().y);
         gc.dispose();
-        final PaintListener paintListener = new ImagePainter(desktopImage, MODE.MOVE);
+        final PaintListener paintListener = new ImagePainter(desktopImage);
         shell.addPaintListener(paintListener);
         shell.setLayout(null);
 		final Canvas canvas = new Canvas(shell, SWT.NONE);
-		configure(display, canvas, bounds, mode);
+		configure(display, canvas, bounds);
 		canvas.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
@@ -53,7 +51,7 @@ class MoveResize {
 		});
 
 		canvas.setToolTipText(
-				(mode == MODE.RESIZE ? "Drag borders to resize.\n" : "") +
+				"Drag borders to resize.\n" +
 				"Drag area to move.\n" +
 				"Type ENTER to accept bounds.\n" +
 				"Type ESCAPE to cancel.");
@@ -92,23 +90,16 @@ class MoveResize {
 		return rectangle[0];
 	}
 
-	private static void configure(Display display, Control control, Rectangle bounds, MODE mode) {
+	private static void configure(Display display, Control control, Rectangle bounds) {
 		/* Take the screen shot */
         GC gc = new GC(display);
         final Image image = new Image(display, bounds);
         gc.copyArea(image, bounds.x, bounds.y);
         gc.dispose();
-        final PaintListener paintListener = new ImagePainter(image, mode);
+        final PaintListener paintListener = new ImagePainter(image);
         control.addPaintListener(paintListener);
 		control.setBounds(bounds);
-		switch(mode) {
-		case RESIZE:
-			new Resizer(control).attach();
-			break;
-		case MOVE:			
-	        new Mover(control).attach();
-			break;
-		}
+		new Resizer(control).attach();
 	}
 	
 	static Cursor getCursor(int c) {
@@ -163,11 +154,9 @@ class MoveResize {
 	
 	private static class ImagePainter implements PaintListener {
 		private final Image image;
-		private final MODE mode;
 
-		ImagePainter(Image image, MODE mode) {
+		ImagePainter(Image image) {
 			this.image = image;
-			this.mode = mode;
 		}
 		public void paintControl(PaintEvent e) {
 			e.gc.drawImage(image, 0, 0);
@@ -175,7 +164,7 @@ class MoveResize {
 				Control control = (Control) e.widget;
 				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLACK));
 				Rectangle bounds = control.getBounds();
-				int times = (mode == MODE.RESIZE ? 2 : 1);
+				int times = 2;
 				for (int i = 0; i < times; i++) {
 					e.gc.drawRectangle(
 							i,
