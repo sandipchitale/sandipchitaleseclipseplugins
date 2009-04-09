@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -128,7 +127,6 @@ public class Main {
 	private static void serve(BlockingQueue<Request> queue, Socket socket) {
 		try {
 			InputStream in = socket.getInputStream();
-			OutputStream out = socket.getOutputStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String input = br.readLine();
 			if ("exit".equals(input)) {

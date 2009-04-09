@@ -3,28 +3,32 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-		<string>MoveResize.sh</string>
+	<string>MoveResize.sh</string>
 	<key>CFBundleGetInfoString</key>
-		<string>MoveResize 1.0 for Mac OS X</string>
+	<string>MoveResize 1.0 for Mac OS X</string>
 	<key>CFBundleIconFile</key>
-		<string>MoveResize.icns</string>
+	<string>MoveResize.icns</string>
 	<key>CFBundleIdentifier</key>
-		<string>moveresize</string>
+	<string>moveresize</string>
 	<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
+	<string>6.0</string>
 	<key>CFBundleName</key>
-		<string>MoveResize</string>
+	<string>MoveResize</string>
 	<key>CFBundlePackageType</key>
-		<string>APPL</string>
+	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-		<string>1.0</string>
+	<string>1.0</string>
 	<key>CFBundleSignature</key>
-		<string>?????</string>
+	<string>?????</string>
 	<key>CFBundleVersion</key>
-		<string>1.0</string>
-	<key>NSPrincipalClass</key>
-		<string>NSApplication</string>
+	<string>1.0</string>
 	<key>LSBackgroundOnly</key>
-		<string>1</string>
+	<string>1</string>
+	<key>LSUIElement</key>
+	<string>1</string>
+	<key>LSUIPresentationMode</key>
+	<integer>4</integer>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
 </dict>
 </plist>
