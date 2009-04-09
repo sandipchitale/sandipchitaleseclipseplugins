@@ -7,8 +7,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -42,11 +40,10 @@ class MoveResize {
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
 				if (e.keyCode == SWT.ESC) {
-					shell.close();
+					close(shell, canvas);
 				} else if (e.keyCode == SWT.CR) {
 					rectangle[0] = canvas.getBounds();
-					shell.close();
-				}
+					close(shell, canvas);				}
 			}
 		});
 
@@ -60,26 +57,17 @@ class MoveResize {
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
 				if (e.keyCode == SWT.ESC) {
-					shell.close();
+					close(shell, canvas);
 				} else if (e.keyCode == SWT.CR) {
 					rectangle[0] = canvas.getBounds();
-					shell.close();
+					close(shell, canvas);
 				}
 			}
 		});
         shell.addMouseListener(new MouseAdapter() {
         	public void mouseUp(MouseEvent e) {
-				shell.close();				
-			}        	
-        });
-        shell.addShellListener(new ShellAdapter() {
-        	private int count = 0;
-			public void shellDeactivated(ShellEvent e) {
-				if (count > 1) {
-					shell.close();
-				}
-				count++;
-			}        	
+				close(shell, canvas);
+        	}
         });
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -90,6 +78,13 @@ class MoveResize {
 		return rectangle[0];
 	}
 
+	private static void close(final Shell shell, Canvas canvas) {
+		canvas.setCursor(CURSOR_ARROW);
+		shell.setCursor(CURSOR_ARROW);
+		shell.setVisible(false);
+		shell.close();
+	}
+	
 	private static void configure(Display display, Control control, Rectangle bounds) {
 		/* Take the screen shot */
         GC gc = new GC(display);
