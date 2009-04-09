@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -27,7 +29,22 @@ public class Main {
 					System.exit(-1);
 				}
 				try {
-					server(Integer.parseInt(args[i]));
+					BlockingQueue<Request> queue = new ArrayBlockingQueue<Request>(2);
+					new Server(Integer.parseInt(args[i]), queue).start();
+					while(true) {
+						try {
+							Request request = queue.take();
+							try {
+								serve(request.input, new PrintWriter(request.socket.getOutputStream()));
+							} finally {
+								request.socket.close();
+							}
+						} catch (InterruptedException e) {
+							System.err.println(e.getMessage());
+						} catch (IOException e) {
+							System.err.println(e.getMessage());
+						}
+					}
 				} catch (NumberFormatException nfe) {
 					usage();
 					System.exit(-1);
@@ -40,45 +57,6 @@ public class Main {
 		System.exit(1);
 	}
 	
-	private static void server(int port) {
-		try {
-			ServerSocket serverSocket = new ServerSocket(port, 1);
-			while (true) {
-				final Socket socket = serverSocket.accept();
-				new Thread(new Runnable() {
-					public void run() {
-						try {
-							serve(socket.getInputStream(), socket.getOutputStream());
-						} catch (IOException e) {
-							System.err.println(e.getMessage());
-						}
-					}
-				}).start();
-			}
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-	}
-	
-	private static void serve(InputStream in, OutputStream out) {
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			try {
-				String readLine = br.readLine();
-				if ("exit".equals(readLine)) {
-					System.exit(0);
-				}
-				serve(readLine, new PrintWriter(out));
-			} catch (IOException e) {
-				System.err.println(e.getMessage());
-			}
-		} finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-			}
-		}
-	}
 	
 	private static void serve(String xywh, PrintWriter out) {
 		String[] bounds = xywh.split(":");
@@ -105,11 +83,63 @@ public class Main {
 			usage();					
 			return;
 		}
-		
 	}
 	
 	private static void usage() {
 		System.err.println("Usage: java -jar MoveResize.jar -server port | x:y:width:height");		
 		System.err.println("Usage: -resize is default");		
+	}
+	
+	private static class Request {
+		final Socket socket;
+		final String input;
+
+		Request(Socket socket, String input) {
+			this.socket = socket;
+			this.input = input;
+		}
+	}
+	
+	private static class Server extends Thread {
+		private final int port;
+		private final BlockingQueue<Request> queue;
+
+		Server(int port, BlockingQueue<Request> queue) {
+			this.port = port;
+			this.queue = queue;
+		}
+		
+		public void run() {
+			try {
+				ServerSocket serverSocket = new ServerSocket(port, 1);
+				while (true) {
+					final Socket socket = serverSocket.accept();
+					new Thread(new Runnable() {
+						public void run() {
+							serve(queue, socket);
+						}
+					}).start();
+				}
+			} catch (IOException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+	}
+		
+	private static void serve(BlockingQueue<Request> queue, Socket socket) {
+		try {
+			InputStream in = socket.getInputStream();
+			OutputStream out = socket.getOutputStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String input = br.readLine();
+			if ("exit".equals(input)) {
+				System.exit(0);
+			}
+			queue.put(new Request(socket, input));
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		} catch (InterruptedException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 }
