@@ -25,6 +25,7 @@ class MoveResize {
 		Display display = new Display();
 		initCursors(display);
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
+		shell.setText(MoveResize.class.getSimpleName());
 		shell.setBounds(display.getBounds());
 		/* Take the screen shot */
         GC gc = new GC(display);
