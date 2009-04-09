@@ -86,8 +86,7 @@ public class Main {
 	}
 	
 	private static void usage() {
-		System.err.println("Usage: java -jar MoveResize.jar -server port | x:y:width:height");		
-		System.err.println("Usage: -resize is default");		
+		System.err.println("Usage: java -jar MoveResize.jar -server port | x:y:width:height");
 	}
 	
 	private static class Request {
