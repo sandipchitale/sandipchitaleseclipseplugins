@@ -162,7 +162,7 @@ class MoveResize {
 			} else {
 				Canvas canvas = (Canvas) e.widget;
 				Rectangle bounds = canvas.getBounds();
-				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLUE));
+				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_DARK_BLUE));
 				if (Resizer.isResizing(canvas)) {
 					e.gc.setAlpha(128);
 					e.gc.fillRoundRectangle(
@@ -174,13 +174,15 @@ class MoveResize {
 							BORDER_THICKNESS*2);
 					e.gc.setAlpha(255);
 				}
-				e.gc.drawRoundRectangle(
-						0,
-						0,
-						bounds.width -1,
-						bounds.height -1,
-						BORDER_THICKNESS*2,
-						BORDER_THICKNESS*2);				
+				for (int i = 0; i < 2; i++) {
+					e.gc.drawRoundRectangle(
+							i,
+							i,
+							bounds.width -1 - (2*i),
+							bounds.height -1 - (2*i),
+							BORDER_THICKNESS*2,
+							BORDER_THICKNESS*2);
+				}
 			}
 		}		
 	};
