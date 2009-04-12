@@ -164,7 +164,7 @@ class MoveResize {
 				Rectangle bounds = canvas.getBounds();
 				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLUE));
 				if (Resizer.isResizing(canvas)) {
-					e.gc.setAlpha(220);
+					e.gc.setAlpha(128);
 					e.gc.fillRoundRectangle(
 							0,
 							0,
