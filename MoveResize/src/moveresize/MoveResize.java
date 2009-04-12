@@ -44,7 +44,8 @@ class MoveResize {
 					close(shell, canvas);
 				} else if (e.keyCode == SWT.CR) {
 					rectangle[0] = canvas.getBounds();
-					close(shell, canvas);				}
+					close(shell, canvas);
+				}
 			}
 		});
 
@@ -156,20 +157,30 @@ class MoveResize {
 		}
 		public void paintControl(PaintEvent e) {
 			e.gc.drawImage(image, 0, 0);
-			if (e.widget instanceof Control) {
-				Control control = (Control) e.widget;
-				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLACK));
-				Rectangle bounds = control.getBounds();
-				int times = 2;
-				for (int i = 0; i < times; i++) {
-					e.gc.drawRoundRectangle(
-							i,
-							i,
-							bounds.width -1 - (2*i),
-							bounds.height -1 - (2*i),
+			if (e.widget instanceof Shell) {
+				// Ignore
+			} else {
+				Canvas canvas = (Canvas) e.widget;
+				Rectangle bounds = canvas.getBounds();
+				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLUE));
+				if (Resizer.isResizing(canvas)) {
+					e.gc.setAlpha(220);
+					e.gc.fillRoundRectangle(
+							0,
+							0,
+							bounds.width,
+							bounds.height,
 							BORDER_THICKNESS*2,
-							BORDER_THICKNESS*2);				
+							BORDER_THICKNESS*2);
+					e.gc.setAlpha(255);
 				}
+				e.gc.drawRoundRectangle(
+						0,
+						0,
+						bounds.width -1,
+						bounds.height -1,
+						BORDER_THICKNESS*2,
+						BORDER_THICKNESS*2);				
 			}
 		}		
 	};
