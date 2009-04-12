@@ -162,11 +162,13 @@ class MoveResize {
 				Rectangle bounds = control.getBounds();
 				int times = 2;
 				for (int i = 0; i < times; i++) {
-					e.gc.drawRectangle(
+					e.gc.drawRoundRectangle(
 							i,
 							i,
 							bounds.width -1 - (2*i),
-							bounds.height -1 - (2*i));				
+							bounds.height -1 - (2*i),
+							BORDER_THICKNESS*2,
+							BORDER_THICKNESS*2);				
 				}
 			}
 		}		
