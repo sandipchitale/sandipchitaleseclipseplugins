@@ -6,6 +6,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 
 public class Resizer extends Delta {
+	static final String RESIZING = Resizer.class.getName() + ".RESIZING";
+	
 	static final int BORDER_THICKNESS = 8;
 	
 	public Resizer(Control control) {
@@ -24,15 +26,18 @@ public class Resizer extends Delta {
 		}
 		switch (state) {
 		case BEGIN:
+			control.setData(RESIZING, Boolean.TRUE);
 			operation = operation(control, x, y);
 			location = control.getLocation();
 			size = control.getSize();
 			resize(location, size, operation, deltaX, deltaY);
 			break;
 		case IN_PROGRESS:
+			control.setData(RESIZING, Boolean.TRUE);
 			resize(location, size, operation, deltaX, deltaY);
 			break;
 		case END:
+			control.setData(RESIZING, null);
 			resize(location, size, operation, deltaX, deltaY);
 			operation = SWT.CURSOR_ARROW;
 			location = null;
@@ -133,5 +138,9 @@ public class Resizer extends Delta {
 			}
 		}
 		return SWT.CURSOR_ARROW;
+	}
+	
+	static boolean isResizing(Control control) {
+		return control.getData(RESIZING) != null;
 	}
 }
