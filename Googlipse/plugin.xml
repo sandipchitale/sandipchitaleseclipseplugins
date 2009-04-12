@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="Googlipse.actionSet"
+            label="Googlipse"
+            visible="true">
+         <action
+               class="googlipse.actions.Googlipse"
+               icon="icons/googlipse.png"
+               id="Googlipse.action"
+               label="Googlipse"
+               menubarPath="File/additions"
+               style="pulldown"
+               toolbarPath="Normal/additions">
+         </action>
+      </actionSet>
+   </extension>
+
+</plugin>
