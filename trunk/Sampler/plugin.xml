@@ -11,4 +11,18 @@
         </toolbar>
       </menuContribution>
     </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="sampler.SamplerPreferencePage"
+            id="Sampler.page"
+            name="Sampler">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="sampler.SamplerPreferences">
+      </initializer>
+   </extension>
 </plugin>

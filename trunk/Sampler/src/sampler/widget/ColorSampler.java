@@ -4,7 +4,10 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.dnd.Clipboard;
@@ -23,6 +26,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PreferencesUtil;
+
+import sampler.SamplerPreferences;
 
 public class ColorSampler extends CLabel {
 	private Clipboard clipboard;
@@ -33,19 +40,22 @@ public class ColorSampler extends CLabel {
 
 	private MenuItem copyToClipboardMenuItem;
 	
-	private boolean copyToClipboard = true;
-
 	private static Map<String, String> formatsMap = new LinkedHashMap<String, String>();
 	static {
 		formatsMap.put("#RRGGBB (HTML/CSS)", "#%1$02x%2$02x%3$02x");
 		formatsMap.put("rgb(r,g,b) (CSS)", "rgb(%1$d, %2$d, %3$d)");
-		formatsMap.put("new Color(r,g,b) (AWT)", "new Color(%1$d, %2$d, %3$d)");
+		formatsMap.put("new Color(r,g,b) (AWT)", "new Color(%1$3d, %2$3d, %3$3d)");
+		
+		String[] customFormats = SamplerPreferences.getCustomFormats();
+		for (String customFormat : customFormats) {
+			formatsMap.put(customFormat, customFormat);
+		}
 	}
 
 	public ColorSampler(Composite parent) {
 		super(parent, SWT.LEFT | SWT.BORDER);
 	
-		formatString = formatsMap.values().iterator().next();
+		formatString = processedFormatString(formatsMap.values().iterator().next());
 
 		ImageData dropperImageData = new ImageData(getClass().getResourceAsStream("dropper.png"));
 		dropperCursor = new Cursor(parent.getDisplay(), dropperImageData, 3, 15);
@@ -100,7 +110,7 @@ public class ColorSampler extends CLabel {
 			menuItem.setSelection(format.equals(formatString));
 			menuItem.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					formatString = format;
+					formatString = processedFormatString(format);
 					refreshColorDisplay();
 					refreshClipboard();
 				}
@@ -109,12 +119,22 @@ public class ColorSampler extends CLabel {
 		
 		new MenuItem(menu, SWT.SEPARATOR);
 		
+		MenuItem customMenuItem =  new MenuItem(menu, SWT.PUSH);
+		customMenuItem.setText("Custom...");
+		customMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				showSamplerPreferences();
+			}
+		});
+
+		new MenuItem(menu, SWT.SEPARATOR);
+		
 		copyToClipboardMenuItem = new MenuItem(menu, SWT.CHECK);
 		copyToClipboardMenuItem.setText("Copy to Clipboard");
-		copyToClipboardMenuItem.setSelection(copyToClipboard);
+		copyToClipboardMenuItem.setSelection(true);
 		copyToClipboardMenuItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				copyToClipboard = copyToClipboardMenuItem.getSelection();
+				SamplerPreferences.setCopyToClipboard(copyToClipboardMenuItem.getSelection());
 				refreshClipboard();
 			}
 		});
@@ -124,18 +144,15 @@ public class ColorSampler extends CLabel {
 		lastColor =  getBackground();
 	}
 	
-	public String getFormatString() {
-		return formatString;
-	}
-	
-	public boolean isCopyToClipboard() {
-		return copyToClipboard;
-	}
-	
-	public void setCopyToClipboard(boolean copyToClipboard) {
-		this.copyToClipboard = copyToClipboard;
-		copyToClipboardMenuItem.setSelection(copyToClipboard);
-		refreshClipboard();
+	private String processedFormatString(String unprocessedFormatString) {
+		return unprocessedFormatString
+		.replaceAll(Pattern.quote("%{r}"), Matcher.quoteReplacement("%1$"))
+		.replaceAll(Pattern.quote("%{g}"), Matcher.quoteReplacement("%2$"))
+		.replaceAll(Pattern.quote("%{b}"), Matcher.quoteReplacement("%3$"))
+		.replaceAll(Pattern.quote("{r}"), Matcher.quoteReplacement("%1$d"))
+		.replaceAll(Pattern.quote("{g}"), Matcher.quoteReplacement("%2$d"))
+		.replaceAll(Pattern.quote("{b}"), Matcher.quoteReplacement("%3$d"))
+		;
 	}
 	
 	public void dispose() {
@@ -165,7 +182,7 @@ public class ColorSampler extends CLabel {
 	}
 	
 	private void refreshClipboard() {
-		if (copyToClipboard && lastColor != null) {
+		if (SamplerPreferences.isCopyToClipboard() && lastColor != null) {
 			copyToClipboard(getDisplay(), formatColor(lastColor));
 		}
 	}
@@ -210,6 +227,16 @@ public class ColorSampler extends CLabel {
 			}
 		}
 		return robot;
+	}
+	
+	private void showSamplerPreferences() {
+		String[] displayedIds = new String[] {"Sampler.page"};
+		PreferenceDialog samplerPreferenceDialog = PreferencesUtil.createPreferenceDialogOn(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				displayedIds[0],
+				displayedIds,
+				null);
+		samplerPreferenceDialog.open();
 	}
 
 }
