@@ -2,8 +2,6 @@ package sampler.widget;
 
 import java.awt.AWTException;
 import java.awt.Robot;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,27 +34,12 @@ public class ColorSampler extends CLabel {
 	private Image dropper;
 	private Cursor dropperCursor;
 	private Color lastColor;
-	private String formatString;
 
 	private MenuItem copyToClipboardMenuItem;
-	
-	private static Map<String, String> formatsMap = new LinkedHashMap<String, String>();
-	static {
-		formatsMap.put("#RRGGBB (HTML/CSS)", "#%1$02x%2$02x%3$02x");
-		formatsMap.put("rgb(r,g,b) (CSS)", "rgb(%1$d, %2$d, %3$d)");
-		formatsMap.put("new Color(r,g,b) (AWT)", "new Color(%1$3d, %2$3d, %3$3d)");
-		
-		String[] customFormats = SamplerPreferences.getCustomFormats();
-		for (String customFormat : customFormats) {
-			formatsMap.put(customFormat, customFormat);
-		}
-	}
 
 	public ColorSampler(Composite parent) {
 		super(parent, SWT.LEFT | SWT.BORDER);
-	
-		formatString = processedFormatString(formatsMap.values().iterator().next());
-
+		
 		ImageData dropperImageData = new ImageData(getClass().getResourceAsStream("dropper.png"));
 		dropperCursor = new Cursor(parent.getDisplay(), dropperImageData, 3, 15);
 		dropper = new Image(getDisplay(), dropperImageData);
@@ -103,19 +86,7 @@ public class ColorSampler extends CLabel {
 
 		// Pop-up menu
 		Menu menu = new Menu(getShell(), SWT.POP_UP);
-		for(String displayFormat : formatsMap.keySet()) {
-			final String format = formatsMap.get(displayFormat);
-			MenuItem menuItem = new MenuItem(menu, SWT.RADIO);
-			menuItem.setText(displayFormat);
-			menuItem.setSelection(format.equals(formatString));
-			menuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					formatString = processedFormatString(format);
-					refreshColorDisplay();
-					refreshClipboard();
-				}
-			});
-		}
+		constructMenu(menu);
 		
 		new MenuItem(menu, SWT.SEPARATOR);
 		
@@ -141,7 +112,38 @@ public class ColorSampler extends CLabel {
 		
 		setMenu(menu);
 		
+		setFormatString(SamplerPreferences.getCurrentFormat());
 		lastColor =  getBackground();
+		
+		showColor(getDisplay(), lastColor);
+	}
+	
+	private void constructMenu(Menu menu) {
+		MenuItem[] items = menu.getItems();
+		for (MenuItem menuItem : items) {
+			if ((menuItem.getStyle() & SWT.RADIO) != 0) {
+				menuItem.dispose();
+			}
+		}
+		String currentFormat = SamplerPreferences.getCurrentFormat();
+		String[] customFormats = SamplerPreferences.getCustomFormats();
+		for(final String customFormat : customFormats) {
+			String displayFormat = customFormat;
+			if (customFormat.contains(SamplerPreferences.LABLE_VALUE_SEPARATOR)) {
+				String[] splitDisplayFormat = customFormat.split(Pattern.quote(SamplerPreferences.LABLE_VALUE_SEPARATOR));
+				displayFormat = splitDisplayFormat[0];
+			}
+			MenuItem menuItem = new MenuItem(menu, SWT.RADIO);
+			menuItem.setText(displayFormat);
+			menuItem.setSelection(customFormat.equals(currentFormat));
+			menuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					setCurrentFormat(customFormat);
+					refreshColorDisplay();
+					refreshClipboard();
+				}
+			});
+		}
 	}
 	
 	private String processedFormatString(String unprocessedFormatString) {
@@ -202,7 +204,21 @@ public class ColorSampler extends CLabel {
 		lastColor = pixelColor;
 
 	}
+	
+	private void setCurrentFormat(String currentFormat) {
+		setFormatString(currentFormat);
+		SamplerPreferences.setCurrentFormat(currentFormat);
+	}
 
+	private String formatString;
+
+	private void setFormatString(String currentFormat) {
+		if (currentFormat.contains(SamplerPreferences.LABLE_VALUE_SEPARATOR)) {
+			currentFormat = currentFormat.split(Pattern.quote(SamplerPreferences.LABLE_VALUE_SEPARATOR))[1];
+		}
+		formatString = processedFormatString(currentFormat);
+	}
+	
 	private void copyToClipboard(Display display, String formattedColor) {
 		clipboard.setContents(new Object[] { formattedColor }, new Transfer[] { TextTransfer.getInstance() });
 	}
