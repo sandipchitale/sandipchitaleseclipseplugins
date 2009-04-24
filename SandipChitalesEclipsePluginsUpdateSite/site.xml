@@ -15,7 +15,7 @@
    <feature url="features/ReorderFeature_1.0.4.jar" id="ReorderFeature" version="1.0.4">
       <category name="Java Editor"/>
    </feature>
-   <feature url="features/SamplerFeature_1.0.4.jar" id="SamplerFeature" version="1.0.4">
+   <feature url="features/SamplerFeature_1.0.5.jar" id="SamplerFeature" version="1.0.5">
       <category name="Desktop"/>
    </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
