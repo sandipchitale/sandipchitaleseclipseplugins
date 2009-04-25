@@ -1,6 +1,8 @@
 package moveresize;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
@@ -17,6 +19,100 @@ public class Resizer extends Delta {
 	private Point location = null;
 	private Point size = null;
 	private int operation = SWT.CURSOR_ARROW;
+	
+	private KeyListener keyListener = new KeyListener() {
+		boolean grow = true;
+		public void keyPressed(KeyEvent e) {
+		}
+
+		public void keyReleased(KeyEvent e) {
+			if (e.character == '.' || e.character == '-') {
+				grow = false;
+				e.doit = false;
+				return;
+			}
+			if (e.character == '=' || e.character == '+' || e.character == 'o' || e.character == 'O') {
+				grow = true;
+				e.doit = false;
+				return;
+			}
+			if (e.keyCode == SWT.ARROW_UP 
+					|| e.keyCode == SWT.ARROW_DOWN
+					|| e.keyCode == SWT.ARROW_LEFT
+					|| e.keyCode == SWT.ARROW_RIGHT) {
+
+				Control control = getControl();
+
+				if (control.isDisposed()) {
+					return;
+				}
+
+				e.doit = false;
+				
+				location = control.getLocation();
+				size = control.getSize();
+
+				int delta = 0;
+				if ((e.stateMask & (SWT.SHIFT | SWT.CONTROL)) == 0) {
+					delta = 10;
+				} else if ((e.stateMask & SWT.SHIFT) != 0 ) {
+					delta = 100;
+				} else if ((e.stateMask & SWT.CONTROL) != 0) {
+					delta = 1;
+				}
+				boolean moving = true;
+				if ((e.stateMask & SWT.ALT) != 0) {
+					moving = false;
+				}
+				try {
+					switch(e.keyCode) { 
+					case SWT.ARROW_UP:
+						if (moving) {
+							resize(location, size, SWT.CURSOR_SIZEALL, 0, -delta);
+						} else {
+							resize(location, size, (grow ? SWT.CURSOR_SIZEN : SWT.CURSOR_SIZES), 0, -delta);														
+						}
+						break;
+					case SWT.ARROW_DOWN:
+						if (moving) {
+							resize(location, size, SWT.CURSOR_SIZEALL, 0, delta);
+						} else {
+							resize(location, size, (grow ? SWT.CURSOR_SIZES : SWT.CURSOR_SIZEN), 0, delta);						
+						}
+						break;
+					case SWT.ARROW_LEFT:
+						if (moving) {
+							resize(location, size, SWT.CURSOR_SIZEALL, -delta, 0);
+						} else {
+							resize(location, size, (grow ? SWT.CURSOR_SIZEW : SWT.CURSOR_SIZEE), -delta, 0);						
+						}
+						break;
+					case SWT.ARROW_RIGHT:
+						if (moving) {
+							resize(location, size, SWT.CURSOR_SIZEALL, delta, 0);
+						} else {
+							resize(location, size, (grow ? SWT.CURSOR_SIZEE : SWT.CURSOR_SIZEW), delta, 0);						
+						}
+						break;
+					}
+				} finally {
+					location = null;
+					size = null;
+					control.setCursor(MoveResize.getCursor(SWT.CURSOR_ARROW));
+				}
+			}
+		}
+	};
+
+	public void attach() {
+		super.attach();
+		control.addKeyListener(keyListener);
+	}
+
+	public void dettach() {
+		super.dettach();
+		control.removeKeyListener(keyListener);
+	}
 
 	protected void process(int deltaX, int deltaY, STATE state, int x, int y) {
 		Control control = getControl();
