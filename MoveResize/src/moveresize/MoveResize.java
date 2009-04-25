@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Control;
@@ -161,7 +162,7 @@ class MoveResize {
 		}
 		
 		public void paintControl(PaintEvent e) {
-			e.gc.setAlpha(128);
+			e.gc.setAlpha(64);
 			Canvas canvas = (Canvas) e.widget;
 			Rectangle bounds = canvas.getBounds();
 			e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_DARK_BLUE));
@@ -172,7 +173,19 @@ class MoveResize {
 					bounds.height,
 					BORDER_THICKNESS*2,
 					BORDER_THICKNESS*2);
+			e.gc.setAlpha(240);
+			String boundsInfo = 
+				"" + bounds.x + "," + bounds.y + " " + bounds.width + "x " + bounds.height + "";
+			Point textExtent = e.gc.textExtent(boundsInfo);
+			e.gc.fillRoundRectangle(
+					((bounds.width-textExtent.x)/2)-8,
+					((bounds.height-textExtent.y)/2)-8,
+					textExtent.x+16,
+					textExtent.y+16,
+					BORDER_THICKNESS*2,
+					BORDER_THICKNESS*2);
 			e.gc.setAlpha(255);
+			e.gc.drawString(boundsInfo, (bounds.width-textExtent.x)/2, (bounds.height-textExtent.y)/2);
 			for (int i = 0; i < 2; i++) {
 				e.gc.drawRoundRectangle(
 						i,
