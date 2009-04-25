@@ -35,7 +35,7 @@ class MoveResize {
         final PaintListener paintListener = new ImagePainter(desktopImage);
         shell.addPaintListener(paintListener);
         shell.setLayout(null);
-		final Canvas canvas = new Canvas(shell, SWT.NONE);
+		final Canvas canvas = new Canvas(shell, SWT.NO_BACKGROUND);
 		configure(display, canvas, bounds);
 		canvas.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
@@ -88,12 +88,7 @@ class MoveResize {
 	}
 	
 	private static void configure(Display display, Control control, Rectangle bounds) {
-		/* Take the screen shot */
-        GC gc = new GC(display);
-        final Image image = new Image(display, bounds);
-        gc.copyArea(image, bounds.x, bounds.y);
-        gc.dispose();
-        final PaintListener paintListener = new ImagePainter(image);
+        final PaintListener paintListener = new TintPainter();
         control.addPaintListener(paintListener);
 		control.setBounds(bounds);
 		new Resizer(control).attach();
@@ -157,32 +152,35 @@ class MoveResize {
 		}
 		public void paintControl(PaintEvent e) {
 			e.gc.drawImage(image, 0, 0);
-			if (e.widget instanceof Shell) {
-				// Ignore
-			} else {
-				Canvas canvas = (Canvas) e.widget;
-				Rectangle bounds = canvas.getBounds();
-				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_DARK_BLUE));
-				if (Resizer.isResizing(canvas)) {
-					e.gc.setAlpha(128);
-					e.gc.fillRoundRectangle(
-							0,
-							0,
-							bounds.width,
-							bounds.height,
-							BORDER_THICKNESS*2,
-							BORDER_THICKNESS*2);
-					e.gc.setAlpha(255);
-				}
-				for (int i = 0; i < 2; i++) {
-					e.gc.drawRoundRectangle(
-							i,
-							i,
-							bounds.width -1 - (2*i),
-							bounds.height -1 - (2*i),
-							BORDER_THICKNESS*2,
-							BORDER_THICKNESS*2);
-				}
+		}		
+	};
+	
+	private static class TintPainter implements PaintListener {
+
+		TintPainter() {
+		}
+		
+		public void paintControl(PaintEvent e) {
+			e.gc.setAlpha(128);
+			Canvas canvas = (Canvas) e.widget;
+			Rectangle bounds = canvas.getBounds();
+			e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_DARK_BLUE));
+			e.gc.fillRoundRectangle(
+					0,
+					0,
+					bounds.width,
+					bounds.height,
+					BORDER_THICKNESS*2,
+					BORDER_THICKNESS*2);
+			e.gc.setAlpha(255);
+			for (int i = 0; i < 2; i++) {
+				e.gc.drawRoundRectangle(
+						i,
+						i,
+						bounds.width -1 - (2*i),
+						bounds.height -1 - (2*i),
+						BORDER_THICKNESS*2,
+						BORDER_THICKNESS*2);
 			}
 		}		
 	};
