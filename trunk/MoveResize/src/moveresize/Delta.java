@@ -20,7 +20,7 @@ public class Delta {
     	attach();
     }
     
-	public final void attach() {
+	public void attach() {
         if (attached.compareAndSet(false, true)) {
         	control.addListener(SWT.MouseDown, listener);
     		control.addListener(SWT.MouseUp, listener);
@@ -28,7 +28,7 @@ public class Delta {
         }
     }
 
-    public final void dettach() {
+    public void dettach() {
         if (attached.compareAndSet(true, false)) {
         	control.removeListener(SWT.MouseDown, listener);
     		control.removeListener(SWT.MouseUp, listener);
