@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="FeaturesPluginsFragmentsFeature"
-      label="Features Plugins Fragments Feature"
-      version="1.0.1"
+      label="Features Plug-ins Fragments Feature"
+      version="1.0.2"
       provider-name="Sandip V. Chitale">
 
    <description url="http://www.example.com/description">

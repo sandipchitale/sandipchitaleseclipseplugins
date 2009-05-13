@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: FeaturesPluginsFragments Plug-in
+Bundle-Name: Features Plug-ins Fragments Plug-in
 Bundle-SymbolicName: FeaturesPluginsFragments;singleton:=true
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Activator: featurespluginsfragments.Activator
 Bundle-Vendor: Sandip V. Chitale
 Require-Bundle: org.eclipse.ui,

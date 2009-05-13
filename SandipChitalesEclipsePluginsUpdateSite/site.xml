@@ -15,7 +15,7 @@
    <feature url="features/SamplerFeature_1.0.5.jar" id="SamplerFeature" version="1.0.5">
       <category name="Desktop"/>
    </feature>
-   <feature url="features/FeaturesPluginsFragmentsFeature_1.0.1.jar" id="FeaturesPluginsFragmentsFeature" version="1.0.1">
+   <feature url="features/FeaturesPluginsFragmentsFeature_1.0.2.jar" id="FeaturesPluginsFragmentsFeature" version="1.0.2">
       <category name="Features Plugins Fragments"/>
    </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>

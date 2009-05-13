@@ -5,7 +5,7 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="FeaturesPluginsFragments.actionSet"
-            label="Features Plugins Fragments"
+            label="Features Plug-ins Fragments"
             visible="true">
          <action
                class="featurespluginsfragments.ListFeaturesPluginsFragmentsAction"
@@ -19,7 +19,7 @@
    <extension
          point="org.eclipse.ui.systemSummarySections">
       <section
-            sectionTitle="Features, Plugins and Fragments section"
+            sectionTitle="Features, Plug-ins and Fragments section"
             class="featurespluginsfragments.FeaturesPluginsFragmentsSection"
             id="0.FeaturesPluginsFragmentsSection">
       </section>
