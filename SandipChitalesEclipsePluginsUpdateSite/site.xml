@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/FeaturesPluginsFragmentsFeature_1.0.0.jar" id="FeaturesPluginsFragmentsFeature" version="1.0.0">
-      <category name="Features Plugins Fragments"/>
-   </feature>
    <feature url="features/GoogleClipsFeature_1.0.6.jar" id="GoogleClipsFeature" version="1.0.6">
       <category name="Google Clips"/>
    </feature>
@@ -17,6 +14,9 @@
    </feature>
    <feature url="features/SamplerFeature_1.0.5.jar" id="SamplerFeature" version="1.0.5">
       <category name="Desktop"/>
+   </feature>
+   <feature url="features/FeaturesPluginsFragmentsFeature_1.0.1.jar" id="FeaturesPluginsFragmentsFeature" version="1.0.1">
+      <category name="Features Plugins Fragments"/>
    </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
    <category-def name="Desktop" label="Desktop Integration"/>

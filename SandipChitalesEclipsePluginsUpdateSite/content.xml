@@ -3,7 +3,7 @@
 <repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1240544443367'/>
+    <property name='p2.timestamp' value='1242225455958'/>
   </properties>
   <references size='8'>
     <repository url='http://code.google.com/u/sandipchitale/' type='0' options='0'/>
@@ -133,6 +133,36 @@
         Sandip V. Chitale
       </copyright>
     </unit>
+    <unit id='FeaturesPluginsFragmentsFeature.feature.group' version='1.0.1' singleton='false'>
+      <update id='FeaturesPluginsFragmentsFeature.feature.group' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Features Plugins Fragments Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragmentsFeature.feature.group' version='1.0.1'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragments' range='[1.0.1,1.0.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragmentsFeature.feature.jar' range='[1.0.1,1.0.1]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
     <unit id='ReverseTextSelectionFeature.feature.jar' version='1.0.1'>
       <update id='ReverseTextSelectionFeature.feature.jar' range='[0.0.0,1.0.1)' severity='0'/>
       <properties size='4'>
@@ -254,35 +284,6 @@
           </instruction>
           <instruction key='uninstall'>
             uninstallFeature(feature:${artifact},featureId:default,featureVersion:default)
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='FeaturesPluginsFragments' version='1.0.0'>
-      <update id='FeaturesPluginsFragments' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='2'>
-        <property name='org.eclipse.equinox.p2.name' value='FeaturesPluginsFragments Plug-in'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragments' version='1.0.0'/>
-        <provided namespace='osgi.bundle' name='FeaturesPluginsFragments' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='4'>
-        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.ui.console' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.update.configurator' range='0.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='FeaturesPluginsFragments' version='1.0.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: featurespluginsfragments.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.ui.console,org.eclipse.update.configurator&#xA;Bundle-Name: FeaturesPluginsFragments Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: FeaturesPluginsFragments;singleton:=true&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;
           </instruction>
         </instructions>
       </touchpointData>
@@ -505,72 +506,6 @@
         Sandip V. Chitale
       </copyright>
     </unit>
-    <unit id='FeaturesPluginsFragmentsFeature.feature.jar' version='1.0.0'>
-      <update id='FeaturesPluginsFragmentsFeature.feature.jar' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='Features Plugins Fragments Feature'/>
-        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragmentsFeature.feature.jar' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='FeaturesPluginsFragmentsFeature' version='1.0.0'/>
-      </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='FeaturesPluginsFragmentsFeature' version='1.0.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
-      <licenses size='1'>
-        <license url='http://www.example.com/license'>
-          [Enter License Description here.]
-        </license>
-      </licenses>
-      <copyright url='http://www.example.com/copyright'>
-        [Enter Copyright Description here.]
-      </copyright>
-    </unit>
-    <unit id='FeaturesPluginsFragmentsFeature.feature.group' version='1.0.0' singleton='false'>
-      <update id='FeaturesPluginsFragmentsFeature.feature.group' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='5'>
-        <property name='org.eclipse.equinox.p2.name' value='Features Plugins Fragments Feature'/>
-        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragmentsFeature.feature.group' version='1.0.0'/>
-      </provides>
-      <requires size='2'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragments' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragmentsFeature.feature.jar' range='[1.0.0,1.0.0]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license url='http://www.example.com/license'>
-          [Enter License Description here.]
-        </license>
-      </licenses>
-      <copyright url='http://www.example.com/copyright'>
-        [Enter Copyright Description here.]
-      </copyright>
-    </unit>
     <unit id='GoogleDocsLibraries' version='1.0.0' singleton='false'>
       <update id='GoogleDocsLibraries' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='2'>
@@ -600,6 +535,34 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-ClassPath: libs/gdata-base-1.0.jar,libs/gdata-core-1.0.jar,libs/gdata-spreadsheet-2.0.jar,libs/gdata-spreadsheet-meta-2.0.jar,libs/activation.jar,libs/mail.jar,.&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime&#xA;Bundle-Name: GoogleDocsLibraries Plug-in&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: GoogleDocsLibraries&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;Export-Package: com.google.api.gbase.client,com.google.gdata.client,com.google.gdata.client.spreadsheet,com.google.gdata.data,com.google.gdata.data.spreadsheet,com.google.gdata.util&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='FeaturesPluginsFragments' version='1.0.1'>
+      <update id='FeaturesPluginsFragments' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='FeaturesPluginsFragments Plug-in'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragments' version='1.0.1'/>
+        <provided namespace='osgi.bundle' name='FeaturesPluginsFragments' version='1.0.1'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.update.configurator' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='FeaturesPluginsFragments' version='1.0.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-Vendor: Sandip V. Chitale&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: featurespluginsfragments.Activator&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.update.configurator&#xA;Bundle-Name: FeaturesPluginsFragments Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: FeaturesPluginsFragments;singleton:=true&#xA;Bundle-Version: 1.0.1&#xA;Eclipse-LazyStart: true&#xA;
           </instruction>
         </instructions>
       </touchpointData>
@@ -777,6 +740,42 @@
       </licenses>
       <copyright url='http://code.google.com/p/sandipchitaleseclipseplugins/'>
         Sandip V. Chitale
+      </copyright>
+    </unit>
+    <unit id='FeaturesPluginsFragmentsFeature.feature.jar' version='1.0.1'>
+      <update id='FeaturesPluginsFragmentsFeature.feature.jar' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Features Plugins Fragments Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Sandip V. Chitale'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='FeaturesPluginsFragmentsFeature.feature.jar' version='1.0.1'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='FeaturesPluginsFragmentsFeature' version='1.0.1'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='FeaturesPluginsFragmentsFeature' version='1.0.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
       </copyright>
     </unit>
     <unit id='ReorderFeature.feature.jar' version='1.0.4'>

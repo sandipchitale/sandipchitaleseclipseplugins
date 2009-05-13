@@ -3,7 +3,7 @@
 <repository name='file:/home/schitale/professional/eclipse/workspace3.4.1/SandipChitalesEclipsePluginsUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1240544443353'/>
+    <property name='p2.timestamp' value='1242225455948'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
@@ -16,6 +16,12 @@
         <property name='artifact.size' value='1017955'/>
         <property name='download.size' value='1017955'/>
         <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='FeaturesPluginsFragmentsFeature' version='1.0.1'>
+      <properties size='2'>
+        <property name='artifact.size' value='713'/>
+        <property name='download.size' value='713'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='ReorderFeature' version='1.0.4'>
@@ -64,19 +70,6 @@
         <property name='download.size' value='1000'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='FeaturesPluginsFragments' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='25484'/>
-        <property name='download.size' value='25484'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='FeaturesPluginsFragmentsFeature' version='1.0.0'>
-      <properties size='2'>
-        <property name='artifact.size' value='712'/>
-        <property name='download.size' value='712'/>
-      </properties>
-    </artifact>
     <artifact classifier='osgi.bundle' id='Reorder' version='1.0.4'>
       <properties size='3'>
         <property name='artifact.size' value='15269'/>
@@ -94,6 +87,13 @@
       <properties size='2'>
         <property name='artifact.size' value='865'/>
         <property name='download.size' value='865'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='FeaturesPluginsFragments' version='1.0.1'>
+      <properties size='3'>
+        <property name='artifact.size' value='27894'/>
+        <property name='download.size' value='27894'/>
+        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
   </artifacts>
