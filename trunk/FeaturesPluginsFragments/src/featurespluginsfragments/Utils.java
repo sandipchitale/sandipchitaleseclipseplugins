@@ -24,7 +24,7 @@ class Utils {
 				String includedFeatureId = iterator.next();
 				FeatureEntry includedFeatureEntry = featureIdToFeatureEntry.get(includedFeatureId);
 				if (includedFeatureEntry == null) {
-					stringBuffer.append(indent + "Feature: " + includedFeatureId);
+					stringBuffer.append(indent + "Feature: " + includedFeatureId + "\n");
 				} else {
 					printFeatureEntry(includedFeatureEntry, stringBuffer, indent, featureIdToFeatureEntry, featureIdToIncludedFeatureIds);
 				}
