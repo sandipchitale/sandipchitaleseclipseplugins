@@ -16,5 +16,12 @@
          </action>
       </actionSet>
    </extension>
-
+   <extension
+         point="org.eclipse.ui.systemSummarySections">
+      <section
+            sectionTitle="Features, Plugins and Fragments section"
+            class="featurespluginsfragments.FeaturesPluginsFragmentsSection"
+            id="0.FeaturesPluginsFragmentsSection">
+      </section>
+   </extension>
 </plugin>

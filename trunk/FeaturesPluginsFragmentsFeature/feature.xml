@@ -2,7 +2,7 @@
 <feature
       id="FeaturesPluginsFragmentsFeature"
       label="Features Plugins Fragments Feature"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Sandip V. Chitale">
 
    <description url="http://www.example.com/description">
