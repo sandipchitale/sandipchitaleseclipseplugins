@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            defaultHandler="multipageeditortabtraverse.NextTabTraverseCommandHandler"
+            id="MultiPageEditorTabTraverse.nextTabCommand"
+            name="Next Tab">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            defaultHandler="multipageeditortabtraverse.PreviousTabTraverseCommandHandler"
+            id="MultiPageEditorTabTraverse.previousTabCommand"
+            name="Previous Tab">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="MultiPageEditorTabTraverse.nextTabCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+TAB">
+      </key>
+      <key
+            commandId="MultiPageEditorTabTraverse.previousTabCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+TAB">
+      </key>
+   </extension>
+
+</plugin>

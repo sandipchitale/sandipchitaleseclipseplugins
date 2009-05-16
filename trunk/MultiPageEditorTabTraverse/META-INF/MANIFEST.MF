@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MultiPage Editor Tab Traverse Plug-in
+Bundle-SymbolicName: MultiPageEditorTabTraverse;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: multipageeditortabtraverse.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.commands
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: Sandip V. Chitale
+Bundle-ActivationPolicy: lazy
