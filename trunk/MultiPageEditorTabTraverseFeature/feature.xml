@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="MultiPageEditorTabTraverseFeature"
+      label="MultiPage Editor Tab Traverse Feature"
+      version="1.0.0"
+      provider-name="Sandip V. Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      This feature provides keybindngs and commmands to enable navigation
+of tabs in Multi Page Editors.
+The default keybindings are:
+CTRL+TAB       - Next Tab
+CTRL+SHIFT+TAB - Previous Tab
+   </description>
+
+   <copyright url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="Sandip Chitale&apos;s Eclipse Plug-ins" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SandipChitalesEclipsePluginsUpdateSite/"/>
+      <discovery label="Sandip Chitale&apos;s Blog" url="http://sandipchitale.blogspot.com/"/>
+   </url>
+
+   <plugin
+         id="MultiPageEditorTabTraverse"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
