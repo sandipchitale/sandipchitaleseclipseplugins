@@ -18,9 +18,13 @@
    <feature url="features/FeaturesPluginsFragmentsFeature_1.0.2.jar" id="FeaturesPluginsFragmentsFeature" version="1.0.2">
       <category name="Features Plugins Fragments"/>
    </feature>
+   <feature url="features/MultiPageEditorTabTraverseFeature_1.0.0.jar" id="MultiPageEditorTabTraverseFeature" version="1.0.0">
+      <category name="Multi Page Editors Navigation"/>
+   </feature>
    <category-def name="Features Plugins Fragments" label="Features Plugins Fragments Information"/>
    <category-def name="Desktop" label="Desktop Integration"/>
    <category-def name="Google Clips" label="Google Clips"/>
    <category-def name="Text Editor" label="Text Editor"/>
    <category-def name="Java Editor" label="Java Editor"/>
+   <category-def name="Multi Page Editors Navigation" label="Multi Page Editors Navigation"/>
 </site>
