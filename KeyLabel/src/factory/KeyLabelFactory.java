@@ -98,7 +98,7 @@ public class KeyLabelFactory {
 	        	case KeyEvent.VK_META:
 	        		break;
 	        	default:
-	        		sb.append((sb.length() > 0 ? " " : "") + getVKText(keyEvent.getKeyCode()));
+	        		sb.append(getVKText(keyEvent.getKeyCode()));
 	        		break;
 	        	}
 	        }
@@ -249,14 +249,32 @@ public class KeyLabelFactory {
 		}
 		
 	}
-	
+//    sb.append("\u21e7");
+////    sb.append("Shift+");
+//}
+//if ((modifiers & InputEvent.CTRL_DOWN_MASK) != 0 ) {
+//	sb.append("\u2303");
+////	sb.append("Ctrl+");
+//}
+//if ((modifiers & InputEvent.META_DOWN_MASK) != 0 ) {
+//	sb.append("\u2318");
+////	sb.append("Meta+");
+//}
+//if ((modifiers & InputEvent.ALT_DOWN_MASK) != 0 ) {
+//	sb.append("\u2325");
 	@SuppressWarnings("serial")
 	public static JCheckBox createKeyLabel() {
-		JCheckBox label = new JCheckBox("     ", true) {
+		JCheckBox label = new JCheckBox("                       ", true) {
 			private KeyListener keyListener;
 			
 			public void addNotify() {
 				super.addNotify();
+				setToolTipText("<html><font face=\"Lucida Grande\">" +
+						"\u21e7 is SHIFT, " +
+						"\u2303 is CTRL, " +
+						"\u2325 is ALT or OPTION, " +
+						"\u2318 is META or COMMAND"
+						);
 				setFont(new Font("Lucida Grande", Font.BOLD, getFont().getSize()));
 				keyListener = new KeyListener(this);
 				addActionListener(new ActionListener() {
