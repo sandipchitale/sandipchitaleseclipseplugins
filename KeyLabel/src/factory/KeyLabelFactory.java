@@ -1,8 +1,6 @@
 package factory;
 
 import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
@@ -17,13 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 public class KeyLabelFactory {
 	private static class KeyListener implements AWTEventListener {
@@ -270,9 +263,9 @@ public class KeyLabelFactory {
 			public void addNotify() {
 				super.addNotify();
 				setToolTipText("<html><font face=\"Lucida Grande\">" +
-						"\u21e7 is SHIFT, " +
-						"\u2303 is CTRL, " +
-						"\u2325 is ALT or OPTION, " +
+						"\u21e7 is SHIFT<br>" +
+						"\u2303&nbsp; is CTRL<br>" +
+						"\u2325 is ALT or OPTION<br>" +
 						"\u2318 is META or COMMAND"
 						);
 				setFont(new Font("Lucida Grande", Font.BOLD, getFont().getSize()));
@@ -312,22 +305,5 @@ public class KeyLabelFactory {
 		return label;
 	}
 
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException e) {
-		} catch (InstantiationException e) {
-		} catch (IllegalAccessException e) {
-		} catch (UnsupportedLookAndFeelException e) {
-		}
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Container contentPane = frame.getContentPane();
-		contentPane.setLayout(new BorderLayout());
-		contentPane.add(createKeyLabel(), BorderLayout.NORTH);
-		contentPane.add(new JScrollPane(new JTextArea()), BorderLayout.CENTER);
-		frame.setSize(200,200);
-		frame.setVisible(true);
-	}
 }
 
