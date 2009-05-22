@@ -103,7 +103,7 @@ class KeyListener implements AWTEventListener {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
-		if (keyChar != KeyEvent.CHAR_UNDEFINED && keyChar != KeyEvent.VK_BACK_SPACE && keyChar != KeyEvent.VK_DELETE && keyChar != KeyEvent.VK_ESCAPE && ((!keyEvent.isAltDown()) && (!keyEvent.isControlDown()) && (!keyEvent.isMetaDown()))) {
+		if (keyChar != KeyEvent.CHAR_UNDEFINED && keyChar != KeyEvent.VK_ENTER && keyChar != KeyEvent.VK_BACK_SPACE && keyChar != KeyEvent.VK_DELETE && keyChar != KeyEvent.VK_ESCAPE && ((!keyEvent.isAltDown()) && (!keyEvent.isControlDown()) && (!keyEvent.isMetaDown()))) {
 			sb.append("" + keyChar);
 		} else if (keyCode != KeyEvent.VK_UNDEFINED) {
 			sb.append(getModifiersText(keyEvent.getModifiers()));
