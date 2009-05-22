@@ -1,9 +1,7 @@
 package factory;
 
-import java.awt.AWTEvent;
 import java.awt.Font;
 import java.awt.SystemColor;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -30,6 +28,11 @@ public class KeyLabelFactory {
 	public static JCheckBox createKeyLabel() {
 		JCheckBox label = new JCheckBox("                       ", true) {
 			private KeyListener keyListener;
+			ChangeListener changeListener = new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					setText(e.getSource().toString());
+				}
+			};
 			
 			public void addNotify() {
 				super.addNotify();
@@ -44,22 +47,29 @@ public class KeyLabelFactory {
 						);
 				setFont(new Font(FONT_NAME, Font.BOLD, getFont().getSize()));
 				keyListener = new KeyListener();
-				keyListener.addChangeListener(new ChangeListener() {
-					public void stateChanged(ChangeEvent e) {
-						setText(e.getSource().toString());
-					}
-				});
+				
 				addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						reconfigure();
 					}
 				});
 				reconfigure();
+				
+				changeListener = new ChangeListener() {
+					public void stateChanged(ChangeEvent e) {
+						setText(e.getSource().toString());
+					}
+				};
+				keyListener.addChangeListener(changeListener);
 			}
 
 			public void removeNotify() {
 				super.removeNotify();
 				if (keyListener != null) {
+					if (changeListener != null) {
+						keyListener.removeChangeListener(changeListener);
+					}
+					keyListener.dettach();
 				}
 			}
 			
