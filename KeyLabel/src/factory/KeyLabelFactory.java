@@ -39,7 +39,7 @@ public class KeyLabelFactory {
 			public void addNotify() {
 				super.addNotify();
 				setToolTipText(
-						"<html><b>" +
+						"<html>" +
 						"<table>" +
 						"<tr><td><font face=\"" + FONT_NAME + "\">\u21e7</td><td>SHIFT</td></tr>" +
 						"<tr><td><font face=\"" + FONT_NAME + "\">\u2303</td><td>CTRL</td></tr>" +
