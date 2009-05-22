@@ -78,8 +78,6 @@ public class KeyLabelFactory {
 		};
 		label.setHorizontalAlignment(SwingConstants.LEADING);
 		label.setFocusPainted(false);
-		label.setFocusable(false);
-		label.setContentAreaFilled(false);
 		
 		return label;
 	}
