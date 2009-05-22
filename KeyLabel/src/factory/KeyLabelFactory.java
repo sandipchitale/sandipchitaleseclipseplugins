@@ -101,28 +101,32 @@ public class KeyLabelFactory {
 			}
 		}
 		private static String getKeyText(KeyEvent keyEvent) {
-			if (keyEvent.getID() == KeyEvent.KEY_TYPED &&  keyEvent.getKeyChar() == KeyEvent.CHAR_UNDEFINED) {
+			char keyChar = keyEvent.getKeyChar();
+			int keyCode = keyEvent.getKeyCode();
+			if (keyEvent.getID() == KeyEvent.KEY_TYPED &&  keyChar == KeyEvent.CHAR_UNDEFINED) {
 				return null;
 			}
 			if (keyEvent.getID() == KeyEvent.KEY_RELEASED && 
 					(
-							keyEvent.getKeyCode() == KeyEvent.VK_SHIFT ||
-							keyEvent.getKeyCode() == KeyEvent.VK_CONTROL ||
-							keyEvent.getKeyCode() == KeyEvent.VK_ALT ||
-							keyEvent.getKeyCode() == KeyEvent.VK_META
+							keyCode == KeyEvent.VK_SHIFT ||
+							keyCode == KeyEvent.VK_CONTROL ||
+							keyCode == KeyEvent.VK_ALT ||
+							keyCode == KeyEvent.VK_META
 							)) {
 				return null;
 			}
 			StringBuilder sb = new StringBuilder();
-	        if (keyEvent.getKeyChar() != KeyEvent.CHAR_UNDEFINED &&
-    				Character.isLetter(keyEvent.getKeyChar()) && 
+	        if (keyChar != KeyEvent.CHAR_UNDEFINED && 
+	        		keyChar !=  KeyEvent.VK_BACK_SPACE &&
+	        		keyChar !=  KeyEvent.VK_DELETE &&
+	        		keyChar !=  KeyEvent.VK_ESCAPE &&
 	        		((!keyEvent.isAltDown()) 
 	        				&& (!keyEvent.isControlDown())
 	        				&& (!keyEvent.isMetaDown()))) {
-	        	sb.append("" + keyEvent.getKeyChar());
-	        } else if (keyEvent.getKeyCode() != KeyEvent.VK_UNDEFINED) {
+	        	sb.append("" + keyChar);
+	        } else if (keyCode != KeyEvent.VK_UNDEFINED) {
 	        	sb.append(getModifiersText(keyEvent.getModifiers()));
-	        	switch (keyEvent.getKeyCode()) {
+	        	switch (keyCode) {
 	        	case KeyEvent.VK_UP:
 	        		sb.append("\u2191");
 	        		break;
@@ -142,7 +146,7 @@ public class KeyLabelFactory {
 	        	case KeyEvent.VK_META:
 	        		break;
 	        	default:
-	        		sb.append(getVKText(keyEvent.getKeyCode()));
+	        		sb.append(getVKText(keyCode));
 	        		break;
 	        	}
 	        }
