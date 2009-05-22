@@ -15,15 +15,80 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JCheckBox;
-import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 public class KeyLabelFactory {
+	
+	private static String FONT_NAME;
+	static {
+		String osName = System.getProperty("os.name").toLowerCase();
+		if (osName.startsWith("linux")) {
+			FONT_NAME = "Lucida Grande";
+		} else if (osName.startsWith("mac")) {
+			FONT_NAME = "Monaco";
+		} else if (osName.startsWith("windows")) {
+			FONT_NAME = "Monospaced";
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static JCheckBox createKeyLabel() {
+		JCheckBox label = new JCheckBox("                       ", true) {
+			private KeyListener keyListener;
+			
+			public void addNotify() {
+				super.addNotify();
+				setToolTipText(
+						"<html><b><font face=\"" +
+						FONT_NAME +
+						"\">" +
+						"\u21e7 is SHIFT<br>" +
+						"\u2303&nbsp; is CTRL<br>" +
+						"\u2325 is ALT or OPTION<br>" +
+						"\u2318 is META or COMMAND"
+						);
+				setFont(new Font(FONT_NAME, Font.BOLD, getFont().getSize()));
+				keyListener = new KeyListener(this);
+				addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						reconfigure();
+					}
+				});
+				reconfigure();
+			}
+
+			public void removeNotify() {
+				super.removeNotify();
+				if (keyListener != null) {
+					Toolkit.getDefaultToolkit().removeAWTEventListener(keyListener);					
+				}
+			}
+			
+			private void reconfigure() {
+				if (isSelected()) {
+					Toolkit.getDefaultToolkit().addAWTEventListener(keyListener, AWTEvent.KEY_EVENT_MASK);
+					setForeground(null);
+					setText("");
+				} else {
+					Toolkit.getDefaultToolkit().removeAWTEventListener(keyListener);
+					setForeground(SystemColor.textInactiveText);
+					setText("Disabled");
+				}
+			}
+		};
+		label.setHorizontalAlignment(SwingConstants.LEADING);
+		label.setFocusPainted(false);
+		label.setFocusable(false);
+		label.setContentAreaFilled(false);
+		
+		return label;
+	}
+	
 	private static class KeyListener implements AWTEventListener {
 		
-		private final JToggleButton keyLabel;
+		private final JCheckBox keyLabel;
 
-		KeyListener(JToggleButton keyLabel) {
+		KeyListener(JCheckBox keyLabel) {
 			this.keyLabel = keyLabel;
 		}
 
@@ -72,18 +137,6 @@ public class KeyLabelFactory {
 	        	case KeyEvent.VK_RIGHT:
 	        		sb.append("\u2192");
 	        		break;
-//	        	case KeyEvent.VK_BACK_SPACE:
-//	        		sb.append("BACKSPACE");
-//	        		break;
-//	        	case KeyEvent.VK_DELETE:
-//	        		sb.append("DELETE");
-//	        		break;
-//	        	case KeyEvent.VK_ENTER:
-//	        		sb.append("ENTER");
-//	        		break;
-//	        	case KeyEvent.VK_ESCAPE:
-//	        		sb.append("ESCAPE");
-//	        		break;
 	        	case KeyEvent.VK_SHIFT:
 	        	case KeyEvent.VK_CONTROL:
 	        	case KeyEvent.VK_ALT:
@@ -241,68 +294,6 @@ public class KeyLabelFactory {
 		    }
 		}
 		
-	}
-//    sb.append("\u21e7");
-////    sb.append("Shift+");
-//}
-//if ((modifiers & InputEvent.CTRL_DOWN_MASK) != 0 ) {
-//	sb.append("\u2303");
-////	sb.append("Ctrl+");
-//}
-//if ((modifiers & InputEvent.META_DOWN_MASK) != 0 ) {
-//	sb.append("\u2318");
-////	sb.append("Meta+");
-//}
-//if ((modifiers & InputEvent.ALT_DOWN_MASK) != 0 ) {
-//	sb.append("\u2325");
-	@SuppressWarnings("serial")
-	public static JCheckBox createKeyLabel() {
-		JCheckBox label = new JCheckBox("                       ", true) {
-			private KeyListener keyListener;
-			
-			public void addNotify() {
-				super.addNotify();
-				setToolTipText("<html><font face=\"Lucida Grande\">" +
-						"\u21e7 is SHIFT<br>" +
-						"\u2303&nbsp; is CTRL<br>" +
-						"\u2325 is ALT or OPTION<br>" +
-						"\u2318 is META or COMMAND"
-						);
-				setFont(new Font("Lucida Grande", Font.BOLD, getFont().getSize()));
-				keyListener = new KeyListener(this);
-				addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						reconfigure();
-					}
-				});
-				reconfigure();
-			}
-
-			public void removeNotify() {
-				super.removeNotify();
-				if (keyListener != null) {
-					Toolkit.getDefaultToolkit().removeAWTEventListener(keyListener);					
-				}
-			}
-			
-			private void reconfigure() {
-				if (isSelected()) {
-					Toolkit.getDefaultToolkit().addAWTEventListener(keyListener, AWTEvent.KEY_EVENT_MASK);
-					setForeground(null);
-					setText("");
-				} else {
-					Toolkit.getDefaultToolkit().removeAWTEventListener(keyListener);
-					setForeground(SystemColor.textInactiveText);
-					setText("Disabled");
-				}
-			}
-		};
-		label.setHorizontalAlignment(SwingConstants.LEADING);
-		label.setFocusPainted(false);
-		label.setFocusable(false);
-		label.setContentAreaFilled(false);
-		
-		return label;
 	}
 
 }
