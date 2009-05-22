@@ -22,8 +22,8 @@ public class Main {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Container contentPane = frame.getContentPane();
 		contentPane.setLayout(new BorderLayout());
-		contentPane.add(KeyLabelFactory.createKeyLabel(), BorderLayout.NORTH);
 		contentPane.add(new JScrollPane(new JTextArea()), BorderLayout.CENTER);
+		contentPane.add(KeyLabelFactory.createKeyLabel(), BorderLayout.SOUTH);
 		frame.setSize(200,200);
 		frame.setVisible(true);
 	}

@@ -39,13 +39,13 @@ public class KeyLabelFactory {
 			public void addNotify() {
 				super.addNotify();
 				setToolTipText(
-						"<html><b><font face=\"" +
-						FONT_NAME +
-						"\">" +
-						"\u21e7 is SHIFT<br>" +
-						"\u2303&nbsp; is CTRL<br>" +
-						"\u2325 is ALT or OPTION<br>" +
-						"\u2318 is META or COMMAND"
+						"<html><b>" +
+						"<table>" +
+						"<tr><td><font face=\"" + FONT_NAME + "\">\u21e7</td><td>SHIFT</td></tr>" +
+						"<tr><td><font face=\"" + FONT_NAME + "\">\u2303</td><td>CTRL</td></tr>" +
+						"<tr><td><font face=\"" + FONT_NAME + "\">\u2325</td><td>ALT or OPTION</td></tr>" +
+						"<tr><td><font face=\"" + FONT_NAME + "\">\u2318</td><td>META or COMMAND</td></tr>" +
+						"</table>"
 						);
 				setFont(new Font(FONT_NAME, Font.BOLD, getFont().getSize()));
 				keyListener = new KeyListener(this);
