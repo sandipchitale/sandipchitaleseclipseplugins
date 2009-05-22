@@ -28,11 +28,7 @@ public class KeyLabelFactory {
 	public static JCheckBox createKeyLabel() {
 		JCheckBox label = new JCheckBox("                       ", true) {
 			private KeyListener keyListener;
-			ChangeListener changeListener = new ChangeListener() {
-				public void stateChanged(ChangeEvent e) {
-					setText(e.getSource().toString());
-				}
-			};
+			private ChangeListener changeListener;
 			
 			public void addNotify() {
 				super.addNotify();
