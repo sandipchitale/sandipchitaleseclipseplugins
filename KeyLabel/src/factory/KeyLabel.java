@@ -39,7 +39,7 @@ class KeyLabel extends JPanel {
 		} else if (osName.startsWith("mac")) {
 			FONT_NAME = "Monaco";
 		} else if (osName.startsWith("windows")) {
-			FONT_NAME = "Monospaced";
+			FONT_NAME = "DejaVu Sans";
 		}
 	}
 	
