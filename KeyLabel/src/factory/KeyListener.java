@@ -94,16 +94,16 @@ class KeyListener implements AWTEventListener {
 	}
 
 	private static String getKeyText(KeyEvent keyEvent) {
-		char keyChar = keyEvent.getKeyChar();
-		int keyCode = keyEvent.getKeyCode();
-		if (keyEvent.getID() == KeyEvent.KEY_TYPED && keyChar == KeyEvent.CHAR_UNDEFINED) {
+		if (keyEvent.getID() == KeyEvent.KEY_TYPED || keyEvent.getID() == KeyEvent.KEY_PRESSED) {
 			return null;
 		}
+		char keyChar = keyEvent.getKeyChar();
+		int keyCode = keyEvent.getKeyCode();
 		if (keyEvent.getID() == KeyEvent.KEY_RELEASED && (keyCode == KeyEvent.VK_SHIFT || keyCode == KeyEvent.VK_CONTROL || keyCode == KeyEvent.VK_ALT || keyCode == KeyEvent.VK_META)) {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
-		if (keyChar != KeyEvent.CHAR_UNDEFINED && keyChar != KeyEvent.VK_ENTER && keyChar != KeyEvent.VK_BACK_SPACE && keyChar != KeyEvent.VK_DELETE && keyChar != KeyEvent.VK_ESCAPE && ((!keyEvent.isAltDown()) && (!keyEvent.isControlDown()) && (!keyEvent.isMetaDown()))) {
+		if (keyChar != KeyEvent.CHAR_UNDEFINED && keyChar != KeyEvent.VK_TAB && keyChar != KeyEvent.VK_ENTER && keyChar != KeyEvent.VK_BACK_SPACE && keyChar != KeyEvent.VK_DELETE && keyChar != KeyEvent.VK_ESCAPE && ((!keyEvent.isAltDown()) && (!keyEvent.isControlDown()) && (!keyEvent.isMetaDown()))) {
 			sb.append("" + keyChar);
 		} else if (keyCode != KeyEvent.VK_UNDEFINED) {
 			sb.append(getModifiersText(keyEvent.getModifiers()));
