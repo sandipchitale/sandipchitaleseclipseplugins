@@ -129,7 +129,7 @@ class KeyLabel extends JPanel {
 			if (uninteresting.matcher(keystrokeText).matches()) {
 				return;
 			}
-			if (keystrokeText.trim().isEmpty()) {
+			if ("".equals(keystrokeText.trim())) {
 				return;
 			}
 			history.add(0, keystrokeText);
