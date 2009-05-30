@@ -24,7 +24,7 @@ public class Main {
 		contentPane.setLayout(new BorderLayout());
 		contentPane.add(new JScrollPane(new JTextArea()), BorderLayout.CENTER);
 		contentPane.add(KeyLabelFactory.createKeyLabel(), BorderLayout.SOUTH);
-		frame.setSize(200,200);
+		frame.setSize(300,200);
 		frame.setVisible(true);
 	}
 }
