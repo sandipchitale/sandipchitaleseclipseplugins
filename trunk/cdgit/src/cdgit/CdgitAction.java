@@ -101,16 +101,18 @@ public class CdgitAction implements IObjectActionDelegate, IMenuCreator {
 			if (location != null) {
 				fileObject = location.toFile();
 			}
-			if (fileObject.isFile()) {
-				fileObject = fileObject.getParentFile();
-			}
 			if (fileObject != null) {
-				while (fileObject != null) {
-					File dotGit = new File(fileObject, ".git");
-					if (dotGit.isDirectory()) {
-						return;
-					}
+				if (fileObject.isFile()) {
 					fileObject = fileObject.getParentFile();
+				}
+				if (fileObject != null) {
+					while (fileObject != null) {
+						File dotGit = new File(fileObject, ".git");
+						if (dotGit.isDirectory()) {
+							return;
+						}
+						fileObject = fileObject.getParentFile();
+					}
 				}
 			}
 		} finally {
