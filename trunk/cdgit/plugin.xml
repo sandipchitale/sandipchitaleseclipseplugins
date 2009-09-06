@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="cdgit.actionSet.toolbar"
+            label="cd git"
+            visible="true">
+         <action
+               class="cdgit.CdgitWindowPulldownAction"
+               icon="icons/cdgit.png"
+               id="cdgit.toolbar"
+               label="cd to git repository root"
+               style="push"
+               toolbarPath="Normal/cdgit">
+         </action>
+      </actionSet>
+   </extension>
+</plugin>
