@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.preferencePages.GeneralTextEditor"
+            class="eclipsemate.BundleEditorPreferencePage"
+            id="EclipseMate.page"
+            name="Bundle Editor">
+      </page>
+   </extension>
+   <extension
+         id="EclipseMate.commands"
+         name="EclipseMate commands"
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.edit"
+            defaultHandler="eclipsemate.ExecuteLineInsertingResultHandler"
+            id="EclipseMate.ExecuteLineInsertingResultCommand"
+            name="Execute Line Inserting Result">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            defaultHandler="eclipsemate.FilterThroughCommandHandler"
+            id="EclipseMate.FilterThroughCommandCommand"
+            name="Filter Through Command...">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="EclipseMate.ExecuteLineInsertingResultCommand"
+            contextId="org.eclipse.ui.textEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+R">
+      </key>
+      <key
+            commandId="EclipseMate.FilterThroughCommandCommand"
+            contextId="org.eclipse.ui.textEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M3+R">
+      </key>
+   </extension>
+   <extension
+         id="EclipseMate.menu"
+         name="EclipseMate Menu Items"
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:edit?after=additions">
+         <separator
+               name="EclipseMate.separator"
+               visible="true">
+         </separator>
+         <command
+               commandId="EclipseMate.ExecuteLineInsertingResultCommand"
+               id="EclipseMate.ExecuteLineInsertingResultMenuCommand"
+               label="Execute Line Inserting Result"
+               style="push">
+         </command>
+         <command
+               commandId="EclipseMate.FilterThroughCommandCommand"
+               id="EclipseMate.FilterThroughCommandMenuCommand"
+               label="Filter Through Command"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>
