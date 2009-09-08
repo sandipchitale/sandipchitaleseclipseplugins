@@ -22,11 +22,7 @@ public class ExecuteLineInsertingResultHandler extends AbstractHandler {
 			Activator.beep(activeWorkbenchWindow);
 			return null;
 		}
-		String editorId = editor.getSite().getId();
-		if (editorId == null) {
-			Activator.beep(activeWorkbenchWindow);
-			return null;
-		}
+		
 		return null;
 	}
 

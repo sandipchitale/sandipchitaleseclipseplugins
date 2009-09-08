@@ -6,6 +6,11 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: eclipsemate.Activator
 Bundle-Vendor: Sandip Chitale
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jface.text,
+ org.eclipse.ui.console,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.editors
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
