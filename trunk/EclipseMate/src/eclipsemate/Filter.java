@@ -4,12 +4,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -38,6 +41,8 @@ public class Filter {
 		,TM_SELECTION_LENGTH
 		,TM_SELECTION_START_LINE_NUMBER
 		,TM_SELECTION_END_LINE_NUMBER
+		,TM_CARET_LINE_NUMBER
+		,TM_CARET_LINE_TEXT
 	};
 	
 	enum INPUT_TYPE  {
@@ -64,7 +69,7 @@ public class Filter {
 	};
 	
 	public static Map<String, String> computeEnvironment(IWorkbenchWindow workbenchWindow, IEditorPart editorPart) {
-		Map<String, String> environment = new HashMap<String, String>();
+		Map<String, String> environment = new TreeMap<String, String>();
 		
 		if (editorPart instanceof ITextEditor) {
 			ITextEditor abstractTextEditor = (ITextEditor) editorPart;
@@ -87,6 +92,19 @@ public class Filter {
 						environment.put(VARIABLES_NAMES.TM_SELECTION_LENGTH.name(), String.valueOf(textSelection.getLength()));
 						environment.put(VARIABLES_NAMES.TM_SELECTION_START_LINE_NUMBER.name(), String.valueOf(textSelection.getStartLine()));
 						environment.put(VARIABLES_NAMES.TM_SELECTION_END_LINE_NUMBER.name(), String.valueOf(textSelection.getEndLine()));
+						Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+						if (adapter instanceof Control) {
+							Control control = (Control) adapter;
+							if (control instanceof StyledText) {
+								StyledText styledText = (StyledText) control;
+								environment.put(VARIABLES_NAMES.TM_LINE_INDEX.name(), String.valueOf(textSelection.getOffset() - styledText.getOffsetAtLine(textSelection.getStartLine())));
+								int caretOffset = styledText.getCaretOffset();
+								int lineAtCaret = styledText.getLineAtOffset(caretOffset);
+								environment.put(VARIABLES_NAMES.TM_CARET_LINE_NUMBER.name(), String.valueOf(lineAtCaret + 1));
+								environment.put(VARIABLES_NAMES.TM_CARET_LINE_TEXT.name(), styledText.getLine(lineAtCaret));
+
+							}
+						}
 					}
 				}
 			}
