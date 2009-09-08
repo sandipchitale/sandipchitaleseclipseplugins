@@ -77,8 +77,12 @@ public class FilterThroughCommandDialog extends Dialog {
 		discardButton.setText("Discard");
 		Button replaceSelectionButton = new Button(outputGroup, SWT.RADIO);
 		replaceSelectionButton.setText("Replace Selection");
-		Button replaceLinesButton = new Button(outputGroup, SWT.RADIO);
-		replaceLinesButton.setText("Replace Lines");
+		Button replaceSelectedLinesButton = new Button(outputGroup, SWT.RADIO);
+		replaceSelectedLinesButton.setText("Replace Selected Lines");
+		Button replaceLineButton = new Button(outputGroup, SWT.RADIO);
+		replaceLineButton.setText("Replace Line");
+		Button replaceWordButton = new Button(outputGroup, SWT.RADIO);
+		replaceWordButton.setText("Replace Word");
 		Button replaceDocumentButton = new Button(outputGroup, SWT.RADIO);
 		replaceDocumentButton.setText("Replace Document");
 		Button insertAsTextButton = new Button(outputGroup, SWT.RADIO);
