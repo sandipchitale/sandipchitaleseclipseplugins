@@ -1,5 +1,7 @@
 package eclipsemate;
 
+import java.util.Map;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -26,6 +28,8 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 			Activator.beep(activeWorkbenchWindow);
 			return null;
 		}
+		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
+		System.out.println(environment);
 		new FilterThroughCommandDialog(activeWorkbenchWindow.getShell()).open();
 		return null;
 	}
