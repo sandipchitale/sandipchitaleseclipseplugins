@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -32,14 +33,22 @@ public class CommandLauncher {
 	private static MessageConsole messageConsole;
 	private static boolean firstTime = true;
 
-	public static void launch(final String command) {
+	public static void launch(final String command, final Map<String, String> environment) {
 		// Launch command on a separate thread.
 		new Thread(new Runnable() {
 			public void run() {
 				Activator activator = Activator.getDefault();
 				String[] commandArray = Utilities.parseParameters(command);
 				try {
-					final Process process = Runtime.getRuntime().exec(commandArray);
+					
+					ProcessBuilder processBuilder = new ProcessBuilder();
+					processBuilder.command(Arrays.asList(commandArray));
+					Map<String, String> inheritedEnvironment = processBuilder.environment();
+					if (environment != null) {
+						inheritedEnvironment.putAll(environment);
+					}
+					
+					final Process process = processBuilder.start();
 					final MessageConsole messageConsole = getMessageConsole();
 					MessageConsoleStream newMessageStream = messageConsole.newMessageStream();
 					if (firstTime) {

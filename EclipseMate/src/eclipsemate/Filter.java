@@ -58,7 +58,7 @@ public class Filter {
 	public static void launch(String command, 
 			INPUT_TYPE input,
 			FilterInputProvider filterInputProvider,
-			Map environment,
+			Map<String, String> environment,
 			OUTPUT_TYPE output,
 			FilterOutputConsumerProvider filterOutputConsumerProvider) {
 	};
