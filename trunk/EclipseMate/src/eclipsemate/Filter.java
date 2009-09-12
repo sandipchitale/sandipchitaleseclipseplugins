@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringBufferInputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -20,6 +21,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.MessageConsole;
+import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class Filter {
@@ -69,8 +74,8 @@ public class Filter {
 		,SHOW_AS_TOOLTIP
 		,CREATE_A_NEW_DOCUMENT
 		,OUTPUT_TO_CONSOLE
-	};
-	
+	}
+
 	public static Map<String, String> computeEnvironment(IWorkbenchWindow workbenchWindow, IEditorPart editorPart) {
 		Map<String, String> environment = new TreeMap<String, String>();
 		
@@ -149,6 +154,10 @@ public class Filter {
 		public PrintStreamOutputConsumer(PrintStream printStream) {
 			this.printStream = printStream;
 		}
+		
+		public PrintStream getPrintStream() {
+			return printStream;
+		}
 
 		public void consume(final InputStream outputStream) {
 			new Thread(new Runnable() {
@@ -168,18 +177,69 @@ public class Filter {
 		}
 	}
 	
-	public class EclipseConsolePrintStreamOutputConsumer extends PrintStreamOutputConsumer {
-		
+	public class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {	
+		public void consume(InputStream outputStream) {
+			MessageConsole messageConsole = getMessageConsole();
+			MessageConsoleWriter messageConsoleWriter =
+				new MessageConsoleWriter(messageConsole, outputStream);
+			new Thread(messageConsoleWriter).start();
+		}
 	}
 	
-	public class NamedConsolePrintStreamOutputConsumer extends PrintStreamOutputConsumer {
-		
-	}
+//	public class NamedConsolePrintStreamOutputConsumer extends PrintStreamOutputConsumer {
+//		
+//	}
 	
 	public static final FilterOutputConsumer DISCARD = new PrintStreamOutputConsumer();
 	
 	public static final FilterOutputConsumer TO_SYSOUT = new PrintStreamOutputConsumer(System.out);
 	
 	public static final FilterOutputConsumer TO_SYSERR = new PrintStreamOutputConsumer(System.err);
+	
+	private static Map<String, MessageConsole> nameToMessageConsole = new HashMap<String, MessageConsole>();
+
+	private static MessageConsole getMessageConsole() {
+		return getMessageConsole("Eclipse Mate");
+	}
+	
+	private static MessageConsole getMessageConsole(String name) {
+		MessageConsole messageConsole = nameToMessageConsole.get(name);
+		if (messageConsole == null) {
+			messageConsole = new MessageConsole(name, null);
+			ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{messageConsole});			
+		}
+		return messageConsole;
+	}
+	
+	private static class MessageConsoleWriter implements Runnable {		
+		private final MessageConsole messageConsole;
+		private final InputStream from;
+		
+		private MessageConsoleWriter(MessageConsole messageConsole, InputStream from) {
+			this.messageConsole = messageConsole;
+			this.from = from;
+		}
+		
+		public void run() {
+			final MessageConsoleStream messageConsoleStream = messageConsole.newMessageStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(from));
+			String output = null;
+			try {
+				while ((output = reader.readLine()) != null) {
+					messageConsoleStream.println(output);
+				}
+			} catch (IOException e) {
+			} finally {
+				try {
+					reader.close();
+				} catch (IOException e) {
+				}
+				try {
+					messageConsoleStream.close();
+				} catch (IOException e) {
+				}
+			}
+		}		
+	}
 
 }
