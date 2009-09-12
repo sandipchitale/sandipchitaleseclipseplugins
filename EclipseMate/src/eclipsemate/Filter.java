@@ -1,13 +1,16 @@
 package eclipsemate;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.StringBufferInputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -102,7 +105,6 @@ public class Filter {
 								int lineAtCaret = styledText.getLineAtOffset(caretOffset);
 								environment.put(VARIABLES_NAMES.TM_CARET_LINE_NUMBER.name(), String.valueOf(lineAtCaret + 1));
 								environment.put(VARIABLES_NAMES.TM_CARET_LINE_TEXT.name(), styledText.getLine(lineAtCaret));
-
 							}
 						}
 					}
@@ -119,16 +121,65 @@ public class Filter {
 			FilterInputProvider filterInputProvider,
 			Map<String, String> environment,
 			OUTPUT_TYPE output,
-			FilterOutputConsumerProvider filterOutputConsumerProvider) {
+			FilterOutputConsumer filterOutputConsumerProvider) {
 	};
 	
 	public interface FilterInputProvider {
 		public InputStream getInputStream();
 	};
 	
-	public interface FilterOutputConsumerProvider {
-		public void consumeOutputStream(OutputStream outputStream);
-		public void consumeErrorStream(OutputStream errorStream);
+	public interface FilterOutputConsumer {
+		public void consume(InputStream input);
 	}
+	
+	public static final FilterInputProvider EOF = new FilterInputProvider() {
+		@SuppressWarnings("deprecation")
+		public InputStream getInputStream() {
+			return new StringBufferInputStream("");
+		}
+	};
+	
+	public static class PrintStreamOutputConsumer implements FilterOutputConsumer
+	{
+		private PrintStream printStream;
+		
+		public PrintStreamOutputConsumer() {
+		}
+		
+		public PrintStreamOutputConsumer(PrintStream printStream) {
+			this.printStream = printStream;
+		}
+
+		public void consume(final InputStream outputStream) {
+			new Thread(new Runnable() {
+				public void run() {
+					BufferedReader br = new BufferedReader(new InputStreamReader(outputStream));
+					String line = null;
+					try {
+						while ((line = br.readLine()) != null) {
+							if (printStream != null) {
+								printStream.println(line);
+							}
+						}
+					} catch (IOException e) {
+					}
+				}
+			}).start();
+		}
+	}
+	
+	public class EclipseConsolePrintStreamOutputConsumer extends PrintStreamOutputConsumer {
+		
+	}
+	
+	public class NamedConsolePrintStreamOutputConsumer extends PrintStreamOutputConsumer {
+		
+	}
+	
+	public static final FilterOutputConsumer DISCARD = new PrintStreamOutputConsumer();
+	
+	public static final FilterOutputConsumer TO_SYSOUT = new PrintStreamOutputConsumer(System.out);
+	
+	public static final FilterOutputConsumer TO_SYSERR = new PrintStreamOutputConsumer(System.err);
 
 }
