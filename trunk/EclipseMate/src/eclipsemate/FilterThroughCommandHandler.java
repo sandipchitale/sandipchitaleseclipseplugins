@@ -29,8 +29,9 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 			return null;
 		}
 		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
-		System.out.println(environment.toString().replaceAll(",", "\n"));
-		//new FilterThroughCommandDialog(activeWorkbenchWindow.getShell()).open();
+		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
+		filterThroughCommandDialog.setEnvironment(environment);
+		filterThroughCommandDialog.open();
 		return null;
 	}
 
@@ -43,6 +44,5 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 	public boolean isHandled() {
 		return true;
 	}
-	
 
 }

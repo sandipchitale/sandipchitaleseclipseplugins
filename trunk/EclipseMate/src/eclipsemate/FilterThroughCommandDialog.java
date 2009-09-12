@@ -1,5 +1,7 @@
 package eclipsemate;
 
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -14,6 +16,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 public class FilterThroughCommandDialog extends Dialog {
+
+	private Map<String, String> environment;
 
 	protected FilterThroughCommandDialog(Shell parentShell) {
 		super(parentShell);
@@ -108,6 +112,10 @@ public class FilterThroughCommandDialog extends Dialog {
 		showEnvironmentButton.setLayoutData(showEnvironmentButtonGridData);
 		
 		return composite;
+	}
+
+	public void setEnvironment(Map<String, String> environment) {
+		this.environment = environment;		
 	}
 
 }
