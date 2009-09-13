@@ -5,10 +5,15 @@ import java.util.Map;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.texteditor.ITextEditor;
+
+import eclipsemate.Filter.VARIABLES_NAMES;
 
 public class ExecuteLineInsertingResultHandler extends AbstractHandler {
 
@@ -25,7 +30,30 @@ public class ExecuteLineInsertingResultHandler extends AbstractHandler {
 			return null;
 		}
 		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
-		Filter.launch(environment.get(Filter.VARIABLES_NAMES.TM_CARET_LINE_TEXT.name()), environment, Filter.EOF);
+		Filter.StringOutputConsumer filterOutputConsumer = new Filter.StringOutputConsumer();
+		Filter.launch(environment.get(Filter.VARIABLES_NAMES.TM_CARET_LINE_TEXT.name()), environment, Filter.EOF, filterOutputConsumer);
+		try {
+			String output = filterOutputConsumer.getOutput();
+			if (editor instanceof ITextEditor) {
+				ITextEditor abstractTextEditor = (ITextEditor) editor;
+				if (abstractTextEditor.isEditable()) {
+					Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+					if (adapter instanceof Control) {
+						Control control = (Control) adapter;
+						if (control instanceof StyledText) {
+							StyledText styledText = (StyledText) control;
+							int caretOffset = styledText.getCaretOffset();
+							int lineAtCaret = styledText.getLineAtOffset(caretOffset);
+							int startOffsetOfLineAtCaret = styledText.getOffsetAtLine(lineAtCaret);
+							int length = styledText.getLine(lineAtCaret).length();
+							styledText.replaceTextRange(startOffsetOfLineAtCaret, length, output);
+						}
+					}
+				}
+			}
+		} catch (InterruptedException e) {
+			// TODO
+		}
 		return null;
 	}
 

@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.core.resources.IFile;
@@ -32,6 +33,8 @@ import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class Filter {
+	static final String DEFAULT_CONSOLE_NAME = "Eclipse Mate";
+
 	enum VARIABLES_NAMES {
 		TM_BUNDLE_SUPPORT
 		,TM_CURRENT_LINE
@@ -150,7 +153,7 @@ public class Filter {
 			final Map<String, String> environment,
 			final FilterInputProvider filterInputProvider,
 			final FilterOutputConsumer filterSTDOUTConsumerProvider,
-			final FilterOutputConsumer filterSTDERRProvider) {
+			final FilterOutputConsumer filterSTDERRConsumerProvider) {
 		// Launch command on a separate thread.
 		new Thread(new Runnable() {
 			public void run() {
@@ -167,7 +170,7 @@ public class Filter {
 					
 					final Process process = processBuilder.start();
 					filterSTDOUTConsumerProvider.consume(process.getInputStream());
-					filterSTDOUTConsumerProvider.consume(process.getErrorStream());
+					filterSTDERRConsumerProvider.consume(process.getErrorStream());
 					
 					new Thread(new Runnable() {
 						public void run() {
@@ -275,10 +278,14 @@ public class Filter {
 	public static class StringOutputConsumer implements FilterOutputConsumer{
 		private BlockingQueue<String> outputQueue;
 		
+		public StringOutputConsumer() {
+			this(new ArrayBlockingQueue<String>(1));
+		}
+		
 		public StringOutputConsumer(BlockingQueue<String> outputQueue) {
 			this.outputQueue = outputQueue;
 		}
-		
+
 		public void consume(final InputStream outputStream) {
 			new Thread(new Runnable() {
 				public void run() {
@@ -287,19 +294,33 @@ public class Filter {
 					String line = null;
 					try {
 						while ((line = br.readLine()) != null) {
-							stringBuilder.append(line);
+							stringBuilder.append(line + "\n");
 						}
 					} catch (IOException e) {
 					}
 					outputQueue.add(stringBuilder.toString());
 				}
 			}).start();
-		}		
+		}
+		
+		public String getOutput() throws InterruptedException {
+			return outputQueue.take();
+		}
 	}
 	
-	public static class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {	
+	public static class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {
+		private final String consoleName;
+
+		public EclipseConsolePrintStreamOutputConsumer() {
+			this(DEFAULT_CONSOLE_NAME);
+		}
+		
+		public EclipseConsolePrintStreamOutputConsumer(String consoleName) {
+			this.consoleName = consoleName;
+		}
+		
 		public void consume(InputStream outputStream) {
-			MessageConsole messageConsole = getMessageConsole();
+			MessageConsole messageConsole = getMessageConsole(consoleName);
 			MessageConsoleWriter messageConsoleWriter =
 				new MessageConsoleWriter(messageConsole, outputStream);
 			new Thread(messageConsoleWriter).start();
@@ -319,7 +340,7 @@ public class Filter {
 	private static Map<String, MessageConsole> nameToMessageConsole = new WeakHashMap<String, MessageConsole>();
 
 	private static MessageConsole getMessageConsole() {
-		return getMessageConsole("Eclipse Mate");
+		return getMessageConsole(DEFAULT_CONSOLE_NAME);
 	}
 	
 	private static MessageConsole getMessageConsole(String name) {
