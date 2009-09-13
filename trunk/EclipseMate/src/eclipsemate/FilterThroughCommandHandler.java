@@ -29,9 +29,10 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 			return null;
 		}
 		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
-		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
-		filterThroughCommandDialog.setEnvironment(environment);
-		filterThroughCommandDialog.open();
+//		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
+//		filterThroughCommandDialog.setEnvironment(environment);
+//		filterThroughCommandDialog.open();
+		Filter.launch("ls /usr/bin", environment, Filter.EOF);
 		return null;
 	}
 

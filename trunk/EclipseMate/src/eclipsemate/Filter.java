@@ -4,14 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringBufferInputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -121,29 +125,99 @@ public class Filter {
 		return environment;
 	}
 	
-	public static void launch(String command,
-			INPUT_TYPE input,
-			FilterInputProvider filterInputProvider,
-			Map<String, String> environment,
-			OUTPUT_TYPE output,
-			FilterOutputConsumer filterSTDOUTConsumerProvider,
-			FilterOutputConsumer filterSTDERRProvider) {
-	}
-	
 	public static void launch(String command, 
-			INPUT_TYPE input,
-			FilterInputProvider filterInputProvider,
 			Map<String, String> environment,
-			OUTPUT_TYPE output,
-			FilterOutputConsumer filterSTDOUTConsumerProvider) {
-		launch( command,
-				 input,
-				 filterInputProvider,
+			FilterInputProvider filterInputProvider) {
+		launch(command,
 				environment,
-				 output,
-				 filterSTDOUTConsumerProvider,
-				 ECLIPSE_MATE_CONSOLE);
+				filterInputProvider,
+				new EclipseConsolePrintStreamOutputConsumer());
 	};
+	
+	public static void launch(String command,
+			Map<String, String> environment,
+			FilterInputProvider filterInputProvider,
+			FilterOutputConsumer filterSTDOUTConsumerProvider) {
+		launch(command,
+				environment,
+				filterInputProvider,
+				filterSTDOUTConsumerProvider,
+				new EclipseConsolePrintStreamOutputConsumer());
+	};
+	
+	public static void launch(final String command,
+			final Map<String, String> environment,
+			final FilterInputProvider filterInputProvider,
+			final FilterOutputConsumer filterSTDOUTConsumerProvider,
+			final FilterOutputConsumer filterSTDERRProvider) {
+		// Launch command on a separate thread.
+		new Thread(new Runnable() {
+			public void run() {
+				Activator activator = Activator.getDefault();
+				String[] commandArray = Utilities.parseParameters(command);
+				try {
+					
+					ProcessBuilder processBuilder = new ProcessBuilder();
+					processBuilder.command(Arrays.asList(commandArray));
+					Map<String, String> inheritedEnvironment = processBuilder.environment();
+					if (environment != null) {
+						inheritedEnvironment.putAll(environment);
+					}
+					
+					final Process process = processBuilder.start();
+					filterSTDOUTConsumerProvider.consume(process.getInputStream());
+					filterSTDOUTConsumerProvider.consume(process.getErrorStream());
+					
+					new Thread(new Runnable() {
+						public void run() {
+							InputStream is = filterInputProvider.getInputStream();
+							OutputStream os = process.getOutputStream();
+							byte bytes[] = new byte[1024];
+							while (true) {
+								try {
+									int readCount = is.read(bytes);
+									if (readCount == -1) {
+										break;
+									}
+									os.write(bytes, 0, readCount);
+								} catch (IOException e) {
+									// TODO
+									break;
+								}
+							}
+						}
+					}).start();
+					
+					int status = process.waitFor();
+					if (status == 0) {
+						// Good
+					} else {
+						activator.getLog().log(
+								new Status(IStatus.ERROR, activator.getBundle()
+										.getSymbolicName(), "Process '"
+										+ Arrays.asList(commandArray)
+												.toString()
+										+ "' exited with status: " + status));
+					}
+				} catch (InterruptedException ex) {
+					activator.getLog().log(
+							new Status(IStatus.ERROR, activator.getBundle()
+									.getSymbolicName(),
+									"Exception while executing '"
+											+ Arrays.asList(commandArray)
+													.toString() + "'", ex));
+				} catch (IOException ioe) {
+					activator.getLog().log(
+							new Status(IStatus.ERROR, activator.getBundle()
+									.getSymbolicName(),
+									"Exception while executing '"
+											+ Arrays.asList(commandArray)
+													.toString() + "'", ioe));
+				}
+
+			}
+		}, "Launching - " + command).start();
+	}
 	
 	public interface FilterInputProvider {
 		public InputStream getInputStream();
@@ -222,7 +296,7 @@ public class Filter {
 		}		
 	}
 	
-	public class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {	
+	public static class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {	
 		public void consume(InputStream outputStream) {
 			MessageConsole messageConsole = getMessageConsole();
 			MessageConsoleWriter messageConsoleWriter =
@@ -239,10 +313,7 @@ public class Filter {
 	
 	public static final FilterOutputConsumer TO_SYSOUT = new PrintStreamOutputConsumer(System.out);
 	
-	public static final FilterOutputConsumer TO_SYSERR = new PrintStreamOutputConsumer(System.err);
-	
-	public static final FilterOutputConsumer ECLIPSE_MATE_CONSOLE = new PrintStreamOutputConsumer(System.err);
-	
+	public static final FilterOutputConsumer TO_SYSERR = new PrintStreamOutputConsumer(System.err);	
 	
 	private static Map<String, MessageConsole> nameToMessageConsole = new HashMap<String, MessageConsole>();
 
