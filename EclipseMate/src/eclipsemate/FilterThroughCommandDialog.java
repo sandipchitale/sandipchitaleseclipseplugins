@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -21,6 +23,30 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Map<String, String> environment;
 	private Combo commandCombo;
 	private String command;
+	
+	private Button noneButton;
+	private Button selectionButton;
+	private Button selectionLinesButton;
+	private Button documentButton;
+	private Button lineButton;
+	private Button wordButton;
+	
+	private Filter.INPUT_TYPE inputType;
+
+	private Button discardButton;
+	private Button outputToConsoleButton;
+	private Button replaceSelectionButton;
+	private Button replaceSelectedLinesButton;
+	private Button replaceLineButton;
+	private Button replaceWordButton;
+	private Button replaceDocumentButton;
+	private Button insertAsTextButton;
+	private Button insertAsTemplateButton;
+	private Button showAsHTMLButton;
+	private Button showAsToolTipButton;
+	private Button createNewDocumentButton;
+
+	private Filter.OUTPUT_TYPE outputType;
 
 	protected FilterThroughCommandDialog(Shell parentShell) {
 		super(parentShell);
@@ -47,7 +73,6 @@ public class FilterThroughCommandDialog extends Dialog {
 		commandComboGridData.horizontalSpan = 2;
 		commandCombo.setLayoutData(commandComboGridData);
 		
-		
 		Label padding = new Label(composite, SWT.NONE);
 		GridData paddingGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
 		padding.setLayoutData(paddingGridData);
@@ -59,17 +84,17 @@ public class FilterThroughCommandDialog extends Dialog {
 		
 		inputGroup.setLayout(new RowLayout(SWT.VERTICAL));
 
-		Button noneButton = new Button(inputGroup, SWT.RADIO);
+		noneButton = new Button(inputGroup, SWT.RADIO);
 		noneButton.setText("None");
-		Button selectionButton = new Button(inputGroup, SWT.RADIO);
+		selectionButton = new Button(inputGroup, SWT.RADIO);
 		selectionButton.setText("Selection");
-		Button selectionLinesButton = new Button(inputGroup, SWT.RADIO);
+		selectionLinesButton = new Button(inputGroup, SWT.RADIO);
 		selectionLinesButton.setText("Selection Lines");
-		Button documentButton = new Button(inputGroup, SWT.RADIO);
+		documentButton = new Button(inputGroup, SWT.RADIO);
 		documentButton.setText("Document");
-		Button lineButton = new Button(inputGroup, SWT.RADIO);
+		lineButton = new Button(inputGroup, SWT.RADIO);
 		lineButton.setText("Line");
-		Button wordButton = new Button(inputGroup, SWT.RADIO);
+		wordButton = new Button(inputGroup, SWT.RADIO);
 		wordButton.setText("Word");
 		
 		Group outputGroup = new Group(composite, SWT.NONE);
@@ -80,30 +105,30 @@ public class FilterThroughCommandDialog extends Dialog {
 		
 		outputGroup.setLayout(new RowLayout(SWT.VERTICAL));
 		
-		Button discardButton = new Button(outputGroup, SWT.RADIO);
+		discardButton = new Button(outputGroup, SWT.RADIO);
 		discardButton.setText("Discard");
-		Button replaceSelectionButton = new Button(outputGroup, SWT.RADIO);
+		replaceSelectionButton = new Button(outputGroup, SWT.RADIO);
 		replaceSelectionButton.setText("Replace Selection");
-		Button replaceSelectedLinesButton = new Button(outputGroup, SWT.RADIO);
+		replaceSelectedLinesButton = new Button(outputGroup, SWT.RADIO);
 		replaceSelectedLinesButton.setText("Replace Selected Lines");
-		Button replaceLineButton = new Button(outputGroup, SWT.RADIO);
+		replaceLineButton = new Button(outputGroup, SWT.RADIO);
 		replaceLineButton.setText("Replace Line");
-		Button replaceWordButton = new Button(outputGroup, SWT.RADIO);
+		replaceWordButton = new Button(outputGroup, SWT.RADIO);
 		replaceWordButton.setText("Replace Word");
-		Button replaceDocumentButton = new Button(outputGroup, SWT.RADIO);
+		replaceDocumentButton = new Button(outputGroup, SWT.RADIO);
 		replaceDocumentButton.setText("Replace Document");
-		Button insertAsTextButton = new Button(outputGroup, SWT.RADIO);
+		insertAsTextButton = new Button(outputGroup, SWT.RADIO);
 		insertAsTextButton.setText("Insert as Text");
-		Button insertAsTemplateButton = new Button(outputGroup, SWT.RADIO);
+		insertAsTemplateButton = new Button(outputGroup, SWT.RADIO);
 		insertAsTemplateButton.setText("Insert as Template");
-		Button showAsHTMLButton = new Button(outputGroup, SWT.RADIO);
+		showAsHTMLButton = new Button(outputGroup, SWT.RADIO);
 		showAsHTMLButton.setText("Show as HTML");
-		Button showAsToolTipButton = new Button(outputGroup, SWT.RADIO);
+		showAsToolTipButton = new Button(outputGroup, SWT.RADIO);
 		showAsToolTipButton.setText("Show as Tool Tip");
-		Button createNewDocumentButton = new Button(outputGroup, SWT.RADIO);
+		createNewDocumentButton = new Button(outputGroup, SWT.RADIO);
 		createNewDocumentButton.setText("Create New Document");
-		Button outputToConsoleDocumentButton1 = new Button(outputGroup, SWT.RADIO);
-		outputToConsoleDocumentButton1.setText("Ouput to Console");
+		outputToConsoleButton = new Button(outputGroup, SWT.RADIO);
+		outputToConsoleButton.setText("Ouput to Console");
 		
 		padding = new Label(composite, SWT.NONE);
 		paddingGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
@@ -113,6 +138,17 @@ public class FilterThroughCommandDialog extends Dialog {
 		showEnvironmentButton.setText("Show Environment...");
 		GridData showEnvironmentButtonGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 		showEnvironmentButton.setLayoutData(showEnvironmentButtonGridData);
+		
+		showEnvironmentButton.addSelectionListener(new SelectionListener() {
+			
+			public void widgetSelected(SelectionEvent e) {
+				
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
 		
 		return composite;
 	}
@@ -125,9 +161,56 @@ public class FilterThroughCommandDialog extends Dialog {
 		return command;
 	}
 	
+	public Filter.INPUT_TYPE getInputType() {
+		return inputType;
+	}
+	
+	public Filter.OUTPUT_TYPE getOuputType() {
+		return outputType;
+	}
+	
 	@Override
 	protected void okPressed() {
 		command = commandCombo.getText();
+		
+		if (noneButton.getSelection()) {
+			inputType = Filter.INPUT_TYPE.NONE;
+		} else if (selectionButton.getSelection()) {
+			inputType = Filter.INPUT_TYPE.SELECTION;
+		} else if (selectionLinesButton.getSelection()) {
+			inputType = Filter.INPUT_TYPE.SELECTED_LINES;
+		} else if (documentButton.getSelection()) {
+			inputType = Filter.INPUT_TYPE.DOCUMENT;
+		} else if (lineButton.getSelection()) {
+			inputType = Filter.INPUT_TYPE.LINE;
+		} else if (wordButton.getSelection()) {
+			inputType = Filter.INPUT_TYPE.WORD;
+		}
+		
+		if (discardButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.DISCARD;
+		} else if (outputToConsoleButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
+		} else if (replaceSelectionButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.REPLACE_SELECTION;
+		} else if (replaceSelectedLinesButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.REPLACE_SELECTED_LINES;
+		} else if (replaceLineButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.REPLACE_LINE;
+		} else if (replaceWordButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.REPLACE_WORD;
+		} else if (insertAsTextButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.INSERT_AS_TEXT;
+		} else if (insertAsTemplateButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.INSERT_AS_TEMPLATE;
+		} else if (showAsHTMLButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.SHOW_AS_HTML;
+		} else if (showAsToolTipButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.SHOW_AS_TOOLTIP;
+		} else if (createNewDocumentButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.CREATE_A_NEW_DOCUMENT;
+		}
+		
 		super.okPressed();
 	}
 
