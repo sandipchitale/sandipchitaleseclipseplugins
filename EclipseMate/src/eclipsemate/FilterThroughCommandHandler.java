@@ -24,11 +24,6 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 			Activator.beep(activeWorkbenchWindow);
 			return null;
 		}
-		String editorId = editor.getSite().getId();
-		if (editorId == null) {
-			Activator.beep(activeWorkbenchWindow);
-			return null;
-		}
 		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
 		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
 		filterThroughCommandDialog.setEnvironment(environment);
