@@ -1,6 +1,5 @@
 package eclipsemate;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +9,7 @@ import java.io.StringBufferInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.ITextSelection;
@@ -121,12 +121,28 @@ public class Filter {
 		return environment;
 	}
 	
+	public static void launch(String command,
+			INPUT_TYPE input,
+			FilterInputProvider filterInputProvider,
+			Map<String, String> environment,
+			OUTPUT_TYPE output,
+			FilterOutputConsumer filterSTDOUTConsumerProvider,
+			FilterOutputConsumer filterSTDERRProvider) {
+	}
+	
 	public static void launch(String command, 
 			INPUT_TYPE input,
 			FilterInputProvider filterInputProvider,
 			Map<String, String> environment,
 			OUTPUT_TYPE output,
-			FilterOutputConsumer filterOutputConsumerProvider) {
+			FilterOutputConsumer filterSTDOUTConsumerProvider) {
+		launch( command,
+				 input,
+				 filterInputProvider,
+				environment,
+				 output,
+				 filterSTDOUTConsumerProvider,
+				 ECLIPSE_MATE_CONSOLE);
 	};
 	
 	public interface FilterInputProvider {
@@ -158,6 +174,10 @@ public class Filter {
 		public PrintStream getPrintStream() {
 			return printStream;
 		}
+		
+		protected void setPrintStream(PrintStream printStream) {
+			this.printStream = printStream;
+		}
 
 		public void consume(final InputStream outputStream) {
 			new Thread(new Runnable() {
@@ -175,6 +195,31 @@ public class Filter {
 				}
 			}).start();
 		}
+	}
+	
+	public static class StringOutputConsumer implements FilterOutputConsumer{
+		private BlockingQueue<String> outputQueue;
+		
+		public StringOutputConsumer(BlockingQueue<String> outputQueue) {
+			this.outputQueue = outputQueue;
+		}
+		
+		public void consume(final InputStream outputStream) {
+			new Thread(new Runnable() {
+				public void run() {
+					StringBuilder stringBuilder = new StringBuilder();
+					BufferedReader br = new BufferedReader(new InputStreamReader(outputStream));
+					String line = null;
+					try {
+						while ((line = br.readLine()) != null) {
+							stringBuilder.append(line);
+						}
+					} catch (IOException e) {
+					}
+					outputQueue.add(stringBuilder.toString());
+				}
+			}).start();
+		}		
 	}
 	
 	public class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {	
@@ -195,6 +240,9 @@ public class Filter {
 	public static final FilterOutputConsumer TO_SYSOUT = new PrintStreamOutputConsumer(System.out);
 	
 	public static final FilterOutputConsumer TO_SYSERR = new PrintStreamOutputConsumer(System.err);
+	
+	public static final FilterOutputConsumer ECLIPSE_MATE_CONSOLE = new PrintStreamOutputConsumer(System.err);
+	
 	
 	private static Map<String, MessageConsole> nameToMessageConsole = new HashMap<String, MessageConsole>();
 
