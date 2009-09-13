@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 public class FilterThroughCommandDialog extends Dialog {
 
@@ -35,6 +36,7 @@ public class FilterThroughCommandDialog extends Dialog {
 
 	private Button discardButton;
 	private Button outputToConsoleButton;
+	private Text   consoleNameText;
 	private Button replaceSelectionButton;
 	private Button replaceSelectedLinesButton;
 	private Button replaceLineButton;
@@ -129,6 +131,12 @@ public class FilterThroughCommandDialog extends Dialog {
 		createNewDocumentButton.setText("Create New Document");
 		outputToConsoleButton = new Button(outputGroup, SWT.RADIO);
 		outputToConsoleButton.setText("Ouput to Console");
+		
+		consoleNameText = new Text(outputGroup, SWT.BORDER);
+		consoleNameText.setText(Filter.DEFAULT_CONSOLE_NAME);
+		
+//		RowData rowData = new RowData();
+//		rowData.
 		
 		padding = new Label(composite, SWT.NONE);
 		paddingGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
