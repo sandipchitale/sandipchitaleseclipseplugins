@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringBufferInputStream;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.core.resources.IFile;
@@ -315,7 +315,7 @@ public class Filter {
 	
 	public static final FilterOutputConsumer TO_SYSERR = new PrintStreamOutputConsumer(System.err);	
 	
-	private static Map<String, MessageConsole> nameToMessageConsole = new HashMap<String, MessageConsole>();
+	private static Map<String, MessageConsole> nameToMessageConsole = new WeakHashMap<String, MessageConsole>();
 
 	private static MessageConsole getMessageConsole() {
 		return getMessageConsole("Eclipse Mate");
@@ -325,7 +325,8 @@ public class Filter {
 		MessageConsole messageConsole = nameToMessageConsole.get(name);
 		if (messageConsole == null) {
 			messageConsole = new MessageConsole(name, null);
-			ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{messageConsole});			
+			ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{messageConsole});
+			nameToMessageConsole.put(name, messageConsole);
 		}
 		return messageConsole;
 	}
