@@ -1,5 +1,7 @@
 package eclipsemate;
 
+import java.util.Map;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -22,7 +24,8 @@ public class ExecuteLineInsertingResultHandler extends AbstractHandler {
 			Activator.beep(activeWorkbenchWindow);
 			return null;
 		}
-		
+		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
+		Filter.launch(environment.get(Filter.VARIABLES_NAMES.TM_CARET_LINE_TEXT.name()), environment, Filter.EOF);
 		return null;
 	}
 
