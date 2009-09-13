@@ -13,8 +13,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import eclipsemate.Filter.VARIABLES_NAMES;
-
 public class ExecuteLineInsertingResultHandler extends AbstractHandler {
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
