@@ -5,6 +5,7 @@ import java.util.Map;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -29,10 +30,11 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 			return null;
 		}
 		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
-//		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
-//		filterThroughCommandDialog.setEnvironment(environment);
-//		filterThroughCommandDialog.open();
-		Filter.launch("ls /usr/bin", environment, Filter.EOF);
+		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
+		filterThroughCommandDialog.setEnvironment(environment);
+		if (filterThroughCommandDialog.open() == Window.OK) {
+			Filter.launch(filterThroughCommandDialog.getCommand(), environment, Filter.EOF);
+		}
 		return null;
 	}
 

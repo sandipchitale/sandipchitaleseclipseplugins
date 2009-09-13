@@ -19,6 +19,8 @@ public class FilterThroughCommandDialog extends Dialog {
 
 	@SuppressWarnings("unused")
 	private Map<String, String> environment;
+	private Combo commandCombo;
+	private String command;
 
 	protected FilterThroughCommandDialog(Shell parentShell) {
 		super(parentShell);
@@ -40,7 +42,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		GridData commandLabelGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
 		commandLabel.setLayoutData(commandLabelGridData);
 		
-		Combo commandCombo = new Combo(composite, SWT.NONE);
+		commandCombo = new Combo(composite, SWT.NONE);
 		GridData commandComboGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 		commandComboGridData.horizontalSpan = 2;
 		commandCombo.setLayoutData(commandComboGridData);
@@ -117,6 +119,16 @@ public class FilterThroughCommandDialog extends Dialog {
 
 	public void setEnvironment(Map<String, String> environment) {
 		this.environment = environment;		
+	}
+	
+	public String getCommand() {
+		return command;
+	}
+	
+	@Override
+	protected void okPressed() {
+		command = commandCombo.getText();
+		super.okPressed();
 	}
 
 }
