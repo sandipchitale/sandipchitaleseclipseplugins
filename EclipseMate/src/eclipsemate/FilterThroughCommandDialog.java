@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class FilterThroughCommandDialog extends Dialog {
 
+	@SuppressWarnings("unused")
 	private Map<String, String> environment;
 
 	protected FilterThroughCommandDialog(Shell parentShell) {
