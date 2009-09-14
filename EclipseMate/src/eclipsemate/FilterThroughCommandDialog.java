@@ -49,6 +49,7 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button createNewDocumentButton;
 
 	private Filter.OUTPUT_TYPE outputType;
+	private String consoleName;
 
 	protected FilterThroughCommandDialog(Shell parentShell) {
 		super(parentShell);
@@ -96,6 +97,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		documentButton.setText("Document");
 		lineButton = new Button(inputGroup, SWT.RADIO);
 		lineButton.setText("Line");
+		lineButton.setSelection(true);
 		wordButton = new Button(inputGroup, SWT.RADIO);
 		wordButton.setText("Word");
 		
@@ -131,6 +133,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		createNewDocumentButton.setText("Create New Document");
 		outputToConsoleButton = new Button(outputGroup, SWT.RADIO);
 		outputToConsoleButton.setText("Ouput to Console");
+		outputToConsoleButton.setSelection(true);
 		
 		consoleNameText = new Text(outputGroup, SWT.BORDER);
 		consoleNameText.setText(Filter.DEFAULT_CONSOLE_NAME);
@@ -146,11 +149,8 @@ public class FilterThroughCommandDialog extends Dialog {
 		showEnvironmentButton.setText("Show Environment...");
 		GridData showEnvironmentButtonGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 		showEnvironmentButton.setLayoutData(showEnvironmentButtonGridData);
-		
-		showEnvironmentButton.addSelectionListener(new SelectionListener() {
-			
+		showEnvironmentButton.addSelectionListener(new SelectionListener() {			
 			public void widgetSelected(SelectionEvent e) {
-				
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -175,6 +175,10 @@ public class FilterThroughCommandDialog extends Dialog {
 	
 	public Filter.OUTPUT_TYPE getOuputType() {
 		return outputType;
+	}
+	
+	public String getConsoleName() {
+		return consoleName;
 	}
 	
 	@Override
@@ -217,6 +221,12 @@ public class FilterThroughCommandDialog extends Dialog {
 			outputType = Filter.OUTPUT_TYPE.SHOW_AS_TOOLTIP;
 		} else if (createNewDocumentButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.CREATE_A_NEW_DOCUMENT;
+		}
+		
+		consoleName = consoleNameText.getText();
+		if (consoleName.trim().length() == 0)
+		{
+			consoleName = Filter.DEFAULT_CONSOLE_NAME;
 		}
 		
 		super.okPressed();

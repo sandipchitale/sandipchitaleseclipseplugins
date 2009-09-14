@@ -7,12 +7,15 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
+
+import eclipsemate.Filter.OUTPUT_TYPE;
 
 public class FilterThroughCommandHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -31,27 +34,83 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
 		filterThroughCommandDialog.setEnvironment(environment);
 		if (filterThroughCommandDialog.open() == Window.OK) {
-			Filter.StringOutputConsumer filterOutputConsumer = new Filter.StringOutputConsumer();
+			Filter.FilterOutputConsumer filterOutputConsumer = null;
+			OUTPUT_TYPE ouputType = filterThroughCommandDialog.getOuputType();
+			switch (ouputType) {
+			case DISCARD:
+				filterOutputConsumer = Filter.DISCARD;
+				break;
+			case OUTPUT_TO_CONSOLE:
+				filterOutputConsumer = new Filter.EclipseConsolePrintStreamOutputConsumer(filterThroughCommandDialog.getConsoleName());
+				break;
+			default:
+				filterOutputConsumer = new Filter.StringOutputConsumer();
+				break;
+			}			
 			Filter.launch(filterThroughCommandDialog.getCommand(), environment, Filter.EOF, filterOutputConsumer);
 			try {
-				String output = filterOutputConsumer.getOutput();
-				if (editor instanceof ITextEditor) {
-					ITextEditor abstractTextEditor = (ITextEditor) editor;
-					if (abstractTextEditor.isEditable()) {
-						Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
-						if (adapter instanceof Control) {
-							Control control = (Control) adapter;
-							if (control instanceof StyledText) {
-								StyledText styledText = (StyledText) control;
-								int caretOffset = styledText.getCaretOffset();
-								int lineAtCaret = styledText.getLineAtOffset(caretOffset);
-								int startOffsetOfLineAtCaret = styledText.getOffsetAtLine(lineAtCaret);
-								int length = styledText.getLine(lineAtCaret).length();
-								styledText.replaceTextRange(startOffsetOfLineAtCaret, length, output);
+				switch (ouputType) {
+				case DISCARD:
+					break;
+				case REPLACE_SELECTION:
+					if (editor instanceof ITextEditor) {
+						ITextEditor abstractTextEditor = (ITextEditor) editor;
+						if (abstractTextEditor.isEditable()) {
+							Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+							if (adapter instanceof Control) {
+								Control control = (Control) adapter;
+								if (control instanceof StyledText) {
+									StyledText styledText = (StyledText) control;
+									Point selectionRange = styledText.getSelection();
+									int start = Math.min(selectionRange.x, selectionRange.y);
+									int end = Math.max(selectionRange.x, selectionRange.y);
+									int length = end - start;
+									styledText.replaceTextRange(start, length, 
+											((Filter.StringOutputConsumer)filterOutputConsumer).getOutput());
+								}
 							}
 						}
 					}
+					break;
+				case REPLACE_LINE:
+					if (editor instanceof ITextEditor) {
+						ITextEditor abstractTextEditor = (ITextEditor) editor;
+						if (abstractTextEditor.isEditable()) {
+							Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+							if (adapter instanceof Control) {
+								Control control = (Control) adapter;
+								if (control instanceof StyledText) {
+									StyledText styledText = (StyledText) control;
+									int caretOffset = styledText.getCaretOffset();
+									int lineAtCaret = styledText.getLineAtOffset(caretOffset);
+									int startOffsetOfLineAtCaret = styledText.getOffsetAtLine(lineAtCaret);
+									int length = styledText.getLine(lineAtCaret).length();
+									styledText.replaceTextRange(startOffsetOfLineAtCaret, length, 
+											((Filter.StringOutputConsumer)filterOutputConsumer).getOutput());
+								}
+							}
+						}
+					}
+					break;
+				case REPLACE_DOCUMENT:
+					if (editor instanceof ITextEditor) {
+						ITextEditor abstractTextEditor = (ITextEditor) editor;
+						if (abstractTextEditor.isEditable()) {
+							Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+							if (adapter instanceof Control) {
+								Control control = (Control) adapter;
+								if (control instanceof StyledText) {
+									StyledText styledText = (StyledText) control;
+									styledText.setText( 
+											((Filter.StringOutputConsumer)filterOutputConsumer).getOutput());
+								}
+							}
+						}
+					}
+					break;
 				}
+				
+
 			} catch (InterruptedException e) {
 				// TODO
 			}
