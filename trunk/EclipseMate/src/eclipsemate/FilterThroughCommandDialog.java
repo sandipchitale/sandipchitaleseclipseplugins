@@ -36,7 +36,7 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button wordButton;
 	
 	private Filter.INPUT_TYPE inputType;
-	private static Filter.INPUT_TYPE lastInputType;
+	private static Filter.INPUT_TYPE lastInputType = Filter.INPUT_TYPE.NONE;
 
 	private Button discardButton;
 	private Button outputToConsoleButton;
@@ -47,13 +47,13 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button replaceWordButton;
 	private Button replaceDocumentButton;
 	private Button insertAsTextButton;
-	private Button insertAsTemplateButton;
+//	private Button insertAsTemplateButton;
 	private Button showAsHTMLButton;
 	private Button showAsToolTipButton;
 	private Button createNewDocumentButton;
 
 	private Filter.OUTPUT_TYPE outputType;
-	private static Filter.OUTPUT_TYPE lastOutputType;
+	private static Filter.OUTPUT_TYPE lastOutputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
 
 	private String consoleName;
 	private static String lastConsoleName;
@@ -104,7 +104,6 @@ public class FilterThroughCommandDialog extends Dialog {
 		documentButton.setText("Document");
 		lineButton = new Button(inputGroup, SWT.RADIO);
 		lineButton.setText("Line");
-		lineButton.setSelection(true);
 		wordButton = new Button(inputGroup, SWT.RADIO);
 		wordButton.setText("Word");
 		
@@ -130,8 +129,8 @@ public class FilterThroughCommandDialog extends Dialog {
 		replaceDocumentButton.setText("Replace Document");
 		insertAsTextButton = new Button(outputGroup, SWT.RADIO);
 		insertAsTextButton.setText("Insert as Text");
-		insertAsTemplateButton = new Button(outputGroup, SWT.RADIO);
-		insertAsTemplateButton.setText("Insert as Template");
+//		insertAsTemplateButton = new Button(outputGroup, SWT.RADIO);
+//		insertAsTemplateButton.setText("Insert as Template");
 		showAsHTMLButton = new Button(outputGroup, SWT.RADIO);
 		showAsHTMLButton.setText("Show as HTML");
 		showAsToolTipButton = new Button(outputGroup, SWT.RADIO);
@@ -140,7 +139,6 @@ public class FilterThroughCommandDialog extends Dialog {
 		createNewDocumentButton.setText("Create New Document");
 		outputToConsoleButton = new Button(outputGroup, SWT.RADIO);
 		outputToConsoleButton.setText("Ouput to Console");
-		outputToConsoleButton.setSelection(true);
 		
 		consoleNameText = new Text(outputGroup, SWT.BORDER);
 		consoleNameText.setText(Filter.DEFAULT_CONSOLE_NAME);
@@ -154,9 +152,6 @@ public class FilterThroughCommandDialog extends Dialog {
 				widgetSelected(e);
 			}
 		});
-		
-//		RowData rowData = new RowData();
-//		rowData.
 		
 		padding = new Label(composite, SWT.NONE);
 		paddingGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
@@ -174,6 +169,8 @@ public class FilterThroughCommandDialog extends Dialog {
 				widgetSelected(e);
 			}
 		});
+		
+		applyState();
 		
 		return composite;
 	}
@@ -217,7 +214,6 @@ public class FilterThroughCommandDialog extends Dialog {
 			inputType = Filter.INPUT_TYPE.WORD;
 		}
 		
-		lastInputType = inputType;
 		
 		if (discardButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.DISCARD;
@@ -233,8 +229,6 @@ public class FilterThroughCommandDialog extends Dialog {
 			outputType = Filter.OUTPUT_TYPE.REPLACE_WORD;
 		} else if (insertAsTextButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.INSERT_AS_TEXT;
-		} else if (insertAsTemplateButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.INSERT_AS_TEMPLATE;
 		} else if (showAsHTMLButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.SHOW_AS_HTML;
 		} else if (showAsToolTipButton.getSelection()) {
@@ -243,20 +237,91 @@ public class FilterThroughCommandDialog extends Dialog {
 			outputType = Filter.OUTPUT_TYPE.CREATE_A_NEW_DOCUMENT;
 		}
 		
-		lastOutputType = outputType;
-		
 		consoleName = consoleNameText.getText();
 		if (consoleName.trim().length() == 0)
 		{
 			consoleName = Filter.DEFAULT_CONSOLE_NAME;
 		}
 		
+		saveState();
+		
+		super.okPressed();
+	}
+	
+	private void applyState() {
+		switch (lastInputType) {
+		case NONE:
+			noneButton.setSelection(true);
+			break;
+		case SELECTION:
+			selectionButton.setSelection(true);
+			break;
+		case SELECTED_LINES:
+			selectionLinesButton.setSelection(true);
+			break;
+		case DOCUMENT:
+			documentButton.setSelection(true);
+			break;
+		case LINE:
+			lineButton.setSelection(true);
+			break;
+		case WORD:
+			wordButton.setSelection(true);
+			break;
+		}
+		
+		switch (lastOutputType) {
+		case DISCARD:
+			discardButton.setSelection(true);
+			break;
+		case REPLACE_SELECTION:
+			replaceSelectionButton.setSelection(true);
+			break;
+		case REPLACE_SELECTED_LINES:
+			replaceSelectedLinesButton.setSelection(true);
+			break;
+		case REPLACE_DOCUMENT:
+			replaceDocumentButton.setSelection(true);
+			break;
+		case REPLACE_LINE:
+			replaceLineButton.setSelection(true);
+			break;
+		case REPLACE_WORD:
+			replaceWordButton.setSelection(true);
+			break;		
+		case CREATE_A_NEW_DOCUMENT:
+			createNewDocumentButton.setSelection(true);
+			break;
+		case SHOW_AS_HTML:
+			showAsHTMLButton.setSelection(true);
+			break;
+		case SHOW_AS_TOOLTIP:
+			showAsToolTipButton.setSelection(true);
+			break;
+		case OUTPUT_TO_CONSOLE:
+			outputToConsoleButton.setSelection(true);
+			break;
+		case INSERT_AS_TEXT:
+			insertAsTextButton.setSelection(true);
+			break;
+		}
+		
+		consoleNameText.setEnabled(outputToConsoleButton.getSelection());
+		
+		if (lastCommands.size() > 0) {
+			commandCombo.setItems(lastCommands.toArray(new String[lastCommands.size()]));
+			commandCombo.select(0);
+		}
+		
+	}
+	
+	private void saveState() {
+		lastInputType = inputType;
+		lastOutputType = outputType;
 		lastConsoleName = consoleName;
 		if (lastConsoleName.equals(Filter.DEFAULT_CONSOLE_NAME)) {
 			lastConsoleName = "";
 		}
-		
-		super.okPressed();
 	}
 
 }
