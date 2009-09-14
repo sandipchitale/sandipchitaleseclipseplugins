@@ -32,6 +32,7 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+@SuppressWarnings("deprecation")
 public class Filter {
 	static final String DEFAULT_CONSOLE_NAME = "Eclipse Mate";
 
@@ -339,6 +340,7 @@ public class Filter {
 	
 	private static Map<String, MessageConsole> nameToMessageConsole = new WeakHashMap<String, MessageConsole>();
 
+	@SuppressWarnings("unused")
 	private static MessageConsole getMessageConsole() {
 		return getMessageConsole(DEFAULT_CONSOLE_NAME);
 	}

@@ -1,5 +1,10 @@
 package eclipsemate;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -12,6 +17,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -104,6 +112,37 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 									styledText.setText( 
 											((Filter.StringOutputConsumer)filterOutputConsumer).getOutput());
 								}
+							}
+						}
+					}
+					break;
+				case SHOW_AS_HTML:
+					File tempHmtlFile = null;
+					try {
+						tempHmtlFile = File.createTempFile(Activator.getDefault().PLUGIN_ID, ".html");
+					} catch (IOException e) {
+						// TODO
+					}
+					if (tempHmtlFile != null) {
+						String output = ((Filter.StringOutputConsumer)filterOutputConsumer).getOutput();
+						tempHmtlFile.deleteOnExit();
+						PrintWriter pw = null;
+						try {
+							pw = new PrintWriter(tempHmtlFile);
+						} catch (FileNotFoundException e1) {
+							e1.printStackTrace();
+						}
+						if (pw != null) {
+							pw.println(output);
+							pw.flush();
+							pw.close();
+							IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
+							try {
+								support.getExternalBrowser().openURL(tempHmtlFile.toURI().toURL());
+							} catch (PartInitException e) {
+								// TODO
+							} catch (MalformedURLException e) {
+								// TODO
 							}
 						}
 					}
