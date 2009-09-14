@@ -10,10 +10,13 @@ import java.util.Map;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -21,6 +24,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import eclipsemate.Filter.OUTPUT_TYPE;
@@ -145,6 +149,39 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 								// TODO
 							}
 						}
+					}
+					break;
+				case CREATE_A_NEW_DOCUMENT:
+					File file = Utilities.queryFile();
+					IEditorInput input = Utilities.createNonExistingFileEditorInput(file, "Output");
+					String editorId = "org.eclipse.ui.DefaultTextEditor";
+					try
+					{
+						IEditorPart part = page.openEditor(input, editorId);
+
+						if (part instanceof ITextEditor)
+						{
+							ITextEditor textEditor = (ITextEditor) part;
+							IDocumentProvider dp = textEditor.getDocumentProvider();
+							IDocument doc = dp.getDocument(textEditor.getEditorInput());
+							try
+							{
+								String fileContents = ((Filter.StringOutputConsumer)filterOutputConsumer).getOutput();;
+								if (fileContents != null)
+								{
+									doc.replace(0, 0, fileContents);
+								}
+							}
+							catch (BadLocationException e)
+							{
+								// TODO
+							}
+						}
+
+					}
+					catch (PartInitException e)
+					{
+						// TODO
 					}
 					break;
 				}
