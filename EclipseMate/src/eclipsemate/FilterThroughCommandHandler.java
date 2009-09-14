@@ -148,8 +148,6 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 					}
 					break;
 				}
-				
-
 			} catch (InterruptedException e) {
 				// TODO
 			}
