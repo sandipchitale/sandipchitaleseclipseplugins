@@ -1,9 +1,17 @@
 package eclipsemate;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.IFileSystem;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.internal.editors.text.NonExistingFileEditorInput;
 
 /**
  * This implements some utility methods.
@@ -186,6 +194,36 @@ public class Utilities {
 		String[] ret = params.toArray(new String[0]);
 
 		return ret;
+	}
+	
+	/**
+	 * Creates a new NonExistingFileEditorInput
+	 * 
+	 * @param file
+	 * @param fileName
+	 * @return IEditorInput
+	 */
+	public static IEditorInput createNonExistingFileEditorInput(File file, String fileName)
+	{
+		IEditorInput input = null;
+		try
+		{
+			IFileSystem fs = EFS.getLocalFileSystem();
+			IFileStore localFile = fs.fromLocalFile(file);
+			input = new NonExistingFileEditorInput(localFile, fileName);
+		}
+		catch (Exception e)
+		{
+			// TODO
+		}
+		return input;
+	}
+	
+	static File queryFile()
+	{
+		IPath stateLocation = Activator.getDefault().getStateLocation();
+		IPath path = stateLocation.append("/_" + new Object().hashCode()); //$NON-NLS-1$ 
+		return new File(path.toOSString());
 	}
 
 }
