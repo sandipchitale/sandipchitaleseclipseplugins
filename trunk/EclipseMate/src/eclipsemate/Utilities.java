@@ -19,6 +19,7 @@ import org.eclipse.ui.internal.editors.text.NonExistingFileEditorInput;
  * @author Sandip V. Chitale
  * 
  */
+@SuppressWarnings("restriction")
 public class Utilities {
 	
 	@SuppressWarnings("unused")

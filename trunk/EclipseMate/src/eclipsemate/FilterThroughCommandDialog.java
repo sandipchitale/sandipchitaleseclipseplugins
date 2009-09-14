@@ -1,5 +1,7 @@
 package eclipsemate;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -24,6 +26,7 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Map<String, String> environment;
 	private Combo commandCombo;
 	private String command;
+	private static List<String> lastCommands = new LinkedList<String>();
 	
 	private Button noneButton;
 	private Button selectionButton;
@@ -33,6 +36,7 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button wordButton;
 	
 	private Filter.INPUT_TYPE inputType;
+	private static Filter.INPUT_TYPE lastInputType;
 
 	private Button discardButton;
 	private Button outputToConsoleButton;
@@ -49,7 +53,10 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button createNewDocumentButton;
 
 	private Filter.OUTPUT_TYPE outputType;
+	private static Filter.OUTPUT_TYPE lastOutputType;
+
 	private String consoleName;
+	private static String lastConsoleName;
 
 	protected FilterThroughCommandDialog(Shell parentShell) {
 		super(parentShell);
@@ -138,6 +145,16 @@ public class FilterThroughCommandDialog extends Dialog {
 		consoleNameText = new Text(outputGroup, SWT.BORDER);
 		consoleNameText.setText(Filter.DEFAULT_CONSOLE_NAME);
 		
+		outputToConsoleButton.addSelectionListener(new SelectionListener() {			
+			public void widgetSelected(SelectionEvent e) {
+				consoleNameText.setEnabled(outputToConsoleButton.getSelection());
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+		
 //		RowData rowData = new RowData();
 //		rowData.
 		
@@ -184,6 +201,7 @@ public class FilterThroughCommandDialog extends Dialog {
 	@Override
 	protected void okPressed() {
 		command = commandCombo.getText();
+		lastCommands.add(0, command);
 		
 		if (noneButton.getSelection()) {
 			inputType = Filter.INPUT_TYPE.NONE;
@@ -198,6 +216,8 @@ public class FilterThroughCommandDialog extends Dialog {
 		} else if (wordButton.getSelection()) {
 			inputType = Filter.INPUT_TYPE.WORD;
 		}
+		
+		lastInputType = inputType;
 		
 		if (discardButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.DISCARD;
@@ -223,10 +243,17 @@ public class FilterThroughCommandDialog extends Dialog {
 			outputType = Filter.OUTPUT_TYPE.CREATE_A_NEW_DOCUMENT;
 		}
 		
+		lastOutputType = outputType;
+		
 		consoleName = consoleNameText.getText();
 		if (consoleName.trim().length() == 0)
 		{
 			consoleName = Filter.DEFAULT_CONSOLE_NAME;
+		}
+		
+		lastConsoleName = consoleName;
+		if (lastConsoleName.equals(Filter.DEFAULT_CONSOLE_NAME)) {
+			lastConsoleName = "";
 		}
 		
 		super.okPressed();
