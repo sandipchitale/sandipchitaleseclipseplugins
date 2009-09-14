@@ -123,7 +123,7 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 				case SHOW_AS_HTML:
 					File tempHmtlFile = null;
 					try {
-						tempHmtlFile = File.createTempFile(Activator.getDefault().PLUGIN_ID, ".html");
+						tempHmtlFile = File.createTempFile(Activator.PLUGIN_ID, ".html");
 					} catch (IOException e) {
 						// TODO
 					}
@@ -153,7 +153,7 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 					break;
 				case CREATE_A_NEW_DOCUMENT:
 					File file = Utilities.queryFile();
-					IEditorInput input = Utilities.createNonExistingFileEditorInput(file, "Output");
+					IEditorInput input = Utilities.createNonExistingFileEditorInput(file, "Untitled.txt");
 					String editorId = "org.eclipse.ui.DefaultTextEditor";
 					try
 					{

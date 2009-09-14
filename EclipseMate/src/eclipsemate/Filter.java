@@ -233,7 +233,6 @@ public class Filter {
 	}
 	
 	public static final FilterInputProvider EOF = new FilterInputProvider() {
-		@SuppressWarnings("deprecation")
 		public InputStream getInputStream() {
 			return new StringBufferInputStream("");
 		}
