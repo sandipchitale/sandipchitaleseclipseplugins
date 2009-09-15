@@ -284,7 +284,7 @@ public class Filter {
 
 		public InputStream getInputStream() {
 			IOConsole messageConsole = getMessageConsole(consoleName);
-			ConsolePlugin.getDefault().getConsoleManager().showConsoleView(messageConsole);
+			messageConsole.activate();
 			return messageConsole.getInputStream();
 		}
 	}
