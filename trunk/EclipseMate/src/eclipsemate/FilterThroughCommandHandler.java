@@ -78,17 +78,14 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 							if (control instanceof StyledText) {
 								StyledText styledText = (StyledText) control;
 								Point selection = styledText.getSelection();
-								int selectionStartOffset = styledText.getLineAtOffset(selection.x);
-								int selectionEndOffset = styledText.getLineAtOffset(selection.y);
+								int selectionStartOffsetLine = styledText.getLineAtOffset(selection.x);
+								int selectionEndOffsetLine = styledText.getLineAtOffset(selection.y);
 								
-								int selectionStartOffsetLineIndex = styledText.getLineAtOffset(selectionStartOffset);
-								int selectionEndOffsetLineIndex = styledText.getLineAtOffset(selectionEndOffset);
-								
-								int selectionStartOffsetLineStartOffset = styledText.getOffsetAtLine(selectionStartOffsetLineIndex);
-								int selectionEndOffsetLineStartOffset = styledText.getLineAtOffset(selectionEndOffsetLineIndex + 1);
+								int selectionStartOffsetLineStartOffset = styledText.getOffsetAtLine(selectionStartOffsetLine);
+								int selectionEndOffsetLineStartOffset = styledText.getOffsetAtLine(selectionEndOffsetLine + 1);
 								
 								filterInputProvider = new Filter.StringInputProvider(styledText.getText(selectionStartOffsetLineStartOffset,
-										selectionEndOffsetLineStartOffset - selectionStartOffsetLineStartOffset));
+										selectionEndOffsetLineStartOffset));
 							}
 						}
 					}
@@ -143,6 +140,7 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 				filterOutputConsumer = new Filter.StringOutputConsumer();
 				break;
 			}
+			
 			Filter.launch(filterThroughCommandDialog.getCommand(), environment, filterInputProvider, filterOutputConsumer);
 			try {
 				switch (ouputType) {
