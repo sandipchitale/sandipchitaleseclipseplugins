@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.StringBufferInputStream;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,8 +31,8 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
-import org.eclipse.ui.console.MessageConsole;
-import org.eclipse.ui.console.MessageConsoleStream;
+import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.IOConsole;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 @SuppressWarnings("deprecation")
@@ -70,6 +71,7 @@ public class Filter {
 		,LINE
 		,WORD
 		,DOCUMENT
+		,INPUT_FROM_CONSOLE
 	};
 	
 	enum OUTPUT_TYPE {
@@ -199,7 +201,7 @@ public class Filter {
 							while (true) {
 								try {
 									int readCount = is.read(bytes);
-									if (readCount == -1) {
+									if (readCount == -1 || new String(bytes, 0, readCount).toLowerCase().startsWith("[eof]")) {
 										os.flush();
 										os.close();
 										break;
@@ -337,21 +339,52 @@ public class Filter {
 		}
 	}
 	
-	public static class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {
+	public static class EclipseConsoleInputProvider  implements FilterInputProvider {
 		private final String consoleName;
 
-		public EclipseConsolePrintStreamOutputConsumer() {
+		public EclipseConsoleInputProvider() {
 			this(DEFAULT_CONSOLE_NAME);
 		}
 		
-		public EclipseConsolePrintStreamOutputConsumer(String consoleName) {
+		public EclipseConsoleInputProvider(String consoleName) {
 			this.consoleName = consoleName;
+		}
+
+		public InputStream getInputStream() {
+			IOConsole messageConsole = getMessageConsole(consoleName);
+			ConsolePlugin.getDefault().getConsoleManager().showConsoleView(messageConsole);
+			return messageConsole.getInputStream();
+		}
+	}
+	
+	public static class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {
+		private final String consoleName;
+		private final boolean err;
+
+		public EclipseConsolePrintStreamOutputConsumer() {
+			this(DEFAULT_CONSOLE_NAME, false);
+		}
+		
+		public EclipseConsolePrintStreamOutputConsumer(String consoleName) {
+			this(consoleName, false);
+		}
+		
+		public EclipseConsolePrintStreamOutputConsumer(boolean err) {
+			this(DEFAULT_CONSOLE_NAME, err);
+		}
+		
+		public EclipseConsolePrintStreamOutputConsumer(String consoleName, boolean err) {
+			this.consoleName = consoleName;
+			this.err = err;
 		}
 		
 		public void consume(InputStream outputStream) {
-			MessageConsole messageConsole = getMessageConsole(consoleName);
+			IOConsole messageConsole = getMessageConsole(consoleName);
 			MessageConsoleWriter messageConsoleWriter =
 				new MessageConsoleWriter(messageConsole, outputStream);
+			if (err) {
+				
+			}
 			new Thread(messageConsoleWriter).start();
 		}
 	}
@@ -366,17 +399,17 @@ public class Filter {
 	
 	public static final FilterOutputConsumer TO_SYSERR = new PrintStreamOutputConsumer(System.err);	
 	
-	private static Map<String, MessageConsole> nameToMessageConsole = new WeakHashMap<String, MessageConsole>();
+	private static Map<String, IOConsole> nameToMessageConsole = new WeakHashMap<String, IOConsole>();
 
 	@SuppressWarnings("unused")
-	private static MessageConsole getMessageConsole() {
+	private static IOConsole getMessageConsole() {
 		return getMessageConsole(DEFAULT_CONSOLE_NAME);
 	}
 	
-	private static MessageConsole getMessageConsole(String name) {
-		MessageConsole messageConsole = nameToMessageConsole.get(name);
+	private static IOConsole getMessageConsole(String name) {
+		IOConsole messageConsole = nameToMessageConsole.get(name);
 		if (messageConsole == null) {
-			messageConsole = new MessageConsole(name, null);
+			messageConsole = new IOConsole(name, null, null, true);
 			ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{messageConsole});
 			nameToMessageConsole.put(name, messageConsole);
 		}
@@ -384,21 +417,22 @@ public class Filter {
 	}
 	
 	private static class MessageConsoleWriter implements Runnable {		
-		private final MessageConsole messageConsole;
+		private final IOConsole messageConsole;
 		private final InputStream from;
 		
-		private MessageConsoleWriter(MessageConsole messageConsole, InputStream from) {
+		private MessageConsoleWriter(IOConsole messageConsole, InputStream from) {
 			this.messageConsole = messageConsole;
 			this.from = from;
 		}
 		
 		public void run() {
-			final MessageConsoleStream messageConsoleStream = messageConsole.newMessageStream();
+			PrintWriter printWriter = new PrintWriter(messageConsole.newOutputStream());
 			BufferedReader reader = new BufferedReader(new InputStreamReader(from));
 			String output = null;
 			try {
 				while ((output = reader.readLine()) != null) {
-					messageConsoleStream.println(output);
+					printWriter.println(output);
+					printWriter.flush();
 				}
 			} catch (IOException e) {
 			} finally {
@@ -406,10 +440,8 @@ public class Filter {
 					reader.close();
 				} catch (IOException e) {
 				}
-				try {
-					messageConsoleStream.close();
-				} catch (IOException e) {
-				}
+				printWriter.flush();
+				printWriter.close();
 			}
 		}		
 	}

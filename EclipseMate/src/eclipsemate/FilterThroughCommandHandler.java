@@ -90,8 +90,10 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 								filterInputProvider = new Filter.StringInputProvider(styledText.getLine(styledText.getLineAtOffset(styledText.getCaretOffset())));
 								break;
 							case WORD:
-								// TODO
 								filterInputProvider = Filter.EOF;
+								break;
+							case INPUT_FROM_CONSOLE:
+								filterInputProvider = new Filter.EclipseConsoleInputProvider(filterThroughCommandDialog.getConsoleName());
 								break;
 							}
 
