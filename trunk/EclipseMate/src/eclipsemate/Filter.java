@@ -207,9 +207,16 @@ public class Filter {
 										break;
 									}
 									os.write(bytes, 0, readCount);
+									os.flush();
 								} catch (IOException e) {
 									// TODO
 									break;
+								} finally {
+									try {
+										os.close();
+									} catch (IOException e) {
+										// TODO
+									}
 								}
 							}
 						}
@@ -269,6 +276,25 @@ public class Filter {
 
 	public static final FilterInputProvider EOF = new StringInputProvider();
 	
+	
+	public static class EclipseConsoleInputProvider  implements FilterInputProvider {
+		private final String consoleName;
+
+		public EclipseConsoleInputProvider() {
+			this(DEFAULT_CONSOLE_NAME);
+		}
+		
+		public EclipseConsoleInputProvider(String consoleName) {
+			this.consoleName = consoleName;
+		}
+
+		public InputStream getInputStream() {
+			IOConsole messageConsole = getMessageConsole(consoleName);
+			ConsolePlugin.getDefault().getConsoleManager().showConsoleView(messageConsole);
+			return messageConsole.getInputStream();
+		}
+	}
+	
 	public static class PrintStreamOutputConsumer implements FilterOutputConsumer
 	{
 		private PrintStream printStream;
@@ -297,9 +323,12 @@ public class Filter {
 						while ((line = br.readLine()) != null) {
 							if (printStream != null) {
 								printStream.println(line);
+								printStream.flush();
 							}
 						}
 					} catch (IOException e) {
+					} finally {
+						printStream.close();
 					}
 				}
 			}).start();
@@ -328,32 +357,15 @@ public class Filter {
 							stringBuilder.append(line + "\n");
 						}
 					} catch (IOException e) {
+					} finally {
+						outputQueue.add(stringBuilder.toString());
 					}
-					outputQueue.add(stringBuilder.toString());
 				}
 			}).start();
 		}
 		
 		public String getOutput() throws InterruptedException {
 			return outputQueue.take();
-		}
-	}
-	
-	public static class EclipseConsoleInputProvider  implements FilterInputProvider {
-		private final String consoleName;
-
-		public EclipseConsoleInputProvider() {
-			this(DEFAULT_CONSOLE_NAME);
-		}
-		
-		public EclipseConsoleInputProvider(String consoleName) {
-			this.consoleName = consoleName;
-		}
-
-		public InputStream getInputStream() {
-			IOConsole messageConsole = getMessageConsole(consoleName);
-			ConsolePlugin.getDefault().getConsoleManager().showConsoleView(messageConsole);
-			return messageConsole.getInputStream();
 		}
 	}
 	
