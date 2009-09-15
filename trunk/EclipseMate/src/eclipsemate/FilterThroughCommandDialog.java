@@ -34,13 +34,12 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button documentButton;
 	private Button lineButton;
 	private Button wordButton;
+	private Button inputFromConsoleButton;
 	
 	private Filter.INPUT_TYPE inputType;
 	private static Filter.INPUT_TYPE lastInputType = Filter.INPUT_TYPE.NONE;
 
 	private Button discardButton;
-	private Button outputToConsoleButton;
-	private Text   consoleNameText;
 	private Button replaceSelectionButton;
 	private Button replaceSelectedLinesButton;
 	private Button replaceLineButton;
@@ -51,12 +50,15 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button showAsHTMLButton;
 	private Button showAsToolTipButton;
 	private Button createNewDocumentButton;
+	
+	private Button outputToConsoleButton;
+	private Text   consoleNameText;
+	private String consoleName;
+	private static String lastConsoleName;
 
 	private Filter.OUTPUT_TYPE outputType;
 	private static Filter.OUTPUT_TYPE lastOutputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
 
-	private String consoleName;
-	private static String lastConsoleName;
 
 	protected FilterThroughCommandDialog(Shell parentShell) {
 		super(parentShell);
@@ -106,6 +108,8 @@ public class FilterThroughCommandDialog extends Dialog {
 		lineButton.setText("Line");
 		wordButton = new Button(inputGroup, SWT.RADIO);
 		wordButton.setText("Word");
+		inputFromConsoleButton = new Button(inputGroup, SWT.RADIO);
+		inputFromConsoleButton.setText("From Console");
 		
 		Group outputGroup = new Group(composite, SWT.NONE);
 		outputGroup.setText("Output");
@@ -138,20 +142,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		createNewDocumentButton = new Button(outputGroup, SWT.RADIO);
 		createNewDocumentButton.setText("Create New Document");
 		outputToConsoleButton = new Button(outputGroup, SWT.RADIO);
-		outputToConsoleButton.setText("Ouput to Console");
-		
-		consoleNameText = new Text(outputGroup, SWT.BORDER);
-		consoleNameText.setText(Filter.DEFAULT_CONSOLE_NAME);
-		
-		outputToConsoleButton.addSelectionListener(new SelectionListener() {			
-			public void widgetSelected(SelectionEvent e) {
-				consoleNameText.setEnabled(outputToConsoleButton.getSelection());
-			}
-			
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
+		outputToConsoleButton.setText("To Console");
 		
 		padding = new Label(composite, SWT.NONE);
 		paddingGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
@@ -163,6 +154,39 @@ public class FilterThroughCommandDialog extends Dialog {
 		showEnvironmentButton.setLayoutData(showEnvironmentButtonGridData);
 		showEnvironmentButton.addSelectionListener(new SelectionListener() {			
 			public void widgetSelected(SelectionEvent e) {
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+		
+		padding = new Label(composite, SWT.NONE);
+		paddingGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
+		padding.setLayoutData(paddingGridData);
+		
+		Label consoleLabel = new Label(composite, SWT.NONE);
+		consoleLabel.setText("Console Name:");
+		GridData consoleLabelGridData = new GridData(SWT.LEAD, SWT.CENTER, false, false);
+		consoleLabel.setLayoutData(consoleLabelGridData);
+		
+		consoleNameText = new Text(composite, SWT.BORDER);
+		GridData consoleNameTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		consoleNameText.setLayoutData(consoleNameTextGridData);
+		
+		inputFromConsoleButton.addSelectionListener(new SelectionListener() {			
+			public void widgetSelected(SelectionEvent e) {
+				consoleNameText.setEnabled(inputFromConsoleButton.getSelection() || outputToConsoleButton.getSelection());
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+		
+		outputToConsoleButton.addSelectionListener(new SelectionListener() {			
+			public void widgetSelected(SelectionEvent e) {
+				consoleNameText.setEnabled(inputFromConsoleButton.getSelection() || outputToConsoleButton.getSelection());
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -218,6 +242,8 @@ public class FilterThroughCommandDialog extends Dialog {
 			inputType = Filter.INPUT_TYPE.LINE;
 		} else if (wordButton.getSelection()) {
 			inputType = Filter.INPUT_TYPE.WORD;
+		} else if (inputFromConsoleButton.getSelection()) {
+			inputType = Filter.INPUT_TYPE.INPUT_FROM_CONSOLE;
 		}
 		
 		if (discardButton.getSelection()) {
@@ -275,6 +301,9 @@ public class FilterThroughCommandDialog extends Dialog {
 		case WORD:
 			wordButton.setSelection(true);
 			break;
+		case INPUT_FROM_CONSOLE:
+			inputFromConsoleButton.setSelection(true);
+			break;
 		}
 		
 		switch (lastOutputType) {
@@ -314,6 +343,11 @@ public class FilterThroughCommandDialog extends Dialog {
 		}
 		
 		consoleNameText.setEnabled(outputToConsoleButton.getSelection());
+		if (lastConsoleName == null || lastConsoleName.trim().equals("")) {
+			consoleNameText.setText(Filter.DEFAULT_CONSOLE_NAME);
+		} else {
+			consoleNameText.setText(lastConsoleName);
+		}
 		
 		if (lastCommands.size() > 0) {
 			commandCombo.setItems(lastCommands.toArray(new String[lastCommands.size()]));

@@ -40,9 +40,12 @@
  */
 package eclipsemate;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,11 +57,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.swing.JTextArea;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 
 /**
@@ -320,34 +330,39 @@ public class TmBundleImport {
     }
     
     private void importFile(File file) {
-//        try {
+        try {
             Element r = null;
 
-//            try {
-//                InputSource inputSource = new InputSource(new FileReader(file));
-//                
-//                org.w3c.dom.Document doc = XMLUtil.parse(inputSource, false, false, null, new NullEntityResolver());
-//                r = doc.getDocumentElement();
-//            } catch (SAXParseException spe) {
-//                BufferedReader f = new BufferedReader(new FileReader(file));
-//                String s = f.readLine();
-//                if (s != null && s.startsWith("bplist")) {
-//                    wasBinary = true;
-//                    log.append("Binary plist files!\n\nYour snippets are in a binary plist format.\nTo " +
-//                            "be imported, they must be in XML format.\n\n" +
-//                            "First make a backup of your bundle tree (zip -r bundle.zip whatever.bundle)\n" +
-//                            "and then run \"plutil -convert xml1 snippet.plist\" to convert each file.\n" +
-//                            "To perform this for a directory tree, use this:\n\n" +
-//                            "find . -name \"*.plist\" -exec plutil -convert xml1 {} \\;\n\n" +
-//                            "(To change back, replace -convert xml1 with -convert binary1");
-//                    return;
-//                }
-//                
-//                log.append("Parsing error in \"" + file.getName() + "\"; skipping\n  " +
-//                    spe.getMessage());
-//
-//                return;
-//            }
+            try {
+                InputSource inputSource = new InputSource(new FileReader(file));
+                
+		    DocumentBuilderFactory domFactory = 
+			    DocumentBuilderFactory.newInstance();
+			    DocumentBuilder builder = domFactory.newDocumentBuilder();
+                org.w3c.dom.Document doc =  builder.parse(inputSource);
+                r = doc.getDocumentElement();
+            } catch (SAXParseException spe) {
+                BufferedReader f = new BufferedReader(new FileReader(file));
+                String s = f.readLine();
+                if (s != null && s.startsWith("bplist")) {
+                    wasBinary = true;
+                    log.append("Binary plist files!\n\nYour snippets are in a binary plist format.\nTo " +
+                            "be imported, they must be in XML format.\n\n" +
+                            "First make a backup of your bundle tree (zip -r bundle.zip whatever.bundle)\n" +
+                            "and then run \"plutil -convert xml1 snippet.plist\" to convert each file.\n" +
+                            "To perform this for a directory tree, use this:\n\n" +
+                            "find . -name \"*.plist\" -exec plutil -convert xml1 {} \\;\n\n" +
+                            "(To change back, replace -convert xml1 with -convert binary1");
+                    return;
+                }
+                
+                log.append("Parsing error in \"" + file.getName() + "\"; skipping\n  " +
+                    spe.getMessage());
+
+                return;
+            } catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+			}
 
             NodeList dicts = r.getElementsByTagName(TMDICT); // NOI18N
 
@@ -426,11 +441,11 @@ public class TmBundleImport {
 
                 return;
             }
-//        } catch (IOException ioe) {
-//            // TODO
-//        } catch (SAXException se) {
-//            // TODO
-//        }
+        } catch (IOException ioe) {
+            // TODO
+        } catch (SAXException se) {
+            // TODO
+        }
     }
 
     /** Get a mime type to use for the given TM scope */
