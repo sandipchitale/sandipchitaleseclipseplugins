@@ -198,6 +198,12 @@ public class FilterThroughCommandDialog extends Dialog {
 	@Override
 	protected void okPressed() {
 		command = commandCombo.getText();
+		
+		if (command.trim().length() == 0) {
+			getShell().getDisplay().beep();
+			return;
+		}
+		
 		lastCommands.add(0, command);
 		
 		if (noneButton.getSelection()) {
