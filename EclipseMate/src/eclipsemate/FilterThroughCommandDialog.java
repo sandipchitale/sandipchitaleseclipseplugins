@@ -150,6 +150,7 @@ public class FilterThroughCommandDialog extends Dialog {
 
 		Button showEnvironmentButton = new Button(composite, SWT.PUSH);
 		showEnvironmentButton.setText("Show Environment...");
+		showEnvironmentButton.setEnabled(false);
 		GridData showEnvironmentButtonGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 		showEnvironmentButton.setLayoutData(showEnvironmentButtonGridData);
 		showEnvironmentButton.addSelectionListener(new SelectionListener() {			
