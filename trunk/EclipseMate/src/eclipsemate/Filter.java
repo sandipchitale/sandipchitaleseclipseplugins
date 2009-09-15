@@ -232,11 +232,23 @@ public class Filter {
 		public void consume(InputStream input);
 	}
 	
-	public static final FilterInputProvider EOF = new FilterInputProvider() {
-		public InputStream getInputStream() {
-			return new StringBufferInputStream("");
+	public static class StringInputProvider implements FilterInputProvider {
+		private final String string;
+
+		public StringInputProvider() {
+			this("");
 		}
-	};
+		
+		public StringInputProvider(String string) {
+			this.string = string;
+		}
+
+		public InputStream getInputStream() {
+			return new StringBufferInputStream(string);
+		}
+	}
+
+	public static final FilterInputProvider EOF = new StringInputProvider();
 	
 	public static class PrintStreamOutputConsumer implements FilterOutputConsumer
 	{
