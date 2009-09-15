@@ -33,6 +33,7 @@ import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IOConsole;
+import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 @SuppressWarnings("deprecation")
@@ -365,7 +366,7 @@ public class Filter {
 	
 	public static class EclipseConsolePrintStreamOutputConsumer implements FilterOutputConsumer {
 		private final String consoleName;
-		private final boolean err;
+		private final boolean isStdErr;
 
 		public EclipseConsolePrintStreamOutputConsumer() {
 			this(DEFAULT_CONSOLE_NAME, false);
@@ -379,18 +380,15 @@ public class Filter {
 			this(DEFAULT_CONSOLE_NAME, err);
 		}
 		
-		public EclipseConsolePrintStreamOutputConsumer(String consoleName, boolean err) {
+		public EclipseConsolePrintStreamOutputConsumer(String consoleName, boolean isStdErr) {
 			this.consoleName = consoleName;
-			this.err = err;
+			this.isStdErr = isStdErr;
 		}
 		
 		public void consume(InputStream outputStream) {
 			IOConsole messageConsole = getMessageConsole(consoleName);
 			MessageConsoleWriter messageConsoleWriter =
-				new MessageConsoleWriter(messageConsole, outputStream);
-			if (err) {
-				
-			}
+				new MessageConsoleWriter(messageConsole, outputStream, isStdErr);
 			new Thread(messageConsoleWriter).start();
 		}
 	}
@@ -425,14 +423,20 @@ public class Filter {
 	private static class MessageConsoleWriter implements Runnable {		
 		private final IOConsole messageConsole;
 		private final InputStream from;
+		private final boolean isStdErr;
 		
-		private MessageConsoleWriter(IOConsole messageConsole, InputStream from) {
+		private MessageConsoleWriter(IOConsole messageConsole, InputStream from, boolean isStdErr) {
 			this.messageConsole = messageConsole;
 			this.from = from;
+			this.isStdErr = isStdErr;
 		}
 		
 		public void run() {
-			PrintWriter printWriter = new PrintWriter(messageConsole.newOutputStream());
+			IOConsoleOutputStream newOutputStream = messageConsole.newOutputStream();
+			if (isStdErr) {
+				// Set the color
+			}
+			PrintWriter printWriter = new PrintWriter(newOutputStream);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(from));
 			String output = null;
 			try {
