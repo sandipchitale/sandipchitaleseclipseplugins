@@ -28,6 +28,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import eclipsemate.Filter.FilterInputProvider;
+import eclipsemate.Filter.INPUT_TYPE;
 import eclipsemate.Filter.OUTPUT_TYPE;
 
 public class FilterThroughCommandHandler extends AbstractHandler {
@@ -47,6 +49,87 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 		FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
 		filterThroughCommandDialog.setEnvironment(environment);
 		if (filterThroughCommandDialog.open() == Window.OK) {
+			INPUT_TYPE inputType = filterThroughCommandDialog.getInputType();
+			FilterInputProvider filterInputProvider = Filter.EOF;
+
+			switch (inputType) {
+			case SELECTION:
+				if (editor instanceof ITextEditor) {
+					ITextEditor abstractTextEditor = (ITextEditor) editor;
+					if (abstractTextEditor.isEditable()) {
+						Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+						if (adapter instanceof Control) {
+							Control control = (Control) adapter;
+							if (control instanceof StyledText) {
+								StyledText styledText = (StyledText) control;
+								filterInputProvider = new Filter.StringInputProvider(styledText.getSelectionText());
+							}
+						}
+					}
+				}
+				break;
+			case SELECTED_LINES:
+				if (editor instanceof ITextEditor) {
+					ITextEditor abstractTextEditor = (ITextEditor) editor;
+					if (abstractTextEditor.isEditable()) {
+						Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+						if (adapter instanceof Control) {
+							Control control = (Control) adapter;
+							if (control instanceof StyledText) {
+								StyledText styledText = (StyledText) control;
+								Point selection = styledText.getSelection();
+								int selectionStartOffset = styledText.getLineAtOffset(selection.x);
+								int selectionEndOffset = styledText.getLineAtOffset(selection.y);
+								
+								int selectionStartOffsetLineIndex = styledText.getLineAtOffset(selectionStartOffset);
+								int selectionEndOffsetLineIndex = styledText.getLineAtOffset(selectionEndOffset);
+								
+								int selectionStartOffsetLineStartOffset = styledText.getOffsetAtLine(selectionStartOffsetLineIndex);
+								int selectionEndOffsetLineStartOffset = styledText.getLineAtOffset(selectionEndOffsetLineIndex + 1);
+								
+								filterInputProvider = new Filter.StringInputProvider(styledText.getText(selectionStartOffsetLineStartOffset,
+										selectionEndOffsetLineStartOffset - selectionStartOffsetLineStartOffset));
+							}
+						}
+					}
+				}
+				break;
+			case DOCUMENT:
+				if (editor instanceof ITextEditor) {
+					ITextEditor abstractTextEditor = (ITextEditor) editor;
+					if (abstractTextEditor.isEditable()) {
+						Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+						if (adapter instanceof Control) {
+							Control control = (Control) adapter;
+							if (control instanceof StyledText) {
+								StyledText styledText = (StyledText) control;
+								filterInputProvider = new Filter.StringInputProvider(styledText.getText());
+							}
+						}
+					}
+				}
+				break;
+			case LINE:
+				if (editor instanceof ITextEditor) {
+					ITextEditor abstractTextEditor = (ITextEditor) editor;
+					if (abstractTextEditor.isEditable()) {
+						Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+						if (adapter instanceof Control) {
+							Control control = (Control) adapter;
+							if (control instanceof StyledText) {
+								StyledText styledText = (StyledText) control;
+								filterInputProvider = new Filter.StringInputProvider(styledText.getLine(styledText.getLineAtOffset(styledText.getCaretOffset())));
+							}
+						}
+					}
+				}
+				break;
+			case WORD:
+				// TODO
+				filterInputProvider = Filter.EOF;
+				break;
+			}
+
 			Filter.FilterOutputConsumer filterOutputConsumer = null;
 			OUTPUT_TYPE ouputType = filterThroughCommandDialog.getOuputType();
 			switch (ouputType) {
@@ -59,8 +142,8 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 			default:
 				filterOutputConsumer = new Filter.StringOutputConsumer();
 				break;
-			}			
-			Filter.launch(filterThroughCommandDialog.getCommand(), environment, Filter.EOF, filterOutputConsumer);
+			}
+			Filter.launch(filterThroughCommandDialog.getCommand(), environment, filterInputProvider, filterOutputConsumer);
 			try {
 				switch (ouputType) {
 				case DISCARD:
