@@ -11,6 +11,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.StyledText;
@@ -151,6 +152,32 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 						}
 					}
 					break;
+				case SHOW_AS_TOOLTIP:
+					if (editor instanceof ITextEditor) {
+						ITextEditor abstractTextEditor = (ITextEditor) editor;
+						if (abstractTextEditor.isEditable()) {
+							Object adapter = (Control) abstractTextEditor.getAdapter(Control.class);
+							if (adapter instanceof Control) {
+								Control control = (Control) adapter;
+								if (control instanceof StyledText) {
+									StyledText styledText = (StyledText) control;
+									
+									DefaultInformationControl tooltip = new DefaultInformationControl(activeWorkbenchWindow.getShell(), "Type escape to dismiss.", null);
+									tooltip.setInformation(((Filter.StringOutputConsumer)filterOutputConsumer).getOutput());
+									Point p = tooltip.computeSizeHint();
+									tooltip.setSize(p.x, p.y);
+									
+									int caretOffset = styledText.getCaretOffset();
+									Point locationAtOffset = styledText.getLocationAtOffset(caretOffset);
+									locationAtOffset = styledText.toDisplay(locationAtOffset.x, locationAtOffset.y + styledText.getLineHeight(caretOffset) + 2);
+									tooltip.setLocation(locationAtOffset);
+									tooltip.setVisible(true);
+									tooltip.setFocus();
+								}
+							}
+						}
+					}
+					break;
 				case CREATE_A_NEW_DOCUMENT:
 					File file = Utilities.queryFile();
 					IEditorInput input = Utilities.createNonExistingFileEditorInput(file, "Untitled.txt");
@@ -166,7 +193,7 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 							IDocument doc = dp.getDocument(textEditor.getEditorInput());
 							try
 							{
-								String fileContents = ((Filter.StringOutputConsumer)filterOutputConsumer).getOutput();;
+								String fileContents = ((Filter.StringOutputConsumer)filterOutputConsumer).getOutput();
 								if (fileContents != null)
 								{
 									doc.replace(0, 0, fileContents);
