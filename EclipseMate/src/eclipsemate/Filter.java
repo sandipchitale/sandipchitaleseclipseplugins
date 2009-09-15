@@ -7,7 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringBufferInputStream;
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
@@ -16,6 +17,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -159,11 +161,26 @@ public class Filter {
 		new Thread(new Runnable() {
 			public void run() {
 				Activator activator = Activator.getDefault();
-				String[] commandArray = Utilities.parseParameters(command);
+				List<String> commandList = new LinkedList<String>();
+				
+				if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS())) {
+					String shell = environment.get("SHELL");
+					if (shell == null) {
+						shell = "/bin/bash";
+					}
+					commandList.add(shell);
+					commandList.add("-c");
+				} else if (Platform.OS_WIN32.equals(Platform.getOS())){
+					commandList.add("cmd");
+					commandList.add("/C");
+					commandList.add("start");
+				}
+				commandList.add(command);
+				//Utilities.parseParameters(command);
 				try {
 					
 					ProcessBuilder processBuilder = new ProcessBuilder();
-					processBuilder.command(Arrays.asList(commandArray));
+					processBuilder.command(commandList);
 					Map<String, String> inheritedEnvironment = processBuilder.environment();
 					if (environment != null) {
 						inheritedEnvironment.putAll(environment);
@@ -203,8 +220,7 @@ public class Filter {
 						activator.getLog().log(
 								new Status(IStatus.ERROR, activator.getBundle()
 										.getSymbolicName(), "Process '"
-										+ Arrays.asList(commandArray)
-												.toString()
+										+ commandList.toString()
 										+ "' exited with status: " + status));
 					}
 				} catch (InterruptedException ex) {
@@ -212,15 +228,13 @@ public class Filter {
 							new Status(IStatus.ERROR, activator.getBundle()
 									.getSymbolicName(),
 									"Exception while executing '"
-											+ Arrays.asList(commandArray)
-													.toString() + "'", ex));
+											+ commandList.toString() + "'", ex));
 				} catch (IOException ioe) {
 					activator.getLog().log(
 							new Status(IStatus.ERROR, activator.getBundle()
 									.getSymbolicName(),
 									"Exception while executing '"
-											+ Arrays.asList(commandArray)
-													.toString() + "'", ioe));
+											+ commandList.toString() + "'", ioe));
 				}
 
 			}

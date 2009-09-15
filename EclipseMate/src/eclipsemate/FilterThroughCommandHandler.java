@@ -82,7 +82,7 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 								int selectionEndOffsetLine = styledText.getLineAtOffset(selection.y);
 								
 								int selectionStartOffsetLineStartOffset = styledText.getOffsetAtLine(selectionStartOffsetLine);
-								int selectionEndOffsetLineStartOffset = styledText.getOffsetAtLine(selectionEndOffsetLine + 1);
+								int selectionEndOffsetLineStartOffset = styledText.getOffsetAtLine(selectionEndOffsetLine + 1) - 1;
 								
 								filterInputProvider = new Filter.StringInputProvider(styledText.getText(selectionStartOffsetLineStartOffset,
 										selectionEndOffsetLineStartOffset));
