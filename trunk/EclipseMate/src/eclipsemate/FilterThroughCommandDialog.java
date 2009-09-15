@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Text;
 
 public class FilterThroughCommandDialog extends Dialog {
 
-	@SuppressWarnings("unused")
 	private Map<String, String> environment;
 	private Combo commandCombo;
 	private String command;
@@ -59,9 +58,9 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Filter.OUTPUT_TYPE outputType;
 	private static Filter.OUTPUT_TYPE lastOutputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
 
-
-	protected FilterThroughCommandDialog(Shell parentShell) {
+	FilterThroughCommandDialog(Shell parentShell, Map<String, String> environment) {
 		super(parentShell);
+		this.environment = environment;
 	}
 	
 	@Override
@@ -150,11 +149,12 @@ public class FilterThroughCommandDialog extends Dialog {
 
 		Button showEnvironmentButton = new Button(composite, SWT.PUSH);
 		showEnvironmentButton.setText("Show Environment...");
-		showEnvironmentButton.setEnabled(false);
 		GridData showEnvironmentButtonGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 		showEnvironmentButton.setLayoutData(showEnvironmentButtonGridData);
 		showEnvironmentButton.addSelectionListener(new SelectionListener() {			
 			public void widgetSelected(SelectionEvent e) {
+				EnvironmentDialog environmentDialog = new EnvironmentDialog(FilterThroughCommandDialog.this.getShell(), environment);
+				environmentDialog.open();
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -200,9 +200,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		return composite;
 	}
 
-	public void setEnvironment(Map<String, String> environment) {
-		this.environment = environment;		
-	}
+
 	
 	public String getCommand() {
 		return command;
