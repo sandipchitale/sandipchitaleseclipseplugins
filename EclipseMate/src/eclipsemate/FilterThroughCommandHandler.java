@@ -69,8 +69,7 @@ public class FilterThroughCommandHandler extends AbstractHandler {
 						int selectionEndOffsetLineEndOffset = 
 							styledText.getOffsetAtLine(selectionEndOffsetLine) + styledText.getLine(selectionEndOffsetLine).length();
 						
-						FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell());
-						filterThroughCommandDialog.setEnvironment(environment);
+						FilterThroughCommandDialog filterThroughCommandDialog = new FilterThroughCommandDialog(activeWorkbenchWindow.getShell(), environment);
 						if (filterThroughCommandDialog.open() == Window.OK) {
 							INPUT_TYPE inputType = filterThroughCommandDialog.getInputType();
 							FilterInputProvider filterInputProvider = Filter.EOF;
