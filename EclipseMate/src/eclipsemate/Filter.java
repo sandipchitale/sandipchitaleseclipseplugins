@@ -173,6 +173,7 @@ public class Filter {
 					filterSTDOUTConsumerProvider.consume(process.getInputStream());
 					filterSTDERRConsumerProvider.consume(process.getErrorStream());
 					
+					// Input stream pump
 					new Thread(new Runnable() {
 						public void run() {
 							InputStream is = filterInputProvider.getInputStream();
@@ -182,6 +183,8 @@ public class Filter {
 								try {
 									int readCount = is.read(bytes);
 									if (readCount == -1) {
+										os.flush();
+										os.close();
 										break;
 									}
 									os.write(bytes, 0, readCount);

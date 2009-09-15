@@ -214,15 +214,14 @@ public class FilterThroughCommandDialog extends Dialog {
 			inputType = Filter.INPUT_TYPE.WORD;
 		}
 		
-		
 		if (discardButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.DISCARD;
-		} else if (outputToConsoleButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
 		} else if (replaceSelectionButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.REPLACE_SELECTION;
 		} else if (replaceSelectedLinesButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.REPLACE_SELECTED_LINES;
+		} else if (replaceDocumentButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.REPLACE_DOCUMENT;
 		} else if (replaceLineButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.REPLACE_LINE;
 		} else if (replaceWordButton.getSelection()) {
@@ -235,7 +234,9 @@ public class FilterThroughCommandDialog extends Dialog {
 			outputType = Filter.OUTPUT_TYPE.SHOW_AS_TOOLTIP;
 		} else if (createNewDocumentButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.CREATE_A_NEW_DOCUMENT;
-		}
+		} else if (outputToConsoleButton.getSelection()) {
+			outputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
+		} 
 		
 		consoleName = consoleNameText.getText();
 		if (consoleName.trim().length() == 0)
