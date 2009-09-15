@@ -211,12 +211,6 @@ public class Filter {
 								} catch (IOException e) {
 									// TODO
 									break;
-								} finally {
-									try {
-										os.close();
-									} catch (IOException e) {
-										// TODO
-									}
 								}
 							}
 						}
