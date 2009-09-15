@@ -30,7 +30,7 @@ public class FilterThroughCommandDialog extends Dialog {
 	
 	private Button noneButton;
 	private Button selectionButton;
-	private Button selectionLinesButton;
+	private Button selectedLinesButton;
 	private Button documentButton;
 	private Button lineButton;
 	private Button wordButton;
@@ -98,8 +98,8 @@ public class FilterThroughCommandDialog extends Dialog {
 		noneButton.setText("None");
 		selectionButton = new Button(inputGroup, SWT.RADIO);
 		selectionButton.setText("Selection");
-		selectionLinesButton = new Button(inputGroup, SWT.RADIO);
-		selectionLinesButton.setText("Selection Lines");
+		selectedLinesButton = new Button(inputGroup, SWT.RADIO);
+		selectedLinesButton.setText("Selected Lines");
 		documentButton = new Button(inputGroup, SWT.RADIO);
 		documentButton.setText("Document");
 		lineButton = new Button(inputGroup, SWT.RADIO);
@@ -204,7 +204,7 @@ public class FilterThroughCommandDialog extends Dialog {
 			inputType = Filter.INPUT_TYPE.NONE;
 		} else if (selectionButton.getSelection()) {
 			inputType = Filter.INPUT_TYPE.SELECTION;
-		} else if (selectionLinesButton.getSelection()) {
+		} else if (selectedLinesButton.getSelection()) {
 			inputType = Filter.INPUT_TYPE.SELECTED_LINES;
 		} else if (documentButton.getSelection()) {
 			inputType = Filter.INPUT_TYPE.DOCUMENT;
@@ -233,7 +233,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		} else if (showAsToolTipButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.SHOW_AS_TOOLTIP;
 		} else if (createNewDocumentButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.CREATE_A_NEW_DOCUMENT;
+			outputType = Filter.OUTPUT_TYPE.CREATE_NEW_DOCUMENT;
 		} else if (outputToConsoleButton.getSelection()) {
 			outputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
 		} 
@@ -258,7 +258,7 @@ public class FilterThroughCommandDialog extends Dialog {
 			selectionButton.setSelection(true);
 			break;
 		case SELECTED_LINES:
-			selectionLinesButton.setSelection(true);
+			selectedLinesButton.setSelection(true);
 			break;
 		case DOCUMENT:
 			documentButton.setSelection(true);
@@ -290,7 +290,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		case REPLACE_WORD:
 			replaceWordButton.setSelection(true);
 			break;		
-		case CREATE_A_NEW_DOCUMENT:
+		case CREATE_NEW_DOCUMENT:
 			createNewDocumentButton.setSelection(true);
 			break;
 		case SHOW_AS_HTML:
