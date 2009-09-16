@@ -174,7 +174,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		
 		inputFromConsoleButton.addSelectionListener(new SelectionListener() {			
 			public void widgetSelected(SelectionEvent e) {
-				consoleNameText.setEnabled(inputFromConsoleButton.getSelection() || outputToConsoleButton.getSelection());
+				adjustConsoleNameTextSate();
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -184,7 +184,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		
 		outputToConsoleButton.addSelectionListener(new SelectionListener() {			
 			public void widgetSelected(SelectionEvent e) {
-				consoleNameText.setEnabled(inputFromConsoleButton.getSelection() || outputToConsoleButton.getSelection());
+				adjustConsoleNameTextSate();
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -197,7 +197,9 @@ public class FilterThroughCommandDialog extends Dialog {
 		return composite;
 	}
 
-
+	private void adjustConsoleNameTextSate() {
+		consoleNameText.setEnabled(inputFromConsoleButton.getSelection() || outputToConsoleButton.getSelection());
+	}
 	
 	public String getCommand() {
 		return command;
