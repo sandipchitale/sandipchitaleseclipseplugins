@@ -386,6 +386,7 @@ public class Filter {
 		
 		public void consume(InputStream outputStream) {
 			IOConsole messageConsole = getMessageConsole(consoleName);
+			messageConsole.activate();
 			MessageConsoleWriter messageConsoleWriter =
 				new MessageConsoleWriter(messageConsole, outputStream, isStdErr);
 			new Thread(messageConsoleWriter).start();
