@@ -162,10 +162,6 @@ public class FilterThroughCommandDialog extends Dialog {
 			}
 		});
 		
-		padding = new Label(composite, SWT.NONE);
-		paddingGridData = new GridData(SWT.LEAD, SWT.TOP, false, false);
-		padding.setLayoutData(paddingGridData);
-		
 		Label consoleLabel = new Label(composite, SWT.NONE);
 		consoleLabel.setText("Console Name:");
 		GridData consoleLabelGridData = new GridData(SWT.LEAD, SWT.CENTER, false, false);
@@ -173,6 +169,7 @@ public class FilterThroughCommandDialog extends Dialog {
 		
 		consoleNameText = new Text(composite, SWT.BORDER);
 		GridData consoleNameTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		consoleNameTextGridData.horizontalSpan = 2;
 		consoleNameText.setLayoutData(consoleNameTextGridData);
 		
 		inputFromConsoleButton.addSelectionListener(new SelectionListener() {			
