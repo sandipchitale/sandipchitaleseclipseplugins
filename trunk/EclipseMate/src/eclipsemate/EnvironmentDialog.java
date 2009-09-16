@@ -1,6 +1,7 @@
 package eclipsemate;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -22,7 +23,9 @@ public class EnvironmentDialog extends Dialog {
 
 	protected EnvironmentDialog(Shell shell, Map<String, String> environment) {
 		super(shell);
-		this.environment = environment;
+		this.environment = new TreeMap<String, String>();
+		this.environment.putAll(environment);
+		this.environment.putAll(new ProcessBuilder("").environment());
 	}
 	
 	@Override
