@@ -2,6 +2,8 @@ package cdgit;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -152,45 +154,72 @@ public class CdgitAction implements IObjectActionDelegate, IMenuCreator {
 			if (fileObject.isFile()) {
 				fileObject = fileObject.getParentFile();
 			}
-			final File finalGotoFile = fileObject;
-			MenuItem gotoParentAction = new MenuItem(menu, SWT.PUSH);
-			gotoParentAction.setText("cd to git repo of " + finalGotoFile.getAbsolutePath());
-			gotoParentAction.addSelectionListener(new SelectionAdapter() {
+			final File finalGitDir = fileObject;
+			MenuItem cdgitAction = new MenuItem(menu, SWT.PUSH);
+			cdgitAction.setText("cd to '" + finalGitDir.getAbsolutePath() + "'");
+			cdgitAction.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					cdgit(finalGotoFile);
+					cdgit(finalGitDir);
 				}
 			});
+			MenuItem cdgitAndGitkAction = new MenuItem(menu, SWT.PUSH);
+			cdgitAndGitkAction.setText("cd to '" + finalGitDir.getAbsolutePath() + "' and run gitk ");
+			cdgitAndGitkAction.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					cdgit(finalGitDir, "gitk");
+				}
+			});
+			
+			if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+				MenuItem cdgitAndGitxAction = new MenuItem(menu, SWT.PUSH);
+				cdgitAndGitxAction.setText("cd to '" + finalGitDir.getAbsolutePath() + "' and run gitx ");
+				cdgitAndGitxAction.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						cdgit(finalGitDir, "gitx");
+					}
+				});
+			}
 		}
 	}
 	
 	private static void cdgit(File file) {
+		cdgit(file, null);
+	}
+	
+	private static void cdgit(File file, String execute) {
 		// Get the configured explorer commands for folder and file
 		if (file != null && file.exists()) {
 			if (file.isFile()) {
 				file = file.getParentFile();
 			}
 			ProcessBuilder processBuilder = new ProcessBuilder();
+			List<String> command = new LinkedList<String>();
 			if (Platform.OS_MACOSX.equals(Platform.getOS())) {
-				processBuilder.command(
-						"/usr/bin/osascript"
-						,Activator.getDefault().getCdgitScriptPath()
-						,file.getAbsolutePath()
-				);
+				command.add("/usr/bin/osascript");
+				command.add(Activator.getDefault().getCdgitScriptPath());
+				command.add(file.getAbsolutePath());
+				if (execute != null) {
+					command.add(execute);
+				}
 			} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
-				processBuilder.command(
-						"/usr/bin/gnome-terminal"
-						,"--working-directory=" + file.getAbsolutePath()
-				);
+				command.add("/usr/bin/gnome-terminal");
+				command.add("--working-directory=" + file.getAbsolutePath());
+				if (execute != null) {					
+					command.add("--command=" + execute);				
+				}
 			} else if (Platform.OS_WIN32.equals(Platform.getOS())) {
-				processBuilder.command(
-						"cmd"
-						,"/K"
-						,"start"
-						,"cd"
-						,"/D"
-						,file.getAbsolutePath()
-				);
+				command.add("cmd");
+				command.add("/K");
+				command.add("start");
+				command.add("cd");
+				command.add("/D");
+				command.add(file.getAbsolutePath());
+				if (execute != null) {
+					command.add("&&");
+					command.add(execute);
+				}
 			}
+			processBuilder.command(command);
 			try {
 				final Process process = processBuilder.start();
 				new Thread(new Runnable() {
