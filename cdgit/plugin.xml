@@ -12,7 +12,7 @@
                icon="icons/cdgit.png"
                id="cdgit.toolbar"
                label="cd to git repository root"
-               style="push"
+               style="pulldown"
                toolbarPath="Normal/cdgit">
          </action>
       </actionSet>
