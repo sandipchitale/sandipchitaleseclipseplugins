@@ -35,59 +35,11 @@ import org.eclipse.ui.console.IOConsole;
 import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import eclipsemate.bundle.model.VARIABLES_NAMES;
+
 @SuppressWarnings("deprecation")
 public class Filter {
 	static final String DEFAULT_CONSOLE_NAME = "Eclipse Mate";
-
-	enum VARIABLES_NAMES {
-		TM_BUNDLE_SUPPORT
-		,TM_CURRENT_LINE
-		,TM_CURRENT_WORD
-		,TM_DIRECTORY
-		,TM_FILEPATH
-		,TM_LINE_NUMBER
-		,TM_LINE_INDEX
-		,TM_PROJECT_DIRECTORY
-		,TM_SCOPE
-		,TM_SELECTED_FILES
-		,TM_SELECTED_FILE
-		,TM_SELECTED_TEXT
-		,TM_SOFT_TABS
-		,TM_SUPPORT_PATH
-		,TM_TAB_SIZE
-		
-		,TM_SELECTION_OFFSET
-		,TM_SELECTION_LENGTH
-		,TM_SELECTION_START_LINE_NUMBER
-		,TM_SELECTION_END_LINE_NUMBER
-		,TM_CARET_LINE_NUMBER
-		,TM_CARET_LINE_TEXT
-	};
-	
-	enum INPUT_TYPE  {
-		NONE
-		,SELECTION
-		,SELECTED_LINES
-		,LINE
-		,WORD
-		,DOCUMENT
-		,INPUT_FROM_CONSOLE
-	};
-	
-	enum OUTPUT_TYPE {
-		DISCARD
-		,REPLACE_SELECTION
-		,REPLACE_SELECTED_LINES
-		,REPLACE_LINE
-		,REPLACE_WORD
-		,REPLACE_DOCUMENT
-		,INSERT_AS_TEXT
-		//,INSERT_AS_TEMPLATE
-		,SHOW_AS_HTML
-		,SHOW_AS_TOOLTIP
-		,CREATE_NEW_DOCUMENT
-		,OUTPUT_TO_CONSOLE
-	}
 
 	public static Map<String, String> computeEnvironment(IWorkbenchWindow workbenchWindow, IEditorPart editorPart) {
 		Map<String, String> environment = new TreeMap<String, String>();

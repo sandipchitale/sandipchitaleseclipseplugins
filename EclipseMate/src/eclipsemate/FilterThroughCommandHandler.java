@@ -29,8 +29,8 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import eclipsemate.Filter.FilterInputProvider;
-import eclipsemate.Filter.INPUT_TYPE;
-import eclipsemate.Filter.OUTPUT_TYPE;
+import eclipsemate.bundle.model.INPUT_TYPE;
+import eclipsemate.bundle.model.OUTPUT_TYPE;
 
 public class FilterThroughCommandHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
