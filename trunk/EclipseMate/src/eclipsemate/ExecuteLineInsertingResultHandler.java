@@ -13,6 +13,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import eclipsemate.bundle.model.VARIABLES_NAMES;
+
 public class ExecuteLineInsertingResultHandler extends AbstractHandler {
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -29,7 +31,7 @@ public class ExecuteLineInsertingResultHandler extends AbstractHandler {
 		}
 		Map<String, String> environment = Filter.computeEnvironment(activeWorkbenchWindow, editor);
 		Filter.StringOutputConsumer filterOutputConsumer = new Filter.StringOutputConsumer();
-		Filter.launch(environment.get(Filter.VARIABLES_NAMES.TM_CARET_LINE_TEXT.name()), environment, Filter.EOF, filterOutputConsumer);
+		Filter.launch(environment.get(VARIABLES_NAMES.TM_CARET_LINE_TEXT.name()), environment, Filter.EOF, filterOutputConsumer);
 		try {
 			String output = filterOutputConsumer.getOutput();
 			if (editor instanceof ITextEditor) {

@@ -20,6 +20,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import eclipsemate.bundle.model.INPUT_TYPE;
+import eclipsemate.bundle.model.OUTPUT_TYPE;
+
 public class FilterThroughCommandDialog extends Dialog {
 
 	private Map<String, String> environment;
@@ -35,8 +38,8 @@ public class FilterThroughCommandDialog extends Dialog {
 	private Button wordButton;
 	private Button inputFromConsoleButton;
 	
-	private Filter.INPUT_TYPE inputType;
-	private static Filter.INPUT_TYPE lastInputType = Filter.INPUT_TYPE.NONE;
+	private INPUT_TYPE inputType;
+	private static INPUT_TYPE lastInputType = INPUT_TYPE.NONE;
 
 	private Button discardButton;
 	private Button replaceSelectionButton;
@@ -55,8 +58,8 @@ public class FilterThroughCommandDialog extends Dialog {
 	private String consoleName;
 	private static String lastConsoleName;
 
-	private Filter.OUTPUT_TYPE outputType;
-	private static Filter.OUTPUT_TYPE lastOutputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
+	private OUTPUT_TYPE outputType;
+	private static OUTPUT_TYPE lastOutputType = OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
 
 	FilterThroughCommandDialog(Shell parentShell, Map<String, String> environment) {
 		super(parentShell);
@@ -205,11 +208,11 @@ public class FilterThroughCommandDialog extends Dialog {
 		return command;
 	}
 	
-	public Filter.INPUT_TYPE getInputType() {
+	public INPUT_TYPE getInputType() {
 		return inputType;
 	}
 	
-	public Filter.OUTPUT_TYPE getOuputType() {
+	public OUTPUT_TYPE getOuputType() {
 		return outputType;
 	}
 	
@@ -229,43 +232,43 @@ public class FilterThroughCommandDialog extends Dialog {
 		lastCommands.add(0, command);
 		
 		if (noneButton.getSelection()) {
-			inputType = Filter.INPUT_TYPE.NONE;
+			inputType = INPUT_TYPE.NONE;
 		} else if (selectionButton.getSelection()) {
-			inputType = Filter.INPUT_TYPE.SELECTION;
+			inputType = INPUT_TYPE.SELECTION;
 		} else if (selectedLinesButton.getSelection()) {
-			inputType = Filter.INPUT_TYPE.SELECTED_LINES;
+			inputType = INPUT_TYPE.SELECTED_LINES;
 		} else if (documentButton.getSelection()) {
-			inputType = Filter.INPUT_TYPE.DOCUMENT;
+			inputType = INPUT_TYPE.DOCUMENT;
 		} else if (lineButton.getSelection()) {
-			inputType = Filter.INPUT_TYPE.LINE;
+			inputType = INPUT_TYPE.LINE;
 		} else if (wordButton.getSelection()) {
-			inputType = Filter.INPUT_TYPE.WORD;
+			inputType = INPUT_TYPE.WORD;
 		} else if (inputFromConsoleButton.getSelection()) {
-			inputType = Filter.INPUT_TYPE.INPUT_FROM_CONSOLE;
+			inputType = INPUT_TYPE.INPUT_FROM_CONSOLE;
 		}
 		
 		if (discardButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.DISCARD;
+			outputType = OUTPUT_TYPE.DISCARD;
 		} else if (replaceSelectionButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.REPLACE_SELECTION;
+			outputType = OUTPUT_TYPE.REPLACE_SELECTION;
 		} else if (replaceSelectedLinesButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.REPLACE_SELECTED_LINES;
+			outputType = OUTPUT_TYPE.REPLACE_SELECTED_LINES;
 		} else if (replaceDocumentButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.REPLACE_DOCUMENT;
+			outputType = OUTPUT_TYPE.REPLACE_DOCUMENT;
 		} else if (replaceLineButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.REPLACE_LINE;
+			outputType = OUTPUT_TYPE.REPLACE_LINE;
 		} else if (replaceWordButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.REPLACE_WORD;
+			outputType = OUTPUT_TYPE.REPLACE_WORD;
 		} else if (insertAsTextButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.INSERT_AS_TEXT;
+			outputType = OUTPUT_TYPE.INSERT_AS_TEXT;
 		} else if (showAsHTMLButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.SHOW_AS_HTML;
+			outputType = OUTPUT_TYPE.SHOW_AS_HTML;
 		} else if (showAsToolTipButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.SHOW_AS_TOOLTIP;
+			outputType = OUTPUT_TYPE.SHOW_AS_TOOLTIP;
 		} else if (createNewDocumentButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.CREATE_NEW_DOCUMENT;
+			outputType = OUTPUT_TYPE.CREATE_NEW_DOCUMENT;
 		} else if (outputToConsoleButton.getSelection()) {
-			outputType = Filter.OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
+			outputType = OUTPUT_TYPE.OUTPUT_TO_CONSOLE;
 		} 
 		
 		consoleName = consoleNameText.getText();
