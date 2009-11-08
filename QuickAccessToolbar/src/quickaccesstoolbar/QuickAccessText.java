@@ -74,8 +74,8 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 			// Set up dispose listener
 			getShell().addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent e) {
-					quickAccessBox.setText("");
 					quickAccessDialog = null;
+					quickAccessBox.setText("");
 				}
 			});
 			
@@ -135,10 +135,10 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 
 	private ModifyListener modifyListener = new ModifyListener() {
 		public void modifyText(ModifyEvent e) {
-			if (quickAccessDialog == null) {
-				showQuickAccessDialog();
-			}
-			if (!quickAccessDialog.getShell().isDisposed()) {
+			if (quickAccessBox.getText().trim().length() > 0) {
+				if (quickAccessDialog == null) {
+					showQuickAccessDialog();
+				}
 				quickAccessDialog.getTitleControl().setText(quickAccessBox.getText());
 			}
 		}
@@ -180,6 +180,7 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 	@Override
 	protected Control createControl(Composite parent) {
 		GridLayout layout = new GridLayout(1, false);
+		layout.marginHeight=2;
 		parent.setLayout(layout);
 		quickAccessBox = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH);
 		quickAccessBox.setText("                    ");
@@ -204,7 +205,7 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 			}
 		});
 		
-		GridData quickAccessBoxGridData = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		GridData quickAccessBoxGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		quickAccessBoxGridData.widthHint = quickAccessBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 		quickAccessBox.setLayoutData(quickAccessBoxGridData);
 		return quickAccessBox;
