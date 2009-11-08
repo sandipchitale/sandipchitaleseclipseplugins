@@ -189,7 +189,7 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 		layout.marginHeight=2;
 		parent.setLayout(layout);
 		quickAccessBox = new Text(parent, SWT.SEARCH | SWT.ICON_SEARCH);
-		quickAccessBox.setText("                    ");
+		quickAccessBox.setText("                                    ");
 		quickAccessBox.addFocusListener(new FocusListener() {
 			private boolean firstTime = true;
 			private boolean secondTime = false;
@@ -202,7 +202,7 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 				if (firstTime) {
 					firstTime = false;
 					secondTime = true;
-					setQuickAccessBoxHelpText();
+					setQuickAccessBoxHelp();
 					return;
 				}
 				if (secondTime) {
@@ -234,9 +234,9 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 		return quickAccessBox;
 	}
 
-	private void setQuickAccessBoxHelpText() {
+	private void setQuickAccessBoxHelp() {
 		quickAccessBox.setForeground(quickAccessBox.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
-		if ("mac".equals(Platform.getOS())) {			
+		if ("macosx".equals(Platform.getOS())) {			
 			quickAccessBox.setText("Command+4 to activate");
 		} else {
 			quickAccessBox.setText("Control+4 to activate");
