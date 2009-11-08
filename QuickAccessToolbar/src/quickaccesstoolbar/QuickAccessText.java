@@ -4,7 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -25,6 +29,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.quickaccess.QuickAccessDialog;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 
@@ -182,10 +188,11 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginHeight=2;
 		parent.setLayout(layout);
-		quickAccessBox = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH);
+		quickAccessBox = new Text(parent, SWT.SEARCH | SWT.ICON_SEARCH);
 		quickAccessBox.setText("                    ");
 		quickAccessBox.addFocusListener(new FocusListener() {
 			private boolean firstTime = true;
+			private boolean secondTime = false;
 			public void focusLost(FocusEvent e) {
 				quickAccessBox.removeKeyListener(keyListener);
 				quickAccessBox.removeModifyListener(modifyListener);
@@ -194,9 +201,16 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 			public void focusGained(FocusEvent e) {
 				if (firstTime) {
 					firstTime = false;
-					quickAccessBox.setText("");
+					secondTime = true;
+					setQuickAccessBoxHelpText();
 					return;
 				}
+				if (secondTime) {
+					secondTime = false;
+					// Reset foreground for notmal use
+					quickAccessBox.setForeground(null);
+				}
+				quickAccessBox.setText("");
 				quickAccessBox.addKeyListener(keyListener);
 				quickAccessBox.addModifyListener(modifyListener);
 				if (quickAccessBox.getText().trim().length() > 0) {
@@ -208,11 +222,30 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 		GridData quickAccessBoxGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		quickAccessBoxGridData.widthHint = quickAccessBox.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 		quickAccessBox.setLayoutData(quickAccessBoxGridData);
+
+		IHandlerService handlerService = (IHandlerService) getWorkbenchWindow().getService(IHandlerService.class);
+		handlerService.activateHandler("QuickAccessToolbar.toolbar.command", new AbstractHandler() {
+			public Object execute(ExecutionEvent event)
+					throws ExecutionException {
+				return quickAccessBox.setFocus();
+			}
+		});
+		
 		return quickAccessBox;
+	}
+
+	private void setQuickAccessBoxHelpText() {
+		quickAccessBox.setForeground(quickAccessBox.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
+		if ("mac".equals(Platform.getOS())) {			
+			quickAccessBox.setText("Command+4 to activate");
+		} else {
+			quickAccessBox.setText("Control+4 to activate");
+		}
 	}
 	
 	private void showQuickAccessDialog() {
-		quickAccessDialog = new NoTitleQuickAccessDialog(getWorkbenchWindow(), null);
+		ICommandService commandService = (ICommandService) getWorkbenchWindow().getService(ICommandService.class);
+		quickAccessDialog = new NoTitleQuickAccessDialog(getWorkbenchWindow(), commandService.getCommand("org.eclipse.ui.window.quickAccess"));
 		Rectangle quickAccessBoxBounds = quickAccessBox.getBounds();
 		Display display = quickAccessBox.getShell().getDisplay();
 		Point quickAccessBoxLocationOnScreen = display.map(quickAccessBox, null, new Point(quickAccessBoxBounds.x, quickAccessBoxBounds.y));
