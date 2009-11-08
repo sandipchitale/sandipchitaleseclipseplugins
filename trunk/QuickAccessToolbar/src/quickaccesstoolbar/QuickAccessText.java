@@ -138,7 +138,9 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 			if (quickAccessDialog == null) {
 				showQuickAccessDialog();
 			}
-			quickAccessDialog.getTitleControl().setText(quickAccessBox.getText());
+			if (!quickAccessDialog.getShell().isDisposed()) {
+				quickAccessDialog.getTitleControl().setText(quickAccessBox.getText());
+			}
 		}
 	};
 	
