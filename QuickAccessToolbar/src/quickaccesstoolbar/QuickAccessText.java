@@ -58,6 +58,8 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 	}
 	
 	private class NoTitleQuickAccessDialog extends QuickAccessDialog {
+		private Text titleControl;
+
 		public NoTitleQuickAccessDialog(IWorkbenchWindow window,
 				Command invokingCommand) {
 			super(window, invokingCommand);
@@ -72,8 +74,6 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 			} catch (IllegalAccessException e) {
 			}
 		}
-		
-		private Text titleControl;
 		
 		@Override
 		protected Control createTitleControl(Composite parent) {
@@ -190,6 +190,7 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 		parent.setLayout(layout);
 		quickAccessBox = new Text(parent, SWT.SEARCH | SWT.ICON_SEARCH);
 		quickAccessBox.setText("                                    ");
+		quickAccessBox.setToolTipText(getHelpText());
 		quickAccessBox.addFocusListener(new FocusListener() {
 			private boolean firstTime = true;
 			private boolean secondTime = false;
@@ -202,7 +203,6 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 				if (firstTime) {
 					firstTime = false;
 					secondTime = true;
-					setQuickAccessBoxHelp();
 					return;
 				}
 				if (secondTime) {
@@ -231,21 +231,27 @@ public class QuickAccessText extends WorkbenchWindowControlContribution {
 			}
 		});
 		
+		setQuickAccessBoxHelp();
+		
 		return quickAccessBox;
 	}
 
 	private void setQuickAccessBoxHelp() {
 		quickAccessBox.setForeground(quickAccessBox.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
+		quickAccessBox.setText(getHelpText());
+	}
+	
+	private String getHelpText() {
 		if ("macosx".equals(Platform.getOS())) {			
-			quickAccessBox.setText("Command+4 to activate");
+			return "Command+4 to activate";
 		} else {
-			quickAccessBox.setText("Control+4 to activate");
+			return "Control+4 to activate";
 		}
 	}
 	
 	private void showQuickAccessDialog() {
 		ICommandService commandService = (ICommandService) getWorkbenchWindow().getService(ICommandService.class);
-		quickAccessDialog = new NoTitleQuickAccessDialog(getWorkbenchWindow(), commandService.getCommand("org.eclipse.ui.window.quickAccess"));
+		quickAccessDialog = new NoTitleQuickAccessDialog(getWorkbenchWindow(), commandService.getCommand("QuickAccessToolbar.toolbar.command"));
 		Rectangle quickAccessBoxBounds = quickAccessBox.getBounds();
 		Display display = quickAccessBox.getShell().getDisplay();
 		Point quickAccessBoxLocationOnScreen = display.map(quickAccessBox, null, new Point(quickAccessBoxBounds.x, quickAccessBoxBounds.y));
