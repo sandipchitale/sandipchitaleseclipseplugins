@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Clips
+Bundle-SymbolicName: CodeClips;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: codeclips.Activator
+Bundle-Vendor: Sandip Chitale
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.expressions,
+ org.eclipse.ui.workbench.texteditor
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
