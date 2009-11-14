@@ -1,6 +1,9 @@
 package codeclips;
 
+import java.io.IOException;
+
 import org.eclipse.jface.text.templates.Template;
+import org.eclipse.jface.text.templates.persistence.TemplatePersistenceData;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -60,6 +63,29 @@ public class Activator extends AbstractUIPlugin {
 	
 	public TemplateStore getTemplateStore() {
 		return templateStore;
+	}
+	
+	public void persistTemplate(String abbrev, String description, String expansion) {
+		TemplateStore templateStore = Activator.getDefault().getTemplateStore();
+		
+		Template existingTemplate = templateStore.findTemplate(abbrev);
+		if (existingTemplate == null) {
+			existingTemplate = new Template(abbrev, description, "", expansion, true);
+			TemplatePersistenceData templatePersistenceData = new TemplatePersistenceData(existingTemplate, true);
+			templateStore.add(templatePersistenceData);
+		} else {
+			existingTemplate.setDescription(description);
+			existingTemplate.setPattern(expansion);
+		}
+		
+		try {
+			templateStore.save();
+		} catch (IOException e) {
+		}
+		Template[] templates = templateStore.getTemplates();
+		for (Template template : templates) {
+			System.out.println(template.getName() + " " + template.getPattern());
+		}
 	}
 
 }
