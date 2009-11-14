@@ -31,9 +31,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 	private Text abbrevText;
 	private Text descriptionText;
 	private StyledText expansionText;
-	
-	private Button manageButton;
-	
+		
 	private final Template template;
 
 	public CodeClipDialog(Shell shell, ITextEditor textEditor, Template template) {
@@ -42,7 +40,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 		this.template = template;
 		abbrev = template.getName();
 		description = template.getDescription();
-		this.expansion = template.getPattern();
+		expansion = template.getPattern();
 	}
 	
 	public CodeClipDialog(Shell shell, ITextEditor textEditor) {
@@ -143,7 +141,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		if (getParentShell() == textEditor.getSite().getShell()) {
-			manageButton = createButton(parent, IDialogConstants.CLIENT_ID, "Manage...", false);
+			Button manageButton = createButton(parent, IDialogConstants.CLIENT_ID, "Manage...", false);
 			manageButton.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					new ManageCodesClipsDialog(getShell(), textEditor).open();
