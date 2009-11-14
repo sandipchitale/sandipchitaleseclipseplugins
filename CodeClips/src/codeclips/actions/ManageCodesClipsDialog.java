@@ -2,13 +2,12 @@ package codeclips.actions;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -16,18 +15,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeclips.Activator;
 
 public class ManageCodesClipsDialog extends TitleAreaDialog{
 
-	private String abbrev;
-	private String expansion;
-	private StyledText expansionText;
 	private final ITextEditor textEditor;
-	private Text abbrevText;
+
 	private Button newButton;
 	private Button modifyButton;
 	private Button deleteButton;
@@ -36,8 +31,6 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	public ManageCodesClipsDialog(Shell shell, ITextEditor textEditor) {
 		super(shell);
 		this.textEditor = textEditor;
-		abbrev = "";
-		this.expansion = expansion;
 		templateStore = Activator.getDefault().getTemplateStore();
 	}
 
@@ -67,35 +60,36 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		return parentComposite;
 	}
 	
-	public String getExpansion() {
-		return expansion;
-	}
-	
-	public String getAbbrev() {
-		return abbrev;
-	}
-	
-	@Override
-	protected void okPressed() {
-		abbrev = abbrevText.getText();
-		expansion = expansionText.getText();
-		super.okPressed();
-	}
-	
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		newButton = createButton(parent, IDialogConstants.CLIENT_ID, "Add...", false);
+		newButton.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor);
+				if (Window.OK == codeClipDialog.open()) {			
+					Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
+				}
+			} 
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
 		modifyButton = createButton(parent, IDialogConstants.CLIENT_ID+1, "Modify...", true);
+		modifyButton.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, new Template("","","","",true));
+				if (Window.OK == codeClipDialog.open()) {			
+					Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
+				}
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
 		deleteButton = createButton(parent, IDialogConstants.CLIENT_ID+2, "Delete", true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, false);
 	}
 	
-	void setExpansion(String expansion) {
-		if (expansionText == null) {
-			this.expansion = expansion;
-		} else {
-			expansionText.setText(expansion);
-			expansion = null;
-		}
-	}	
 }
