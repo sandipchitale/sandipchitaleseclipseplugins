@@ -60,7 +60,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		setTitle("Code Clip");
-		setMessage((template == null ? "Create a new " : "Modify the ") + " Code Clip");
+		setMessage((template == null ? "Create a new" : "Modify the") + " Code Clip");
         Composite parentComposite = (Composite) super.createDialogArea(parent);
         
         GridData layoutData = (GridData) parentComposite.getChildren()[0].getLayoutData();
@@ -115,6 +115,11 @@ public class CodeClipDialog extends TitleAreaDialog{
 		styledTextGridData.horizontalSpan = 2;
 		expansionText.setLayoutData(styledTextGridData);
 		
+		if (template == null) {
+			abbrevText.setFocus();
+		} else {
+			descriptionText.setFocus();
+		}
 		return parentComposite;
 	}
 	
