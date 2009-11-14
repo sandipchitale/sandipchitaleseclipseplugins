@@ -1,5 +1,7 @@
 package codeclips;
 
+import org.eclipse.jface.text.templates.Template;
+import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -14,6 +16,8 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
+	private static TemplateStore templateStore;
+	
 	/**
 	 * The constructor
 	 */
@@ -27,6 +31,13 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		
+		templateStore = new TemplateStore(getPreferenceStore(), PreferenceInitializer.TEMPLATES_KEY);
+		templateStore.load();
+		Template[] templates = templateStore.getTemplates();
+		for (Template template : templates) {
+			System.out.println(template.getName() + " " + template.getPattern());
+		}
 	}
 
 	/*
@@ -45,6 +56,10 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+	public TemplateStore getTemplateStore() {
+		return templateStore;
 	}
 
 }
