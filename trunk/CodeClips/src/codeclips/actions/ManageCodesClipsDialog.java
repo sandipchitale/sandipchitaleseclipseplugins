@@ -4,21 +4,28 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeclips.Activator;
@@ -32,6 +39,41 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	private Button deleteButton;
 	private TemplateStore templateStore;
 
+	private TableViewer tableViewer;
+	
+	private class CodeClipsProvider implements IStructuredContentProvider {
+
+		public Object[] getElements(Object inputElement) {
+			return ((TemplateStore)inputElement).getTemplates();
+		}
+
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		}
+
+	}
+
+	private static class CodeClipLabelProvider extends LabelProvider implements ITableLabelProvider {
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
+		}
+		
+		public String getColumnText(Object element, int columnIndex) {
+			Template template = (Template) element;
+			switch (columnIndex) {
+			case 0:
+				return template.getName();
+			case 1:
+				return template.getDescription();
+			default:
+				throw new RuntimeException("Should not happen");
+			}
+
+		}
+	}
+
 	public ManageCodesClipsDialog(Shell shell, ITextEditor textEditor) {
 		super(shell);
 		this.textEditor = textEditor;
@@ -41,6 +83,15 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	@Override
 	protected boolean isResizable() {
 		return true;
+	}
+	
+	@Override
+	protected Control createContents(Composite parent) {
+		Control contents = super.createContents(parent);
+
+		tableViewer.setInput(templateStore);
+
+		return contents;
 	}
 	
 	@Override
@@ -55,31 +106,33 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		gridLayout.verticalSpacing = 5;
         
         Label abbrevLabel = new Label(parentComposite, SWT.NONE);
-        abbrevLabel.setText("Clips:");
+        abbrevLabel.setText("Code Clips:");
 		GridData abbrevLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		abbrevLabel.setLayoutData(abbrevLabelGridData);
 		
-		Table table = new Table (parentComposite, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
-		table.setLinesVisible (true);
-		table.setHeaderVisible (true);
+		tableViewer = new TableViewer(parentComposite);
+		
+		Table table = tableViewer.getTable();
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.heightHint = 200;
 		table.setLayoutData(data);
-		String[] titles = {"Abbrev", "Description"};
-		for (int i=0; i<titles.length; i++) {
-			TableColumn column = new TableColumn (table, SWT.NONE);
-			column.setText(titles [i]);
-		}
 		
-		Template[] templates = templateStore.getTemplates();
-		for (Template template : templates) {
-			TableItem item = new TableItem (table, SWT.NONE);
-			item.setText (0, template.getName());
-			item.setText (1, template.getDescription());
-		}
-		for (int i=0; i<titles.length; i++) {
-			table.getColumn (i).pack ();
-		}
+	    TableLayout layout = new TableLayout();
+	    layout.addColumnData(new ColumnWeightData(20, 75, true));
+	    layout.addColumnData(new ColumnWeightData(80, 75, true));
+		table.setLayout(layout);
+
+		TableViewerColumn abbrevColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
+	    abbrevColumn.getColumn().setText("Abbreviation");
+	    TableViewerColumn descriptionColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
+	    descriptionColumn.getColumn().setText("Description");
+	    
+	    table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+	    
+	    tableViewer.setContentProvider(new CodeClipsProvider());
+	    tableViewer.setLabelProvider(new CodeClipLabelProvider());
+	    
 		return parentComposite;
 	}
 	
