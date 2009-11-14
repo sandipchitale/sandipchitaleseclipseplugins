@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -46,9 +47,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	protected Control createDialogArea(Composite parent) {
 		setTitle("Manage Code Clips");
         Composite parentComposite = (Composite) super.createDialogArea(parent);
-        
-        GridLayout gridLayout = new GridLayout(1, false);
-		parentComposite.setLayout(gridLayout);
+        GridLayout gridLayout = (GridLayout) parentComposite.getLayout();
 		
 		gridLayout.marginWidth = 10;
 		gridLayout.marginHeight = 10;

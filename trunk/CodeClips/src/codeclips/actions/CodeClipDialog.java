@@ -4,8 +4,11 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.templates.Template;
+import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
@@ -20,6 +23,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import codeclips.Activator;
+
 public class CodeClipDialog extends TitleAreaDialog{
 
 	private final ITextEditor textEditor;
@@ -33,6 +38,8 @@ public class CodeClipDialog extends TitleAreaDialog{
 	private StyledText expansionText;
 		
 	private final Template template;
+
+	private Button createUpdateButton;
 
 	public CodeClipDialog(Shell shell, ITextEditor textEditor, Template template) {
 		super(shell);
@@ -58,16 +65,23 @@ public class CodeClipDialog extends TitleAreaDialog{
 	}
 	
 	@Override
+	protected Control createContents(Composite parent) {
+		Control contents = super.createContents(parent);
+		validateAbbrev();
+		return contents;
+	}
+	
+	@Override
 	protected Control createDialogArea(Composite parent) {
-		setTitle("Code Clip");
-		setMessage((template == null ? "Create a new" : "Modify the") + " Code Clip");
+		setTitle((template == null ? "Create a new" : "Modify the") + " Code Clip");
         Composite parentComposite = (Composite) super.createDialogArea(parent);
         
+        GridLayout gridLayout = (GridLayout) parentComposite.getLayout();
+        gridLayout.numColumns = 2;
+        gridLayout.makeColumnsEqualWidth = false;
+		
         GridData layoutData = (GridData) parentComposite.getChildren()[0].getLayoutData();
         layoutData.horizontalSpan = 2;
-        
-        GridLayout gridLayout = new GridLayout(2, false);
-		parentComposite.setLayout(gridLayout);
 		
 		gridLayout.marginWidth = 10;
 		gridLayout.marginHeight = 10;
@@ -75,7 +89,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 		gridLayout.verticalSpacing = 5;
         
         Label abbrevLabel = new Label(parentComposite, SWT.NONE);
-        abbrevLabel.setText("Clip Name:");
+        abbrevLabel.setText("Abbreviation:");
 		GridData abbrevLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		abbrevLabel.setLayoutData(abbrevLabelGridData);
 		
@@ -90,9 +104,9 @@ public class CodeClipDialog extends TitleAreaDialog{
 		GridData abbrevTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		abbrevText.setLayoutData(abbrevTextGridData);
 		
-		abbrevText.addVerifyListener(new VerifyListener() {
-			public void verifyText(VerifyEvent e) {
-				// TODO validate
+		abbrevText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				validateAbbrev();
 			}
 		});
 		
@@ -102,7 +116,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 		descriptionText.setLayoutData(descriptionTextGridData);
 		
         Label expansionLabel = new Label(parentComposite, SWT.NONE);
-        expansionLabel.setText("Clip Text:");
+        expansionLabel.setText("Expansion:");
 		GridData expansionLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		expansionLabelGridData.horizontalSpan = 2;
 		expansionLabel.setLayoutData(expansionLabelGridData);
@@ -123,6 +137,24 @@ public class CodeClipDialog extends TitleAreaDialog{
 		return parentComposite;
 	}
 	
+	private void validateAbbrev() {
+		setMessage("");
+		createUpdateButton.setEnabled(true);
+		if (template == null) {
+			String text = abbrevText.getText().trim();
+			if ("".equals(text)) {
+				setMessage("Must specify abbreviation.");
+				createUpdateButton.setEnabled(false);
+				return;
+			}
+			if (Activator.getDefault().getTemplateStore().findTemplate(text) != null) {
+				setMessage("Code Clip with same abbreviation exists. Specify a different abbreviation.");
+				createUpdateButton.setEnabled(false);
+				return;
+			}
+		}
+	}
+
 	public String getAbbrev() {
 		return abbrev;
 	}
@@ -137,8 +169,8 @@ public class CodeClipDialog extends TitleAreaDialog{
 	
 	@Override
 	protected void okPressed() {
-		abbrev = abbrevText.getText();
-		description = descriptionText.getText();
+		abbrev = abbrevText.getText().trim();
+		description = descriptionText.getText().trim();
 		expansion = expansionText.getText();
 		super.okPressed();
 	}
@@ -158,7 +190,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 			});
 		}
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, (template == null ? "Create" : "Update"), true);
+		createUpdateButton = createButton(parent, IDialogConstants.OK_ID, (template == null ? "Create" : "Update"), true);
 	}
 	
 	void setExpansion(String expansion) {
