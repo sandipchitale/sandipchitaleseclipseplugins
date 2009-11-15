@@ -23,10 +23,12 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 	private char triggerChar;
 	private char[] triggerChars;
 	private StyledString styledDisplayString;
+	private final TabCompleteCodeClipsAction tabCompleteCodeClipsAction;
 
 	public CodeClipTemplateProposal(Template template, TemplateContext context,
-			IRegion region, Image image, int relevance) {
+			IRegion region, Image image, int relevance, TabCompleteCodeClipsAction tabCompleteCodeClipsAction) {
 		super(template, context, region, image, relevance);
+		this.tabCompleteCodeClipsAction = tabCompleteCodeClipsAction;
 	}
 
 	@Override
@@ -37,7 +39,7 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 				Display.getCurrent().asyncExec(new Runnable() {
 					public void run() {
 						if (LinkedModeModel.hasInstalledModel(document)) {
-							// TODO setDeactivated(true);
+							tabCompleteCodeClipsAction.setDeactivated(true);
 							LinkedModeModel linkedModeModel = LinkedModeModel.getModel(document, offset);
 							linkedModeModel.addLinkingListener(new ILinkedModeListener() {								
 								public void suspend(LinkedModeModel model) {
@@ -45,7 +47,7 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 								public void resume(LinkedModeModel model, int flags) {
 								}
 								public void left(LinkedModeModel model, int flags) {
-									// TODO setDeactivated(false);
+									tabCompleteCodeClipsAction.setDeactivated(false);
 								}
 							});
 						}

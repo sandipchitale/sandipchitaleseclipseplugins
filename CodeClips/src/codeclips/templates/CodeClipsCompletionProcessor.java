@@ -23,7 +23,10 @@ import codeclips.Activator;
 
 class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 
-	public CodeClipsCompletionProcessor() {
+	private final TabCompleteCodeClipsAction tabCompleteCodeClipsAction;
+
+	public CodeClipsCompletionProcessor(TabCompleteCodeClipsAction tabCompleteCodeClipsAction) {
+		this.tabCompleteCodeClipsAction = tabCompleteCodeClipsAction;
 	}
 	
 	@Override
@@ -90,7 +93,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 	
 	@Override
 	protected ICompletionProposal createProposal(Template template, TemplateContext context, IRegion region, int relevance) {
-		return new CodeClipTemplateProposal(template, context, region, getImage(template), relevance);
+		return new CodeClipTemplateProposal(template, context, region, getImage(template), relevance, tabCompleteCodeClipsAction);
 	}
 	
 	@Override
