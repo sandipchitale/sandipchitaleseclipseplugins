@@ -52,7 +52,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	private static class CodeClipsProvider implements IStructuredContentProvider {
 
 		public Object[] getElements(Object inputElement) {
-			return ((TemplateStore)inputElement).getTemplates();
+			return ((TemplateStore)inputElement).getTemplateData(false);
 		}
 
 		public void dispose() {
@@ -79,7 +79,8 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		}
 		
 		public String getColumnText(Object element, int columnIndex) {
-			Template template = (Template) element;
+			TemplatePersistenceData templatePersistenceData = (TemplatePersistenceData) element;
+			Template template = templatePersistenceData.getTemplate();
 			switch (columnIndex) {
 			case 0:
 				return template.getName();
@@ -202,9 +203,14 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 				if (selection instanceof IStructuredSelection) {
 					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 					if (!structuredSelection.isEmpty()) {
-						CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, (Template) structuredSelection.getFirstElement());
-						if (Window.OK == codeClipDialog.open()) {			
-							Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
+						TemplatePersistenceData templatePersistenceData = (TemplatePersistenceData) structuredSelection.getFirstElement();
+						CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, templatePersistenceData);
+						if (Window.OK == codeClipDialog.open()) {	
+							Template template = templatePersistenceData.getTemplate();
+							template.setName(codeClipDialog.getAbbrev());
+							template.setDescription(codeClipDialog.getDescription());
+							template.setPattern(codeClipDialog.getExpansion());
+							Activator.getDefault().persistTemplatePersistenceData(templatePersistenceData);
 							tableViewer.setInput(templateStore);
 						}
 					}
@@ -222,8 +228,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 				if (selection instanceof IStructuredSelection) {
 					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 					if (!structuredSelection.isEmpty()) {
-						Template template = (Template) structuredSelection.getFirstElement();
-						templateStore.delete(new TemplatePersistenceData(template, true));
+						templateStore.delete((TemplatePersistenceData) structuredSelection.getFirstElement());
 						tableViewer.setInput(templateStore);
 					}
 				}

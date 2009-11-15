@@ -4,6 +4,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.templates.Template;
+import org.eclipse.jface.text.templates.persistence.TemplatePersistenceData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -34,14 +35,15 @@ public class CodeClipDialog extends TitleAreaDialog{
 	private Text descriptionText;
 	private StyledText expansionText;
 		
-	private final Template template;
+	private final TemplatePersistenceData templatePersistenceData;
 
 	private Button createUpdateButton;
 
-	public CodeClipDialog(Shell shell, ITextEditor textEditor, Template template) {
+	public CodeClipDialog(Shell shell, ITextEditor textEditor, TemplatePersistenceData templatePersistenceData) {
 		super(shell);
 		this.textEditor = textEditor;
-		this.template = template;
+		this.templatePersistenceData = templatePersistenceData;
+		Template template = templatePersistenceData.getTemplate();
 		abbrev = template.getName();
 		description = template.getDescription();
 		expansion = template.getPattern();
@@ -50,7 +52,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 	public CodeClipDialog(Shell shell, ITextEditor textEditor) {
 		super(shell);
 		this.textEditor = textEditor;
-		this.template = null;
+		this.templatePersistenceData = null;
 		abbrev = "";
 		description = "";
 		expansion = "";
@@ -70,7 +72,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		setTitle((template == null ? "Create a new" : "Modify the") + " Code Clip");
+		setTitle((templatePersistenceData == null ? "Create a new" : "Modify the") + " Code Clip");
         Composite parentComposite = (Composite) super.createDialogArea(parent);
         
         GridLayout gridLayout = (GridLayout) parentComposite.getLayout();
@@ -97,7 +99,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 		
 		abbrevText = new Text(parentComposite, SWT.SINGLE | SWT.BORDER);
         abbrevText.setText(abbrev);
-        abbrevText.setEditable(template == null);
+        abbrevText.setEditable(templatePersistenceData == null);
 		GridData abbrevTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		abbrevText.setLayoutData(abbrevTextGridData);
 		
@@ -126,7 +128,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 		styledTextGridData.horizontalSpan = 2;
 		expansionText.setLayoutData(styledTextGridData);
 		
-		if (template == null) {
+		if (templatePersistenceData == null) {
 			abbrevText.setFocus();
 		} else {
 			descriptionText.setFocus();
@@ -137,7 +139,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 	private void validateAbbrev() {
 		setMessage("");
 		createUpdateButton.setEnabled(true);
-		if (template == null) {
+		if (templatePersistenceData == null) {
 			String text = abbrevText.getText().trim();
 			if ("".equals(text)) {
 				setMessage("Must specify abbreviation.");
@@ -187,7 +189,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 			});
 		}
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		createUpdateButton = createButton(parent, IDialogConstants.OK_ID, (template == null ? "Create" : "Update"), true);
+		createUpdateButton = createButton(parent, IDialogConstants.OK_ID, (templatePersistenceData == null ? "Create" : "Update"), true);
 	}
 	
 	void setExpansion(String expansion) {
