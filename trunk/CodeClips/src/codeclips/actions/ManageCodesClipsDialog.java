@@ -101,6 +101,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		super(shell);
 		this.textEditor = textEditor;
 		templateStore = Activator.getDefault().getTemplateStore();
+		setHelpAvailable(false);
 	}
 
 	@Override
