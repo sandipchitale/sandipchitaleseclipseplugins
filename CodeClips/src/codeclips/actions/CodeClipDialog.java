@@ -221,6 +221,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 				"${8}",
 				"${9}",
 				"${clipboard}",
+				"${user.home:sysprop}",
 				"${date}",
 				"${time}",
 				"${user}",

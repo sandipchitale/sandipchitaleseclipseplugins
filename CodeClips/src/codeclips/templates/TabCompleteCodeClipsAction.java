@@ -101,10 +101,16 @@ public class TabCompleteCodeClipsAction extends TextEditorAction {
 	}
 
 	void activate() {
-		getTextEditor().setAction(getActionDefinitionId(), this);
+		ITextEditor textEditor = getTextEditor();
+		if (textEditor != null) {
+			textEditor.setAction(getActionDefinitionId(), this);
+		}
 	}
 	
 	void deactivate() {
-		getTextEditor().setAction(getActionDefinitionId(), null);
+		ITextEditor textEditor = getTextEditor();
+		if (textEditor != null) {
+			getTextEditor().setAction(getActionDefinitionId(), null);
+		}
 	}
 }
