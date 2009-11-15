@@ -33,7 +33,8 @@ class CodeClipTemplateContextType extends TemplateContextType {
 				for (Object object : keySet) {
 					if (object instanceof String) {
 						String key = (String) object;
-						values.add(System.getProperty(key, key) + " (" + key + ")");
+						values.add(System.getProperty(key, key) + " (Value of " + key + ")");
+						values.add(System.getProperty(key, key));
 					}
 				}
 				variable.setValues(values.toArray(new String[0])); //$NON-NLS-1$
