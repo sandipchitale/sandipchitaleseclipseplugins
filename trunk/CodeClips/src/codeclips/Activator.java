@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.persistence.TemplatePersistenceData;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -91,6 +93,17 @@ public class Activator extends AbstractUIPlugin {
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
 		}
+	}
+	
+	public static final String CODECLIP = "/icons/codeclip.gif"; //$NON-NLS-1$
+	
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		reg.put(CODECLIP, imageDescriptorFromPlugin(PLUGIN_ID, CODECLIP));
+	}
+	
+	public Image getImage(String imageID) {
+		return getImageRegistry().get(imageID);
 	}
 
 }

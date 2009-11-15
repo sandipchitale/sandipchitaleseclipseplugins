@@ -23,7 +23,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeclips.Activator;
 
-public class CodeClipDialog extends TitleAreaDialog{
+public class CodeClipDialog extends TitleAreaDialog {
 
 	private final ITextEditor textEditor;
 
@@ -36,6 +36,9 @@ public class CodeClipDialog extends TitleAreaDialog{
 	private StyledText expansionText;
 		
 	private final TemplatePersistenceData templatePersistenceData;
+
+	private static final int CREATE_UPDATE_ID = IDialogConstants.CLIENT_ID;
+	private static final int CANCEL_ID = CREATE_UPDATE_ID + 1;
 
 	private Button createUpdateButton;
 
@@ -187,10 +190,21 @@ public class CodeClipDialog extends TitleAreaDialog{
 				}
 			});
 		}
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		createUpdateButton = createButton(parent, IDialogConstants.OK_ID, (templatePersistenceData == null ? "Create" : "Update"), true);
+		createUpdateButton = createButton(parent, CREATE_UPDATE_ID, (templatePersistenceData == null ? "Create" : "Update"), false);
+		createButton(parent, CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
 	}
 	
+	@Override
+	protected void buttonPressed(int buttonId) {
+		if (buttonId == CREATE_UPDATE_ID) {
+			okPressed();
+			return;
+		} else if (buttonId == CANCEL_ID) {
+			cancelPressed();
+			return;
+		}
+		super.buttonPressed(buttonId);
+	}
 	void setExpansion(String expansion) {
 		if (expansionText == null) {
 			this.expansion = expansion;
