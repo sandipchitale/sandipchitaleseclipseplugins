@@ -75,9 +75,13 @@ public class Activator extends AbstractUIPlugin {
 	}
 	
 	public void persistTemplate(String abbrev, String description, String expansion) {
-		Template template = new Template(abbrev, description, "", expansion, true);
+		// fake
+		Template template = new Template(abbrev, description+" ", "", expansion, true);
 		TemplatePersistenceData templatePersistenceData = new TemplatePersistenceData(template, true, UUID.randomUUID().toString());
 		persistTemplatePersistenceData(templatePersistenceData);
+		// fake
+		template = new Template(abbrev, description, "", expansion, true);
+		templatePersistenceData.setTemplate(template);
 	}
 
 	public void persistTemplatePersistenceData(TemplatePersistenceData templatePersistenceData) {
