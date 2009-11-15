@@ -1,5 +1,7 @@
 package codeclips.actions;
 
+import java.io.IOException;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -237,6 +239,11 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 					if (!structuredSelection.isEmpty()) {
 						templateStore.delete((TemplatePersistenceData) structuredSelection.getFirstElement());
+						try {
+							templateStore.save();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
 						tableViewer.setInput(templateStore);
 					}
 				}
