@@ -24,6 +24,7 @@ class CodeClipTemplateContextType extends TemplateContextType {
 			super("sysprop", "System property template variable."); //$NON-NLS-1$
 		}
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public void resolve(TemplateVariable variable, TemplateContext context) {
 			String name = variable.getName();
