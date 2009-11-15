@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPageListener;
@@ -42,10 +44,12 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 				public IStatus runInUIThread(IProgressMonitor monitor) {
 					IWorkbench workbench = PlatformUI.getWorkbench();
 					if (workbench != null) {
+						// process existing windows
 						IWorkbenchWindow[] workbenchWindows = workbench.getWorkbenchWindows();
 						for (IWorkbenchWindow workbenchWindow : workbenchWindows) {
-							addWindowListeners(workbenchWindow);
+							processWindow(workbenchWindow);
 						}
+						// process future windows
 						workbench.addWindowListener(windowListener);
 					}
 					return Status.OK_STATUS;
@@ -58,51 +62,11 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 		return false;
 	}
 	
-	private static IPartListener partListener = new IPartListener() {
-		public void partActivated(IWorkbenchPart part) {
-		}
-
-		public void partBroughtToTop(IWorkbenchPart part) {
-		}
-
-		public void partClosed(IWorkbenchPart part) {
-		}
-
-		public void partDeactivated(IWorkbenchPart part) {
-		}
-
-		public void partOpened(IWorkbenchPart part) {
-			if (part instanceof ITextEditor) {
-				addAction((ITextEditor)part);
-			} else if (part instanceof MultiPageEditorPart) {
-				MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) part;
-				Object selectedPage = multiPageEditorPart.getSelectedPage();
-				if (selectedPage instanceof ITextEditor) {
-					addAction((ITextEditor)selectedPage);
-				}
-			}
-		}	
-	};
-	
-	private static IPageListener pageListener = new IPageListener() {
-		
-		public void pageOpened(IWorkbenchPage page) {
-			addPartListener(page);
-		}
-		
-		public void pageClosed(IWorkbenchPage page) {
-			page.removePartListener(partListener);
-		}
-		
-		public void pageActivated(IWorkbenchPage page) {
-			
-		}
-	};
-
 	private static IWindowListener windowListener = new IWindowListener() {
 		
 		public void windowOpened(IWorkbenchWindow window) {
-			addWindowListeners(window);
+			// process newly opened window
+			processWindow(window);
 		}
 		
 		public void windowDeactivated(IWorkbenchWindow window) {
@@ -121,34 +85,96 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 		}
 	};
 	
-	private static void addWindowListeners(IWorkbenchWindow workbenchWindow) {
+	private static IPageListener pageListener = new IPageListener() {
+		
+		public void pageOpened(IWorkbenchPage page) {
+			processPage(page);
+		}
+		
+		public void pageClosed(IWorkbenchPage page) {
+			page.removePartListener(partListener);
+		}
+		
+		public void pageActivated(IWorkbenchPage page) {
+			
+		}
+	};
+	
+	private static IPartListener partListener = new IPartListener() {
+		public void partActivated(IWorkbenchPart part) {
+		}
+
+		public void partBroughtToTop(IWorkbenchPart part) {
+		}
+
+		public void partClosed(IWorkbenchPart part) {
+			if (part instanceof MultiPageEditorPart) {
+				((MultiPageEditorPart) part).removePageChangedListener(pageChangedListener);
+			}
+		}
+
+		public void partDeactivated(IWorkbenchPart part) {
+		}
+
+		public void partOpened(IWorkbenchPart editorPart) {
+			if (editorPart instanceof IEditorPart) {
+				processPart((IEditorPart)editorPart);
+			}
+		}	
+	};
+	
+	private static IPageChangedListener pageChangedListener = new IPageChangedListener() {
+		public void pageChanged(PageChangedEvent event) {
+			Object selectedPage = event.getSelectedPage();
+			if (selectedPage instanceof ITextEditor) {
+				processITextEditor((ITextEditor)selectedPage);
+			}
+		}
+	};
+	
+	private static void processWindow(IWorkbenchWindow workbenchWindow) {
+		// process existing pages
 		IWorkbenchPage[] workbenchPages = workbenchWindow.getPages();
 		for (IWorkbenchPage workbenchPage : workbenchPages) {
-			addPartListener(workbenchPage);
+			processPage(workbenchPage);
 		}
+		// process future pages
 		workbenchWindow.addPageListener(pageListener);
 	}
 	
-	private static void addPartListener(IWorkbenchPage workbenchPage) {
+	private static void processPage(IWorkbenchPage workbenchPage) {
 		IEditorReference[] editorReferences = workbenchPage.getEditorReferences();
 		for (IEditorReference editorReference : editorReferences) {
-			IEditorPart part = editorReference.getEditor(false);
-			if (part instanceof ITextEditor) {
-				addAction((ITextEditor)part);
-			} else if (part instanceof MultiPageEditorPart) {
-				MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) part;
-				Object selectedPage = multiPageEditorPart.getSelectedPage();
-				if (selectedPage instanceof ITextEditor) {
-					addAction((ITextEditor) selectedPage);
-				}
-			}
+			processPart(editorReference.getEditor(false));
 		}
 		workbenchPage.addPartListener(partListener);		
+	}
+	
+	private static void processPart(IEditorPart editorPart) {
+		if (editorPart instanceof ITextEditor) {
+			processITextEditor((ITextEditor)editorPart);
+		} else if (editorPart instanceof MultiPageEditorPart) {
+			processMultiPageEditorPart((MultiPageEditorPart) editorPart);
+		}
+	}
+	
+	private static void processITextEditor(ITextEditor textEditor) {
+		addAction(textEditor);
+	}
+	
+	private static void processMultiPageEditorPart(MultiPageEditorPart multiPageEditorPart) {
+		Object selectedPage = multiPageEditorPart.getSelectedPage();
+		if (selectedPage instanceof ITextEditor) {
+			addAction((ITextEditor)selectedPage);
+		}
+		multiPageEditorPart.addPageChangedListener(pageChangedListener);
 	}
 
 	private static void addAction(ITextEditor textEditor) {
 		if (textEditor.isEditable()) {
-			textEditor.setAction(ID, TabCompleteCodeClipsAction.create(textEditor));
+			if (textEditor.getAction(ID) == null) {
+				textEditor.setAction(ID, TabCompleteCodeClipsAction.create(textEditor));
+			}
 		}
 	}
 }
