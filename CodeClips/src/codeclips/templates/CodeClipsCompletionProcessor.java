@@ -1,5 +1,7 @@
 package codeclips.templates;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +43,12 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 	
 	@Override
 	protected Template[] getTemplates(String contextTypeId) {
-		return Activator.getDefault().getTemplateStore().getTemplates();
+		Template[] templates = Activator.getDefault().getTemplateStore().getTemplates();
+		List<CodeClipTemplate> codeClipTemplates = new LinkedList<CodeClipTemplate>();
+		for (Template template : templates) {
+			codeClipTemplates.add(new CodeClipTemplate(template));
+		}
+		return codeClipTemplates.toArray(templates);
 	}
 	
 	private static final String SPACES= "\\s*+"; //$NON-NLS-1$
