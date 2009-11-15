@@ -1,12 +1,20 @@
 package codeclips.actions;
 
-import java.awt.color.CMMException;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.persistence.TemplatePersistenceData;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -19,11 +27,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeclips.Activator;
@@ -211,7 +218,6 @@ public class CodeClipDialog extends TitleAreaDialog {
 				"${7}",
 				"${8}",
 				"${9}",
-				"${cursor}",
 				"${clipboard}",
 				"${date}",
 				"${time}",
@@ -220,23 +226,59 @@ public class CodeClipDialog extends TitleAreaDialog {
 				"${word_selection}",
 				"${line_selection}",
 				"${dollar}",
+				"Variablize..."
 				}
 		);
+		
 		combo.select(0);
 		combo.addSelectionListener(new SelectionListener() {
 			
 			public void widgetSelected(SelectionEvent e) {
-					int selectionIndex = combo.getSelectionIndex();
-					if (selectionIndex > 0) {
-//						try {
-//							combo.removeSelectionListener(this);							
-							int caretOffset = expansionText.getCaretOffset();
-							expansionText.replaceTextRange(caretOffset, 0, combo.getItem(selectionIndex));
-							combo.select(0);
-//						} finally {
-//							combo.addSelectionListener(this);
-//						}
+				int selectionIndex = combo.getSelectionIndex();
+				if (selectionIndex == (combo.getItemCount() - 1)) {
+					String text = expansionText.getText();
+					Map<String, Integer> frequencyMap = new TreeMap<String, Integer>();
+					Scanner scanner = new Scanner(text);
+					scanner.useDelimiter("\\W+");
+					while(scanner.hasNext()) {
+						String next = scanner.next();
+						if (next.matches("[a-zA-Z]\\w*")) {
+							Integer freq = frequencyMap.get(next);
+							frequencyMap.put(next, (freq == null ? 1 : freq + 1));
+						}
 					}
+					Set<String> variableCandidates = new TreeSet<String>();
+					for (String word : frequencyMap.keySet()) {
+						if (frequencyMap.get(word) > 1) {
+							variableCandidates.add(word);
+						}
+					}
+					if (variableCandidates.size() > 0) {
+						ListDialog listDialog = new ListDialog(getShell());
+						listDialog.setAddCancelButton(true);
+						listDialog.setInput(variableCandidates);
+						listDialog.setContentProvider(new ArrayContentProvider());
+						listDialog.setLabelProvider(new LabelProvider());
+						listDialog.setTitle("Select word to variabalize");
+						if (Window.OK == listDialog.open()) {
+							Object[] results = listDialog.getResult();
+							if (results.length > 0) {
+								for (Object result : results) {
+									if (result instanceof String) {
+										String string = (String) result;
+										text = text.replaceAll("\\b" + Pattern.quote(string) + "\\b", "\\$\\{" + string + "\\}");
+									}
+								}
+								expansionText.setText(text);
+							}
+						}
+					}
+					combo.select(0);
+				} else if (selectionIndex > 0) {
+					int caretOffset = expansionText.getCaretOffset();
+					expansionText.replaceTextRange(caretOffset, 0, combo.getItem(selectionIndex));
+					combo.select(0);
+				}
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent e) {
