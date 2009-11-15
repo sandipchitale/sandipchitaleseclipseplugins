@@ -147,8 +147,7 @@ public class CodeClipDialog extends TitleAreaDialog{
 				return;
 			}
 			if (Activator.getDefault().getTemplateStore().findTemplate(text) != null) {
-				setMessage("Code Clip with same abbreviation exists. Specify a different abbreviation.");
-				createUpdateButton.setEnabled(false);
+				setMessage("Code Clip with same abbreviation exists.");
 				return;
 			}
 		}
