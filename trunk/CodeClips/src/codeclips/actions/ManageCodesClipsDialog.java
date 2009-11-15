@@ -1,8 +1,12 @@
 package codeclips.actions;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.text.templates.Template;
+import org.eclipse.jface.text.templates.persistence.TemplatePersistenceData;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelection;
@@ -29,6 +33,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeclips.Activator;
@@ -44,7 +49,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 
 	private TableViewer tableViewer;
 	
-	private class CodeClipsProvider implements IStructuredContentProvider {
+	private static class CodeClipsProvider implements IStructuredContentProvider {
 
 		public Object[] getElements(Object inputElement) {
 			return ((TemplateStore)inputElement).getTemplates();
@@ -53,9 +58,19 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		public void dispose() {
 		}
 
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		public void inputChanged(final Viewer viewer, Object oldInput, final Object newInput) {
+			UIJob job = new UIJob(viewer.getControl().getDisplay(), "") {
+				@Override
+				public IStatus runInUIThread(IProgressMonitor monitor) {
+					if (!viewer.getControl().isDisposed()) {
+						viewer.refresh();
+					}
+					return Status.OK_STATUS;
+				}
+			};
+			job.setSystem(true);
+			job.schedule();
 		}
-
 	}
 
 	private static class CodeClipLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -155,6 +170,11 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 			if (structuredSelection.isEmpty()) {
 				modifyButton.setEnabled(false);
 				deleteButton.setEnabled(false);
+				return;
+			}
+			if (structuredSelection.size() > 1) {
+				modifyButton.setEnabled(false);
+				return;
 			}
 		}
 	}
@@ -167,6 +187,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 				CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor);
 				if (Window.OK == codeClipDialog.open()) {			
 					Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
+					tableViewer.setInput(templateStore);
 				}
 			} 
 			
@@ -177,9 +198,16 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		modifyButton = createButton(parent, IDialogConstants.CLIENT_ID+1, "Modify...", true);
 		modifyButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, new Template("","","","",true));
-				if (Window.OK == codeClipDialog.open()) {			
-					Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
+				ISelection selection = tableViewer.getSelection();
+				if (selection instanceof IStructuredSelection) {
+					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+					if (!structuredSelection.isEmpty()) {
+						CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, (Template) structuredSelection.getFirstElement());
+						if (Window.OK == codeClipDialog.open()) {			
+							Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
+							tableViewer.setInput(templateStore);
+						}
+					}
 				}
 			}
 			
@@ -188,6 +216,23 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 			}
 		});
 		deleteButton = createButton(parent, IDialogConstants.CLIENT_ID+2, "Delete", true);
+		deleteButton.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				ISelection selection = tableViewer.getSelection();
+				if (selection instanceof IStructuredSelection) {
+					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+					if (!structuredSelection.isEmpty()) {
+						Template template = (Template) structuredSelection.getFirstElement();
+						templateStore.delete(new TemplatePersistenceData(template, true));
+						tableViewer.setInput(templateStore);
+					}
+				}
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, false);
 	}
 	
