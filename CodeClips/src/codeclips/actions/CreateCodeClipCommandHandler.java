@@ -40,7 +40,6 @@ public class CreateCodeClipCommandHandler extends AbstractHandler {
 		return null;
 	}
 	
-	@SuppressWarnings("deprecation")
 	private static void createCodeClip(ITextEditor textEditor) {
 		CodeClipDialog codeClipDialog = new CodeClipDialog(textEditor.getSite().getShell(), textEditor);
 		ISelection selection = textEditor.getSelectionProvider().getSelection();
