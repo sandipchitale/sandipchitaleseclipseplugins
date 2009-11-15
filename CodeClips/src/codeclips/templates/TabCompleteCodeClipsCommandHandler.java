@@ -78,7 +78,7 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 				MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) part;
 				Object selectedPage = multiPageEditorPart.getSelectedPage();
 				if (selectedPage instanceof ITextEditor) {
-					addAction((ITextEditor)part);
+					addAction((ITextEditor)selectedPage);
 				}
 			}
 		}	
@@ -139,7 +139,7 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 				MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) part;
 				Object selectedPage = multiPageEditorPart.getSelectedPage();
 				if (selectedPage instanceof ITextEditor) {
-					addAction((ITextEditor)part);
+					addAction((ITextEditor) selectedPage);
 				}
 			}
 		}
