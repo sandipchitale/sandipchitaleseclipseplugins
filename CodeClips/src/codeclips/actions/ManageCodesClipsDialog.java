@@ -42,6 +42,10 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 
 	private final ITextEditor textEditor;
 
+	private static final int ADD_ID = IDialogConstants.CLIENT_ID;
+	private static final int MODIFY_ID = ADD_ID+1;
+	private static final int DELETE_ID = MODIFY_ID+1;
+
 	private Button newButton;
 	private Button modifyButton;
 	private Button deleteButton;
@@ -182,7 +186,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		newButton = createButton(parent, IDialogConstants.CLIENT_ID, "Add...", false);
+		newButton = createButton(parent, ADD_ID, "Add...", false);
 		newButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor);
@@ -196,7 +200,8 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 				widgetSelected(e);
 			}
 		});
-		modifyButton = createButton(parent, IDialogConstants.CLIENT_ID+1, "Modify...", true);
+		
+		modifyButton = createButton(parent,MODIFY_ID, "Modify...", true);
 		modifyButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				ISelection selection = tableViewer.getSelection();
@@ -221,7 +226,8 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 				widgetSelected(e);
 			}
 		});
-		deleteButton = createButton(parent, IDialogConstants.CLIENT_ID+2, "Delete", true);
+		
+		deleteButton = createButton(parent, DELETE_ID, "Delete", false);
 		deleteButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				ISelection selection = tableViewer.getSelection();
@@ -238,7 +244,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 				widgetSelected(e);
 			}
 		});
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, false);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
 	}
 	
 }
