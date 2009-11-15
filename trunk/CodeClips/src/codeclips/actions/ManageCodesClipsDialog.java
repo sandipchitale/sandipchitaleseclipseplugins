@@ -5,9 +5,13 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -25,7 +29,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeclips.Activator;
@@ -90,7 +93,8 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		Control contents = super.createContents(parent);
 
 		tableViewer.setInput(templateStore);
-
+		adjustButtonState();
+		
 		return contents;
 	}
 	
@@ -133,9 +137,28 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	    tableViewer.setContentProvider(new CodeClipsProvider());
 	    tableViewer.setLabelProvider(new CodeClipLabelProvider());
 	    
+	    tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				adjustButtonState();
+			}
+		});
+	    
 		return parentComposite;
 	}
 	
+	protected void adjustButtonState() {
+		modifyButton.setEnabled(true);
+		deleteButton.setEnabled(true);
+		ISelection selection = tableViewer.getSelection();
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+			if (structuredSelection.isEmpty()) {
+				modifyButton.setEnabled(false);
+				deleteButton.setEnabled(false);
+			}
+		}
+	}
+
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		newButton = createButton(parent, IDialogConstants.CLIENT_ID, "Add...", false);

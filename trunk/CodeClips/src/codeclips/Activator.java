@@ -37,10 +37,6 @@ public class Activator extends AbstractUIPlugin {
 		
 		templateStore = new TemplateStore(getPreferenceStore(), PreferenceInitializer.TEMPLATES_KEY);
 		templateStore.load();
-		Template[] templates = templateStore.getTemplates();
-		for (Template template : templates) {
-			System.out.println(template.getName() + " " + template.getPattern());
-		}
 	}
 
 	/*
