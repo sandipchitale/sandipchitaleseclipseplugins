@@ -1,5 +1,9 @@
 package codeclips.templates;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.jface.text.templates.GlobalTemplateVariables;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
@@ -12,10 +16,7 @@ class CodeClipTemplateContextType extends TemplateContextType {
 		addGlobalResolvers();
 	}
 	
-	/**
-	 * The user variable evaluates to the current user.
-	 */
-	public static class SysProp extends TemplateVariableResolver {
+	private static class SysProp extends TemplateVariableResolver {
 		/**
 		 * Creates a new user name variable
 		 */
@@ -27,11 +28,41 @@ class CodeClipTemplateContextType extends TemplateContextType {
 		public void resolve(TemplateVariable variable, TemplateContext context) {
 			String name = variable.getName();
 			if (variable.getType().equals(name)) {
-				variable.setValues(System.getProperties().values().toArray(new String[0])); //$NON-NLS-1$
+				Set keySet = System.getProperties().keySet();
+				List<String> values = new LinkedList<String>();
+				for (Object object : keySet) {
+					if (object instanceof String) {
+						String key = (String) object;
+						values.add(System.getProperty(key, key) + " (" + key + ")");
+					}
+				}
+				variable.setValues(values.toArray(new String[0])); //$NON-NLS-1$
 			} else {
 				name = name.replaceAll("DOT", ".");
 				variable.setValues(new String[] { System.getProperty(name, name) });
 			}
+		}
+		
+		@Override
+		protected String resolve(TemplateContext context) {
+			String value = super.resolve(context);
+			return System.getProperty(value, value);
+		}
+		
+		@Override
+		protected boolean isUnambiguous(TemplateContext context) {
+			return false;
+		}
+	}
+	
+	private static class SysPropName extends TemplateVariableResolver {
+		public SysPropName() {
+			super("syspropname", "System property name template variable."); //$NON-NLS-1$
+		}
+		
+		@Override
+		public void resolve(TemplateVariable variable, TemplateContext context) {
+			variable.setValues(System.getProperties().keySet().toArray(new String[0])); //$NON-NLS-1$
 		}
 		
 		@Override
@@ -52,6 +83,7 @@ class CodeClipTemplateContextType extends TemplateContextType {
 		addResolver(new GlobalTemplateVariables.User());
 		addResolver(new ClipboardVariableResolver());
 		addResolver(new SysProp());
+		addResolver(new SysPropName());
 		
 		// Tab stops
 		addResolver(new TabStopVariableResolver("1", "1st tab stop")); //$NON-NLS-1$ //$NON-NLS-2$
