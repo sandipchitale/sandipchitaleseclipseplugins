@@ -203,6 +203,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		
 		modifyButton = createButton(parent,MODIFY_ID, "Modify...", true);
 		modifyButton.addSelectionListener(new SelectionListener() {
+			@SuppressWarnings("deprecation")
 			public void widgetSelected(SelectionEvent e) {
 				ISelection selection = tableViewer.getSelection();
 				if (selection instanceof IStructuredSelection) {
