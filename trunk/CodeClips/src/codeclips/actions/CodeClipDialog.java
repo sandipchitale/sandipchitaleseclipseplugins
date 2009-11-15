@@ -42,7 +42,8 @@ public class CodeClipDialog extends TitleAreaDialog {
 		
 	private final TemplatePersistenceData templatePersistenceData;
 
-	private static final int CREATE_UPDATE_ID = IDialogConstants.CLIENT_ID;
+	private static final int MANAGE_ID = IDialogConstants.CLIENT_ID;
+	private static final int CREATE_UPDATE_ID = MANAGE_ID+1;
 	private static final int CANCEL_ID = CREATE_UPDATE_ID + 1;
 
 	private Button createUpdateButton;
@@ -184,7 +185,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		if (getParentShell() == textEditor.getSite().getShell()) {
-			Button manageButton = createButton(parent, IDialogConstants.CLIENT_ID, "Manage...", false);
+			Button manageButton = createButton(parent, MANAGE_ID, "Manage...", false);
 			manageButton.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					new ManageCodesClipsDialog(getShell(), textEditor).open();
@@ -210,7 +211,15 @@ public class CodeClipDialog extends TitleAreaDialog {
 				"${7}",
 				"${8}",
 				"${9}",
+				"${cursor}",
 				"${clipboard}",
+				"${date}",
+				"${time}",
+				"${user}",
+				"${selection}",
+				"${word_selection}",
+				"${line_selection}",
+				"${dollar}",
 				}
 		);
 		combo.select(0);
