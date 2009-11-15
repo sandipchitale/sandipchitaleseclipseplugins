@@ -1,7 +1,9 @@
 package codeclips;
 
 import java.io.IOException;
+import java.util.UUID;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.persistence.TemplatePersistenceData;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
@@ -19,7 +21,18 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
-	private static TemplateStore templateStore;
+	private static class CodeClipsTemplateStore extends TemplateStore {
+
+		public CodeClipsTemplateStore(IPreferenceStore store, String key) {
+			super(store, key);
+		}
+		
+		protected void internalAdd(TemplatePersistenceData data) {
+			super.internalAdd(data);
+		}
+	}
+	
+	private static CodeClipsTemplateStore templateStore;
 	
 	/**
 	 * The constructor
@@ -35,7 +48,7 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		
-		templateStore = new TemplateStore(getPreferenceStore(), PreferenceInitializer.TEMPLATES_KEY);
+		templateStore = new CodeClipsTemplateStore(getPreferenceStore(), PreferenceInitializer.TEMPLATES_KEY);
 		templateStore.load();
 	}
 
@@ -62,21 +75,17 @@ public class Activator extends AbstractUIPlugin {
 	}
 	
 	public void persistTemplate(String abbrev, String description, String expansion) {
-		TemplateStore templateStore = Activator.getDefault().getTemplateStore();
-		
-		Template existingTemplate = templateStore.findTemplate(abbrev);
-		if (existingTemplate == null) {
-			existingTemplate = new Template(abbrev, description, "", expansion, true);
-			TemplatePersistenceData templatePersistenceData = new TemplatePersistenceData(existingTemplate, true);
-			templateStore.add(templatePersistenceData);
-		} else {
-			existingTemplate.setDescription(description);
-			existingTemplate.setPattern(expansion);
-		}
-		
+		Template template = new Template(abbrev, description, "", expansion, true);
+		TemplatePersistenceData templatePersistenceData = new TemplatePersistenceData(template, true, UUID.randomUUID().toString());
+		persistTemplatePersistenceData(templatePersistenceData);
+	}
+
+	public void persistTemplatePersistenceData(TemplatePersistenceData templatePersistenceData) {
+		templateStore.internalAdd(templatePersistenceData);
 		try {
 			templateStore.save();
 		} catch (IOException e) {
+			e.printStackTrace(System.err);
 		}
 	}
 
