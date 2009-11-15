@@ -76,7 +76,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 				snippetTemplateProposal.setTemplateProposals(completionProposals);
 				Template template = snippetTemplateProposal.getTemplateSuper();
 				StyledString styledString =
-					new StyledString(String.format("%1$-20.20s", template.getDescription()), FIXED_WIDTH_STYLER); //$NON-NLS-1$
+					new StyledString(String.format("%1$-20.20s", template.getName() + " - " + template.getDescription()), FIXED_WIDTH_STYLER); //$NON-NLS-1$
 				
 				styledString.append(new StyledString(String.format("%1$10.10s ", template.getName() + "\u21E5"), FIXED_WIDTH_STYLER)); //$NON-NLS-1$
 
