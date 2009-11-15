@@ -63,6 +63,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 		abbrev = template.getName();
 		description = template.getDescription();
 		expansion = template.getPattern();
+		setHelpAvailable(false);
 	}
 	
 	public CodeClipDialog(Shell shell, ITextEditor textEditor) {
@@ -72,6 +73,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 		abbrev = "";
 		description = "";
 		expansion = "";
+		setHelpAvailable(false);
 	}
 
 	@Override
@@ -207,7 +209,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 		((GridLayout) parent.getLayout()).numColumns++;
 		final Combo combo = new Combo(parent, SWT.READ_ONLY);
 		combo.setItems (new String [] {
-				"",
+				"Insert Variables",
 				"${cursor}",
 				"${1}",
 				"${2}",
@@ -234,49 +236,53 @@ public class CodeClipDialog extends TitleAreaDialog {
 		combo.addSelectionListener(new SelectionListener() {
 			
 			public void widgetSelected(SelectionEvent e) {
-				int selectionIndex = combo.getSelectionIndex();
-				if (selectionIndex == (combo.getItemCount() - 1)) {
-					String text = expansionText.getText();
-					Map<String, Integer> frequencyMap = new TreeMap<String, Integer>();
-					Scanner scanner = new Scanner(text);
-					scanner.useDelimiter("\\W+");
-					while(scanner.hasNext()) {
-						String next = scanner.next();
-						if (next.matches("[a-zA-Z]\\w*")) {
-							Integer freq = frequencyMap.get(next);
-							frequencyMap.put(next, (freq == null ? 1 : freq + 1));
-						}
-					}
-					Set<String> variableCandidates = new TreeSet<String>();
-					for (String word : frequencyMap.keySet()) {
-						if (frequencyMap.get(word) > 1) {
-							variableCandidates.add(word);
-						}
-					}
-					if (variableCandidates.size() > 0) {
-						ListDialog listDialog = new ListDialog(getShell());
-						listDialog.setAddCancelButton(true);
-						listDialog.setInput(variableCandidates);
-						listDialog.setContentProvider(new ArrayContentProvider());
-						listDialog.setLabelProvider(new LabelProvider());
-						listDialog.setTitle("Select word to variabalize");
-						if (Window.OK == listDialog.open()) {
-							Object[] results = listDialog.getResult();
-							if (results.length > 0) {
-								for (Object result : results) {
-									if (result instanceof String) {
-										String string = (String) result;
-										text = text.replaceAll("\\b" + Pattern.quote(string) + "\\b", "\\$\\{" + string + "\\}");
-									}
-								}
-								expansionText.setText(text);
+				try {
+					int selectionIndex = combo.getSelectionIndex();
+					if (selectionIndex == (combo.getItemCount() - 1)) {
+						String text = expansionText.getText();
+						Map<String, Integer> frequencyMap = new TreeMap<String, Integer>();
+						Scanner scanner = new Scanner(text);
+						scanner.useDelimiter("\\W+");
+						while(scanner.hasNext()) {
+							String next = scanner.next();
+							if (next.matches("[a-zA-Z]\\w*")) {
+								Integer freq = frequencyMap.get(next);
+								frequencyMap.put(next, (freq == null ? 1 : freq + 1));
 							}
 						}
+						Set<String> variableCandidates = new TreeSet<String>();
+						for (String word : frequencyMap.keySet()) {
+							if (frequencyMap.get(word) > 1) {
+								variableCandidates.add(word);
+							}
+						}
+						if (variableCandidates.size() > 0) {
+							ListDialog listDialog = new ListDialog(getShell());
+							listDialog.setAddCancelButton(true);
+							listDialog.setHelpAvailable(false);
+							listDialog.setInput(variableCandidates);
+							listDialog.setContentProvider(new ArrayContentProvider());
+							listDialog.setLabelProvider(new LabelProvider());
+							listDialog.setTitle("Variabalize");
+							listDialog.setMessage("Select a word to variabalize");
+							if (Window.OK == listDialog.open()) {
+								Object[] results = listDialog.getResult();
+								if (results.length > 0) {
+									for (Object result : results) {
+										if (result instanceof String) {
+											String string = (String) result;
+											text = text.replaceAll("\\b" + Pattern.quote(string) + "\\b", "\\$\\{" + string + "\\}");
+										}
+									}
+									expansionText.setText(text);
+								}
+							}
+						}
+					} else if (selectionIndex > 0) {
+						int caretOffset = expansionText.getCaretOffset();
+						expansionText.replaceTextRange(caretOffset, 0, combo.getItem(selectionIndex));
 					}
-					combo.select(0);
-				} else if (selectionIndex > 0) {
-					int caretOffset = expansionText.getCaretOffset();
-					expansionText.replaceTextRange(caretOffset, 0, combo.getItem(selectionIndex));
+				} finally {
 					combo.select(0);
 				}
 			}
