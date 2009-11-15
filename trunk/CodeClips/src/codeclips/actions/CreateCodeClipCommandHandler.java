@@ -51,5 +51,5 @@ public class CreateCodeClipCommandHandler extends AbstractHandler {
 		if (Window.OK == codeClipDialog.open()) {			
 			Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
 		}
-	}	
+	}
 }

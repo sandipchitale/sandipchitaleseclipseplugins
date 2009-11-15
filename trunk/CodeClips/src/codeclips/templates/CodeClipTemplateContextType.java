@@ -1,16 +1,46 @@
 package codeclips.templates;
 
 import org.eclipse.jface.text.templates.GlobalTemplateVariables;
+import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.jface.text.templates.TemplateVariable;
+import org.eclipse.jface.text.templates.TemplateVariableResolver;
 
 class CodeClipTemplateContextType extends TemplateContextType {
 	CodeClipTemplateContextType(String scope) {
 		super(scope);
 		addGlobalResolvers();
 	}
+	
+	/**
+	 * The user variable evaluates to the current user.
+	 */
+	public static class SysProp extends TemplateVariableResolver {
+		/**
+		 * Creates a new user name variable
+		 */
+		public SysProp() {
+			super("sysprop", "System property template variable."); //$NON-NLS-1$
+		}
+		
+		@Override
+		public void resolve(TemplateVariable variable, TemplateContext context) {
+			String name = variable.getName();
+			if (variable.getType().equals(name)) {
+				variable.setValues(System.getProperties().values().toArray(new String[0])); //$NON-NLS-1$
+			} else {
+				name = name.replaceAll("DOT", ".");
+				variable.setValues(new String[] { System.getProperty(name, name) });
+			}
+		}
+		
+		@Override
+		protected boolean isUnambiguous(TemplateContext context) {
+			return false;
+		}
+	}
 
 	private void addGlobalResolvers() {
-		
 		// Global
 		addResolver(new GlobalTemplateVariables.Cursor());
 		addResolver(new GlobalTemplateVariables.WordSelection());
@@ -21,6 +51,7 @@ class CodeClipTemplateContextType extends TemplateContextType {
 		addResolver(new GlobalTemplateVariables.Time());
 		addResolver(new GlobalTemplateVariables.User());
 		addResolver(new ClipboardVariableResolver());
+		addResolver(new SysProp());
 		
 		// Tab stops
 		addResolver(new TabStopVariableResolver("1", "1st tab stop")); //$NON-NLS-1$ //$NON-NLS-2$
