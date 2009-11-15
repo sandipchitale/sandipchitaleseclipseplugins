@@ -1,5 +1,7 @@
 package codeclips.actions;
 
+import java.awt.color.CMMException;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -14,9 +16,12 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -190,6 +195,49 @@ public class CodeClipDialog extends TitleAreaDialog {
 				}
 			});
 		}
+		
+		((GridLayout) parent.getLayout()).numColumns++;
+		final Combo combo = new Combo(parent, SWT.READ_ONLY);
+		combo.setItems (new String [] {
+				"",
+				"${cursor}",
+				"${1}",
+				"${2}",
+				"${3}",
+				"${4}",
+				"${5}",
+				"${6}",
+				"${7}",
+				"${8}",
+				"${9}",
+				"${clipboard}",
+				}
+		);
+		combo.select(0);
+		combo.addSelectionListener(new SelectionListener() {
+			
+			public void widgetSelected(SelectionEvent e) {
+					int selectionIndex = combo.getSelectionIndex();
+					if (selectionIndex > 0) {
+//						try {
+//							combo.removeSelectionListener(this);							
+							int caretOffset = expansionText.getCaretOffset();
+							expansionText.replaceTextRange(caretOffset, 0, combo.getItem(selectionIndex));
+							combo.select(0);
+//						} finally {
+//							combo.addSelectionListener(this);
+//						}
+					}
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+
+		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		combo.setLayoutData(gridData);
+		
 		createUpdateButton = createButton(parent, CREATE_UPDATE_ID, (templatePersistenceData == null ? "Create" : "Update"), false);
 		createButton(parent, CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
 	}
