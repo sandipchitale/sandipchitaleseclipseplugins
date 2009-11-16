@@ -206,7 +206,6 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		
 		modifyButton = createButton(parent,MODIFY_ID, "Modify...", true);
 		modifyButton.addSelectionListener(new SelectionListener() {
-			@SuppressWarnings("deprecation")
 			public void widgetSelected(SelectionEvent e) {
 				ISelection selection = tableViewer.getSelection();
 				if (selection instanceof IStructuredSelection) {
@@ -216,9 +215,12 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 						CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, templatePersistenceData);
 						if (Window.OK == codeClipDialog.open()) {	
 							Template template = templatePersistenceData.getTemplate();
-							template.setName(codeClipDialog.getAbbrev());
-							template.setDescription(codeClipDialog.getDescription());
-							template.setPattern(codeClipDialog.getExpansion());
+							Template modifiedTemplate = new Template(codeClipDialog.getAbbrev(),
+									codeClipDialog.getDescription(),
+									template.getContextTypeId(),
+									codeClipDialog.getExpansion(),
+									true);
+							templatePersistenceData.setTemplate(modifiedTemplate);
 							Activator.getDefault().persistTemplatePersistenceData(templatePersistenceData);
 							tableViewer.setInput(templateStore);
 						}
