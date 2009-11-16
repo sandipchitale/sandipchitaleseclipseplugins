@@ -42,6 +42,21 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 	@Override
 	public boolean isHandled() {
 		if (firstTime.compareAndSet(true, false)) {
+			
+			IEvaluationService evaluationService = (IEvaluationService) PlatformUI.getWorkbench().getService(IEvaluationService.class);
+			if (evaluationService != null) {
+				Object variable = evaluationService.getCurrentState().getVariable("activePart");
+				if (variable instanceof ITextEditor) {
+					processITextEditor((ITextEditor) variable);
+				} else if (variable instanceof MultiPageEditorPart) {
+					MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) variable;
+					Object selectedPage = multiPageEditorPart.getSelectedPage();
+					if (selectedPage instanceof ITextEditor) {
+						processITextEditor((ITextEditor) selectedPage);
+					}
+				}
+			}
+			
 			Job addEditorMonitorJobs = new WorkbenchJob("Monitor TextEditors.") {  //$NON-NLS-1$
 				public IStatus runInUIThread(IProgressMonitor monitor) {
 					IWorkbench workbench = PlatformUI.getWorkbench();
@@ -60,20 +75,6 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 			};
 			addEditorMonitorJobs.setSystem(true);
 			addEditorMonitorJobs.schedule();
-			
-			IEvaluationService evaluationService = (IEvaluationService) PlatformUI.getWorkbench().getService(IEvaluationService.class);
-			if (evaluationService != null) {
-				Object variable = evaluationService.getCurrentState().getVariable("activePart");
-				if (variable instanceof ITextEditor) {
-					processITextEditor((ITextEditor) variable);
-				} else if (variable instanceof MultiPageEditorPart) {
-					MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) variable;
-					Object selectedPage = multiPageEditorPart.getSelectedPage();
-					if (selectedPage instanceof ITextEditor) {
-						processITextEditor((ITextEditor) selectedPage);
-					}
-				}
-			}
 		}
 		return false;
 	}
