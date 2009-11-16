@@ -39,10 +39,12 @@ public class CodeClipDialog extends TitleAreaDialog {
 
 	private final ITextEditor textEditor;
 
+	private String contentType;
 	private String abbrev;
 	private String description;
 	private String expansion;
 
+//	private Text contentTypeText;
 	private Text abbrevText;
 	private Text descriptionText;
 	private StyledText expansionText;
@@ -63,6 +65,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 		abbrev = template.getName();
 		description = template.getDescription();
 		expansion = template.getPattern();
+		contentType = template.getContextTypeId();
 		setHelpAvailable(false);
 	}
 	
@@ -73,6 +76,16 @@ public class CodeClipDialog extends TitleAreaDialog {
 		abbrev = "";
 		description = "";
 		expansion = "";
+		contentType = "";
+//		ISelection selection = textEditor.getSelectionProvider().getSelection();
+//		if (selection instanceof ITextSelection) {
+//			ITextSelection textSelection = (ITextSelection) selection;
+//			try {
+//				contentType = textEditor.getDocumentProvider().getDocument(
+//						textEditor.getEditorInput()).getContentType(textSelection.getOffset()+textSelection.getLength());
+//			} catch (BadLocationException e) {
+//			}
+//		}
 		setHelpAvailable(false);
 	}
 
@@ -94,17 +107,17 @@ public class CodeClipDialog extends TitleAreaDialog {
         Composite parentComposite = (Composite) super.createDialogArea(parent);
         
         GridLayout gridLayout = (GridLayout) parentComposite.getLayout();
-        gridLayout.numColumns = 2;
+        gridLayout.numColumns = 2; // 3;
         gridLayout.makeColumnsEqualWidth = false;
 		
         GridData layoutData = (GridData) parentComposite.getChildren()[0].getLayoutData();
-        layoutData.horizontalSpan = 2;
+        layoutData.horizontalSpan = 2; //3;
 		
 		gridLayout.marginWidth = 10;
 		gridLayout.marginHeight = 10;
 		gridLayout.horizontalSpacing = 5;
 		gridLayout.verticalSpacing = 5;
-        
+		
         Label abbrevLabel = new Label(parentComposite, SWT.NONE);
         abbrevLabel.setText("Abbreviation:        ");
 		GridData abbrevLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -115,9 +128,14 @@ public class CodeClipDialog extends TitleAreaDialog {
 		GridData descriptionLabelGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		descriptionLabel.setLayoutData(descriptionLabelGridData);
 		
+//		Label contentTypeLabel = new Label(parentComposite, SWT.NONE);
+//        contentTypeLabel.setText("Content Type:");
+//		GridData contentTypeLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+//		contentTypeLabel.setLayoutData(contentTypeLabelGridData);
+		
 		abbrevText = new Text(parentComposite, SWT.SINGLE | SWT.BORDER);
-        abbrevText.setText(abbrev);
-        abbrevText.setEditable(templatePersistenceData == null);
+		abbrevText.setText(abbrev);
+		abbrevText.setEditable(templatePersistenceData == null);
 		GridData abbrevTextGridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
 		abbrevText.setLayoutData(abbrevTextGridData);
 		
@@ -131,11 +149,17 @@ public class CodeClipDialog extends TitleAreaDialog {
         descriptionText.setText(description);
 		GridData descriptionTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		descriptionText.setLayoutData(descriptionTextGridData);
+
+//		contentTypeText = new Text(parentComposite, SWT.SINGLE | SWT.BORDER);
+//      contentTypeText.setText(contentType);
+//      contentTypeText.setEditable(false);
+//		GridData contentTypeTextGridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
+//		contentTypeText.setLayoutData(contentTypeTextGridData);
 		
         Label expansionLabel = new Label(parentComposite, SWT.NONE);
         expansionLabel.setText("Expansion:");
 		GridData expansionLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		expansionLabelGridData.horizontalSpan = 2;
+		expansionLabelGridData.horizontalSpan = 2; // 3;
 		expansionLabel.setLayoutData(expansionLabelGridData);
 		
 		expansionText = new StyledText(parentComposite, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -143,7 +167,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 		expansionText.setFont(JFaceResources.getFontRegistry().get(JFaceResources.TEXT_FONT));
 		GridData styledTextGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		styledTextGridData.heightHint = expansionText.getLineHeight() * 8;
-		styledTextGridData.horizontalSpan = 2;
+		styledTextGridData.horizontalSpan = 2; // 3;
 		expansionText.setLayoutData(styledTextGridData);
 		
 		if (templatePersistenceData == null) {
@@ -179,12 +203,17 @@ public class CodeClipDialog extends TitleAreaDialog {
 		return description;
 	}
 	
+	public String getContentType() {
+		return contentType;
+	}
+	
 	public String getExpansion() {
 		return expansion;
 	}
 	
 	@Override
 	protected void okPressed() {
+//		contentType = contentTypeText.getText().trim();
 		abbrev = abbrevText.getText().trim();
 		description = descriptionText.getText().trim();
 		expansion = expansionText.getText();
