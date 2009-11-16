@@ -214,10 +214,9 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 						TemplatePersistenceData templatePersistenceData = (TemplatePersistenceData) structuredSelection.getFirstElement();
 						CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, templatePersistenceData);
 						if (Window.OK == codeClipDialog.open()) {	
-							Template template = templatePersistenceData.getTemplate();
 							Template modifiedTemplate = new Template(codeClipDialog.getAbbrev(),
 									codeClipDialog.getDescription(),
-									template.getContextTypeId(),
+									codeClipDialog.getContentType(),
 									codeClipDialog.getExpansion(),
 									true);
 							templatePersistenceData.setTemplate(modifiedTemplate);
