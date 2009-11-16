@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -23,6 +24,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.progress.WorkbenchJob;
+import org.eclipse.ui.services.IEvaluationService;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
@@ -58,6 +60,20 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 			};
 			addEditorMonitorJobs.setSystem(true);
 			addEditorMonitorJobs.schedule();
+			
+			IEvaluationService evaluationService = (IEvaluationService) PlatformUI.getWorkbench().getService(IEvaluationService.class);
+			if (evaluationService != null) {
+				Object variable = evaluationService.getCurrentState().getVariable("activePart");
+				if (variable instanceof ITextEditor) {
+					processITextEditor((ITextEditor) variable);
+				} else if (variable instanceof MultiPageEditorPart) {
+					MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) variable;
+					Object selectedPage = multiPageEditorPart.getSelectedPage();
+					if (selectedPage instanceof ITextEditor) {
+						processITextEditor((ITextEditor) selectedPage);
+					}
+				}
+			}
 		}
 		return false;
 	}
