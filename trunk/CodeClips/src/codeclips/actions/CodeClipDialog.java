@@ -106,7 +106,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 		gridLayout.verticalSpacing = 5;
         
         Label abbrevLabel = new Label(parentComposite, SWT.NONE);
-        abbrevLabel.setText("Abbreviation:");
+        abbrevLabel.setText("Abbreviation:        ");
 		GridData abbrevLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		abbrevLabel.setLayoutData(abbrevLabelGridData);
 		
@@ -118,7 +118,7 @@ public class CodeClipDialog extends TitleAreaDialog {
 		abbrevText = new Text(parentComposite, SWT.SINGLE | SWT.BORDER);
         abbrevText.setText(abbrev);
         abbrevText.setEditable(templatePersistenceData == null);
-		GridData abbrevTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		GridData abbrevTextGridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
 		abbrevText.setLayoutData(abbrevTextGridData);
 		
 		abbrevText.addModifyListener(new ModifyListener() {
