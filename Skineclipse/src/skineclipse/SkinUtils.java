@@ -38,6 +38,9 @@ public class SkinUtils {
 		slider.setMinimum(0);
 		slider.setMaximum(255);
 		slider.setIncrement(1);
+		Display display = slider.getDisplay();
+		Color widgetBackground = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		slider.setSelection((widgetBackground .getRed() + widgetBackground.getGreen() + widgetBackground.getBlue())/3);
 
 		GridData sliderGridData = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false);
