@@ -107,11 +107,17 @@ public class Info implements IWorkbenchWindowActionDelegate {
 		footer(out, header);
 	}
 	
+	@SuppressWarnings("deprecation")
 	private static void editors(PrintWriter out) {
 		String header = "Editors";
 		header(out, header);
 		IEditorRegistry editorRegistry = PlatformUI.getWorkbench().getEditorRegistry();
 		IFileEditorMapping[] fileEditorMappings = editorRegistry.getFileEditorMappings();
+		IEditorDescriptor defaultEditorDescriptor = editorRegistry.getDefaultEditor();
+		out.println(defaultEditorDescriptor.getId()
+				+ " "
+				+ defaultEditorDescriptor.getLabel()
+		);
 		for (IFileEditorMapping fileEditorMapping : fileEditorMappings) {
 			IEditorDescriptor[] editorDescriptors = fileEditorMapping.getEditors();
 			SortedSet<IEditorDescriptor> sortedContentTypes = new TreeSet<IEditorDescriptor>(
@@ -135,7 +141,7 @@ public class Info implements IWorkbenchWindowActionDelegate {
 						);
 			}
 		}
-
+		
 		footer(out, header);
 	}
 	
