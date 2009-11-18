@@ -7,6 +7,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.core.internal.content.ContentTypeManager;
+import org.eclipse.core.runtime.IBundleGroup;
+import org.eclipse.core.runtime.IBundleGroupProvider;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -20,6 +23,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
+import org.osgi.framework.Bundle;
 
 public class Info implements IWorkbenchWindowActionDelegate {
 
@@ -36,6 +40,7 @@ public class Info implements IWorkbenchWindowActionDelegate {
 		
 		// Features
 		// Plugins
+		bundles(out);
 		// Extension points
 		// Extensions		
 		
@@ -52,6 +57,21 @@ public class Info implements IWorkbenchWindowActionDelegate {
 
 	public void selectionChanged(IAction action, ISelection selection) {
 	}
+	
+	private static void bundles(PrintWriter out) {
+		String header = "Bundles aka Plug-ins:";
+		header(out, header);
+		IBundleGroupProvider[] bundleGroupProviders = Platform.getBundleGroupProviders();
+		for (IBundleGroupProvider bundleGroupProvider : bundleGroupProviders) {
+			IBundleGroup[] bundleGroups = bundleGroupProvider.getBundleGroups();
+			for (IBundleGroup bundleGroup : bundleGroups) {
+				Bundle[] bundles = bundleGroup.getBundles();
+				for (Bundle bundle : bundles) {
+				}
+			}
+		}
+		footer(out, header);
+	}	
 
 	private static void perspectives(PrintWriter out) {
 		String header = "Perspectives";
