@@ -66,12 +66,17 @@ public class Info implements IWorkbenchWindowActionDelegate {
 		for (IBundleGroupProvider bundleGroupProvider : bundleGroupProviders) {
 			IBundleGroup[] bundleGroups = bundleGroupProvider.getBundleGroups();
 			for (IBundleGroup bundleGroup : bundleGroups) {
-				out.println(bundleGroup.getIdentifier() + " "
-						+ bundleGroup.getDescription());
+				out.println(bundleGroup.getIdentifier()
+						+ " "
+						+ bundleGroup.getDescription()
+						+ " "
+						+ bundleGroup.getVersion());
 				Bundle[] bundles = bundleGroup.getBundles();
 				for (Bundle bundle : bundles) {
-					out.println(" " + bundle.getSymbolicName() + " "
-							+ bundle.getBundleId());
+					out.println("\t" + bundle.getSymbolicName() + " "
+							+ bundle.getBundleId()
+							+ " "
+							+ bundle.getVersion());
 				}
 			}
 		}
@@ -95,9 +100,11 @@ public class Info implements IWorkbenchWindowActionDelegate {
 		sortedPerspectiveDescriptors.addAll(Arrays.asList(perspectives));
 
 		for (IPerspectiveDescriptor perspectiveDescriptor : sortedPerspectiveDescriptors) {
-			out.println(perspectiveDescriptor.getId() + " "
-					+ perspectiveDescriptor.getLabel() + " "
-					+ perspectiveDescriptor.getDescription());
+			out.printf(
+					"%1$-40.40s\t%2$-25.25s\t%3$s\n"
+					,perspectiveDescriptor.getId()
+					,perspectiveDescriptor.getLabel()
+					,perspectiveDescriptor.getDescription());
 		}
 
 		footer(out, header);
@@ -118,9 +125,11 @@ public class Info implements IWorkbenchWindowActionDelegate {
 		sortedViewDescriptors.addAll(Arrays.asList(viewDescriptors));
 
 		for (IViewDescriptor viewDescriptor : sortedViewDescriptors) {
-			out.println(viewDescriptor.getId() + " "
-					+ viewDescriptor.getLabel() + " "
-					+ viewDescriptor.getDescription());
+			out.printf(
+					"%1$-40.40s\t%2$-25.25s\t%3$s\n"
+					,viewDescriptor.getId() + " "
+					,viewDescriptor.getLabel() + " "
+					,viewDescriptor.getDescription());
 		}
 
 		footer(out, header);
