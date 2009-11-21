@@ -1,7 +1,6 @@
 package editorfindbar.api;
 
 import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import editorfindbar.impl.FindBarDecorator;
