@@ -52,7 +52,6 @@ public class FindBarDecorator implements IFindBarDecorator {
 	public FindBarDecorator(ITextEditor textEditor, IStatusLineManager statusLineManager) {
 		this.textEditor = textEditor;
 		this.statusLineManager = statusLineManager;
-		textEditor.setAction(ID, new ShowFindBarAction());
 	}
 
 	public Composite createFindBarComposite(Composite parent) {
@@ -69,7 +68,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 		Composite content = new Composite(composite, SWT.NONE);
 		content.setLayout(new FillLayout());
 		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		return composite;
+		return content;
 	}
 	
 	public void createFindBar(ISourceViewer sourceViewer) {
@@ -217,6 +216,8 @@ public class FindBarDecorator implements IFindBarDecorator {
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
+		
+		textEditor.setAction(ID, new ShowFindBarAction());
 	}
 
 	private Combo combo;

@@ -24,7 +24,7 @@ import editorfindbar.impl.FindBarDecorator;
  *
  */
 public class FindBarDecoratorFactory {
-	public static IFindBarDecorator createBarDecorator(ITextEditor textEditor,
+	public static IFindBarDecorator createFindBarDecorator(ITextEditor textEditor,
 			IStatusLineManager statusLineManager) {
 		return new FindBarDecorator(textEditor, statusLineManager);
 	}
