@@ -1,5 +1,8 @@
 package editorfindbar.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
@@ -150,7 +153,6 @@ public class FindBarDecorator implements IFindBarDecorator {
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
 			}
 		});
 
@@ -177,8 +179,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 
 		wholeWord = new Button(findBar, SWT.CHECK);
 		wholeWord.setText("Whole Word");
-		wholeWord
-				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		wholeWord.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		wholeWord.setEnabled(false);
 
 		IFindReplaceTarget findReplaceTarget = (IFindReplaceTarget) textEditor.getAdapter(IFindReplaceTarget.class);
@@ -192,6 +193,14 @@ public class FindBarDecorator implements IFindBarDecorator {
 		countTotal = new Button(findBar, SWT.PUSH);
 		countTotal.setText("\u2211");
 		countTotal.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		countTotal.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				showCountTotal();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 		
 		count = new Label(findBar, SWT.NONE);
 		count.setText("      ");
@@ -420,6 +429,34 @@ public class FindBarDecorator implements IFindBarDecorator {
 				}
 			}
 		}
+	}
+	
+	private void showCountTotal() {
+		String patternString = combo.getText();
+		boolean patternStringIsAWord = isWord(patternString);
+		int total = 0;
+		if (!"".equals(patternString) ) {
+			String text = sourceViewer.getDocument().get();
+			int flags = 0;
+			if (!caseSensitive.getSelection()) {
+				flags |= Pattern.CASE_INSENSITIVE;
+			}
+			if (!regularExpression.getSelection()) {
+				patternString = Pattern.quote(patternString);
+			}
+			if (patternStringIsAWord && wholeWord.getSelection()) {
+				patternString = "\\b" + patternString + "\\b";
+			}
+			Pattern pattern = Pattern.compile(patternString);
+			Matcher matcher = pattern.matcher(text);
+			if (matcher.find(0)) {
+				total = 1;
+				while (matcher.find()) {
+					++total;
+				}
+			}
+		}
+		count.setText(String.valueOf(total));
 	}
 
 	/**
