@@ -14,16 +14,8 @@
       <key
             commandId="org.eclipse.ui.edit.find.bar"
             contextId="org.eclipse.ui.textEditorScope"
-            platform="cocoa"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+F">
-      </key>
-      <key
-            commandId="org.eclipse.ui.edit.find.bar"
-            contextId="org.eclipse.ui.textEditorScope"
-            platform="carbon"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+F">
+            sequence="M1+F">
       </key>
    </extension>
 </plugin>
