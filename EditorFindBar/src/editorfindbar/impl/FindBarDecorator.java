@@ -181,6 +181,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 				false));
 		caseSensitive.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
+				find(true, true);
 				showCountTotal();
 			}
 
@@ -194,6 +195,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 		wholeWord.setEnabled(false);
 		wholeWord.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
+				find(true, true);
 				showCountTotal();
 			}
 
@@ -209,6 +211,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 					false, false));
 			regularExpression.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
+					find(true, true);
 					showCountTotal();
 				}
 
