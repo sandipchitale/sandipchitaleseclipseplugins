@@ -81,17 +81,17 @@ public class FindBarDecorator implements IFindBarDecorator {
 		findBarGridData.exclude = true;
 		findBar.setLayoutData(findBarGridData);
 
-		GridLayout gridLayout = new GridLayout(10, false);
+		GridLayout gridLayout = new GridLayout(12, false);
 		gridLayout.marginWidth = 0;
 		gridLayout.marginHeight = 0;
 		gridLayout.marginTop = 0;
-		gridLayout.marginLeft = 5;
+		gridLayout.marginLeft = 10;
 		gridLayout.marginBottom = 0;
 		gridLayout.marginRight = 5;
 		findBar.setLayout(gridLayout);
 
 		Label close = new Label(findBar, SWT.PUSH);
-//		 close.setText("X");
+		close.setText("  ");
 		close.setToolTipText("Hide Find Bar");
 		close.setImage(Activator.getDefault().getImage(Activator.CLOSE));
 		close.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
@@ -103,8 +103,9 @@ public class FindBarDecorator implements IFindBarDecorator {
 
 		Label findLabel = new Label(findBar, SWT.NONE);
 		findLabel.setText("Find:");
-		findLabel
-				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		GridData findLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		findLabelGridData.horizontalIndent = 5;
+		findLabel.setLayoutData(findLabelGridData);
 
 		combo = new Combo(findBar, SWT.DROP_DOWN);
 		combo.setText("                            ");
@@ -135,7 +136,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 				}
 			}
 		});
-
+		
 		previous = new Button(findBar, SWT.PUSH);
 		previous.setEnabled(false);
 		// previous.setText("Previous");
@@ -187,12 +188,20 @@ public class FindBarDecorator implements IFindBarDecorator {
 			regularExpression.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
 					false, false));
 		}
+		
+		countTotal = new Button(findBar, SWT.PUSH);
+		countTotal.setText("\u2211");
+		countTotal.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		
+		count = new Label(findBar, SWT.NONE);
+		count.setText("      ");
+		countTotal.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		Label streach = new Label(findBar, SWT.PUSH);
-		streach.setLayoutData(findBarGridData);
+		streach.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Button showFindReplaceDialog = new Button(findBar, SWT.PUSH);
-		showFindReplaceDialog.setText("Find/Replace...");
+		showFindReplaceDialog.setText("...");
 		showFindReplaceDialog.setToolTipText("Show Find/Replace Dialog");
 		showFindReplaceDialog.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
 				false, false));
@@ -226,6 +235,8 @@ public class FindBarDecorator implements IFindBarDecorator {
 	private int incrementalOffset = -1;
 	private Button next;
 	private Button previous;
+	private Button countTotal;
+	private Label count;
 	private Composite composite;
 	private TraverseListener traverseListener = new TraverseListener() {
 		public void keyTraversed(TraverseEvent e) {
@@ -248,9 +259,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 				wrap = false;
 			}
 			lastText = text;
-			previous.setEnabled(!"".equals(text));
-			next.setEnabled(!"".equals(text));
-			wholeWord.setEnabled((!"".equals(text)) && (isWord(text)));
+			adjustEnablement();
 			if ("".equals(text)) {
 				ISelectionProvider selectionProvider = textEditor.getSelectionProvider();
 				ISelection selection = selectionProvider.getSelection();
@@ -274,6 +283,15 @@ public class FindBarDecorator implements IFindBarDecorator {
 			showFindBar();
 		}
 	}
+	
+	private void adjustEnablement() {
+		String text = combo.getText();
+		previous.setEnabled(!"".equals(text));
+		next.setEnabled(!"".equals(text));
+		countTotal.setEnabled(!"".equals(text));
+		count.setText("");
+		wholeWord.setEnabled((!"".equals(text)) && (isWord(text)));
+	}
 
 	private void hideFindBar() {
 		if (findBarGridData.exclude == false) {
@@ -287,11 +305,11 @@ public class FindBarDecorator implements IFindBarDecorator {
 	}
 
 	private void showFindBar() {
+		boolean wasExcluded = findBarGridData.exclude;
 		if (findBarGridData.exclude) {
 			findBarGridData.exclude = false;
 			composite.layout();
 			findBar.addTraverseListener(traverseListener);
-			combo.addModifyListener(modifyListener);
 		}
 		ISelection selection = sourceViewer.getSelectionProvider()
 				.getSelection();
@@ -301,6 +319,10 @@ public class FindBarDecorator implements IFindBarDecorator {
 			if (text.indexOf("\n") == -1 && text.indexOf("\r") == -1) {
 				combo.setText(text);
 			}
+		}
+		if (wasExcluded) {
+			combo.addModifyListener(modifyListener);
+			adjustEnablement();
 		}
 		boolean comboHasFocus = combo.isFocusControl();
 		if (!comboHasFocus) {
