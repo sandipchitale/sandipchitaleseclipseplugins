@@ -3,9 +3,11 @@ package editorfindbar.impl;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -42,6 +44,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -214,7 +217,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 			});
 		}
 		
-		countTotal = new Button(findBar, SWT.PUSH);
+		countTotal = new Button(findBar, SWT.TOGGLE);
 		countTotal.setText("\u2211");
 		countTotal.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		countTotal.addSelectionListener(new SelectionListener() {
@@ -241,12 +244,13 @@ public class FindBarDecorator implements IFindBarDecorator {
 		showFindReplaceDialog.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				IWorkbenchPartSite site = textEditor.getSite();
-				IHandlerService handlerService = (IHandlerService) site
-						.getService(IHandlerService.class);
+				ICommandService commandService = (ICommandService) site.getService(ICommandService.class);
+				Command findReplacecommand = commandService.getCommand("org.eclipse.ui.edit.findReplace");
+				IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
 				if (handlerService != null) {
 					try {
 						handlerService.executeCommand(
-								"org.eclipse.ui.edit.findReplace", null);
+								new ParameterizedCommand(findReplacecommand, null), null);
 					} catch (ExecutionException e1) {
 					} catch (NotDefinedException e1) {
 					} catch (NotEnabledException e1) {
@@ -304,6 +308,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 			} else {
 				find(true, true, wrap);
 			}
+			showCountTotal();
 		}
 	};
 
@@ -456,10 +461,14 @@ public class FindBarDecorator implements IFindBarDecorator {
 	}
 	
 	private void showCountTotal() {
+		if (!countTotal.getSelection()) {
+			count.setText("");
+			return;
+		}
 		String patternString = combo.getText();
 		boolean patternStringIsAWord = isWord(patternString);
 		int total = 0;
-		if (!"".equals(patternString) ) {
+		if (!"".equals(patternString)) {
 			String text = sourceViewer.getDocument().get();
 			int flags = 0;
 			if (!caseSensitive.getSelection()) {
