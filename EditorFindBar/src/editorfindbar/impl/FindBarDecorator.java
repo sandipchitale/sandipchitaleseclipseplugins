@@ -22,6 +22,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
@@ -40,6 +42,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import editorfindbar.Activator;
 import editorfindbar.api.IFindBarDecorator;
 
 public class FindBarDecorator implements IFindBarDecorator {
@@ -87,19 +90,15 @@ public class FindBarDecorator implements IFindBarDecorator {
 		gridLayout.marginRight = 5;
 		findBar.setLayout(gridLayout);
 
-		Button close = new Button(findBar, SWT.PUSH);
-		// close.setText("X");
-		close.setToolTipText("Hide Find bar");
-		close.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
-				ISharedImages.IMG_TOOL_DELETE));
+		Label close = new Label(findBar, SWT.PUSH);
+//		 close.setText("X");
+		close.setToolTipText("Hide Find Bar");
+		close.setImage(Activator.getDefault().getImage(Activator.CLOSE));
 		close.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		close.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				hideFindBar();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+		close.addMouseListener(new MouseListener() {
+			public void mouseUp(MouseEvent e) {}
+			public void mouseDown(MouseEvent e) { hideFindBar(); }
+			public void mouseDoubleClick(MouseEvent e) {}
 		});
 
 		Label findLabel = new Label(findBar, SWT.NONE);
@@ -107,8 +106,8 @@ public class FindBarDecorator implements IFindBarDecorator {
 		findLabel
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-		combo = new Combo(findBar, SWT.DROP_DOWN | SWT.ICON_SEARCH);
-		combo.setText("                    ");
+		combo = new Combo(findBar, SWT.DROP_DOWN);
+		combo.setText("                            ");
 		Point size = combo.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		GridData comboGridData = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false);
