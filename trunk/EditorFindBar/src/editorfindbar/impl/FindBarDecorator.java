@@ -176,11 +176,27 @@ public class FindBarDecorator implements IFindBarDecorator {
 		caseSensitive.setText("Case Sensitive");
 		caseSensitive.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 				false));
+		caseSensitive.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				showCountTotal();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 
 		wholeWord = new Button(findBar, SWT.CHECK);
 		wholeWord.setText("Whole Word");
 		wholeWord.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		wholeWord.setEnabled(false);
+		wholeWord.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				showCountTotal();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 
 		IFindReplaceTarget findReplaceTarget = (IFindReplaceTarget) textEditor.getAdapter(IFindReplaceTarget.class);
 		if (findReplaceTarget instanceof IFindReplaceTargetExtension3) {
@@ -188,6 +204,14 @@ public class FindBarDecorator implements IFindBarDecorator {
 			regularExpression.setText("Regular Expression");
 			regularExpression.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
 					false, false));
+			regularExpression.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					showCountTotal();
+				}
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
 		}
 		
 		countTotal = new Button(findBar, SWT.PUSH);
@@ -447,7 +471,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 			if (patternStringIsAWord && wholeWord.getSelection()) {
 				patternString = "\\b" + patternString + "\\b";
 			}
-			Pattern pattern = Pattern.compile(patternString);
+			Pattern pattern = Pattern.compile(patternString, flags);
 			Matcher matcher = pattern.matcher(text);
 			if (matcher.find(0)) {
 				total = 1;
