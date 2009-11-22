@@ -1,5 +1,8 @@
 package editorfindbar.impl;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,8 +139,10 @@ public class FindBarDecorator implements IFindBarDecorator {
 				if (e.keyCode == SWT.CR || e.keyCode == SWT.LF) {
 					if ((e.stateMask & SWT.CTRL) == 0) {
 						find(true);
+						setFindText(combo.getText());
 					} else {
 						find(false);
+						setFindText(combo.getText());
 					}
 				}
 			}
@@ -153,6 +158,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 		previous.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				find(false);
+				setFindText(combo.getText());
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -168,6 +174,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 		next.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				find(true);
+				setFindText(combo.getText());
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -361,7 +368,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 			ITextSelection textSelection = (ITextSelection) selection;
 			String text = textSelection.getText();
 			if (text.indexOf("\n") == -1 && text.indexOf("\r") == -1) {
-				combo.setText(text);
+				setFindText(text, !wasExcluded);
 			}
 		}
 		if (wasExcluded) {
@@ -462,6 +469,28 @@ public class FindBarDecorator implements IFindBarDecorator {
 					IFindReplaceTargetExtension findReplaceTargetExtension = (IFindReplaceTargetExtension) findReplaceTarget;
 					findReplaceTargetExtension.endSession();
 				}
+			}
+		}
+	}
+	
+	private void setFindText(String findText) {
+		setFindText(findText, true);
+	}
+	
+	private void setFindText(String findText, boolean removeAddListener) {
+		String[] items = combo.getItems();
+		Set<String> itemSet = new LinkedHashSet<String>();
+		itemSet.add(findText);
+		itemSet.addAll(Arrays.asList(items));
+		try {
+			if (removeAddListener) {
+				combo.removeModifyListener(modifyListener);
+			}
+			combo.setItems(itemSet.toArray(new String[0]));
+			combo.select(0);
+		} finally {
+			if (removeAddListener) {
+				combo.addModifyListener(modifyListener);
 			}
 		}
 	}
