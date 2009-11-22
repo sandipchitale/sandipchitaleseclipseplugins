@@ -1,5 +1,7 @@
 package editorfindbar;
 
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -45,6 +47,16 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+	public static final String CLOSE = "/icons/close.png"; //$NON-NLS-1$
+	
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		reg.put(CLOSE, imageDescriptorFromPlugin(PLUGIN_ID, CLOSE));
+	}
+	
+	public Image getImage(String imageID) {
+		return getImageRegistry().get(imageID);
 	}
 
 }
