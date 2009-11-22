@@ -1,5 +1,7 @@
 package editor.editors;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
 
@@ -23,10 +25,20 @@ public class XMLEditor extends TextEditor {
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		IFindBarDecorator findBarDecorator = FindBarDecoratorFactory.createFindBarDecorator(this, getStatusLineManager());
-		Composite findBarComposite = findBarDecorator.createFindBarComposite(parent);
+		Composite findBarComposite = getfindBarDecorator().createFindBarComposite(parent);
 		super.createPartControl(findBarComposite);
-		findBarDecorator.createFindBar(getSourceViewer());
+		getfindBarDecorator().createFindBar(getSourceViewer());
+	}
+	
+	@Override
+	protected void createActions() {
+		super.createActions();
+		getfindBarDecorator().createActions();
 	}
 
+	private AtomicReference<IFindBarDecorator> findBarDecorator = new AtomicReference<IFindBarDecorator>();
+	private IFindBarDecorator getfindBarDecorator() {
+		findBarDecorator.compareAndSet(null, FindBarDecoratorFactory.createFindBarDecorator(this, getStatusLineManager()));
+		return findBarDecorator.get();
+	}
 }
