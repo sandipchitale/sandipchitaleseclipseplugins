@@ -265,6 +265,9 @@ public class FindBarDecorator implements IFindBarDecorator {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+	}
+	
+	public void createActions() {
 		textEditor.setAction(ID, new ShowFindBarAction());
 	}
 
