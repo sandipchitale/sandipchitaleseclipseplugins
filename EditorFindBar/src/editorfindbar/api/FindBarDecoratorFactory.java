@@ -21,10 +21,12 @@ import editorfindbar.impl.FindBarDecorator;
  *     getfindBarDecorator().createActions();
  * }
  * 
- * private AtomicReference<IFindBarDecorator> findBarDecorator = new AtomicReference<IFindBarDecorator>();
+ * private IFindBarDecorator findBarDecorator;
  * private IFindBarDecorator getfindBarDecorator() {
- *     findBarDecorator.compareAndSet(null, FindBarDecoratorFactory.createFindBarDecorator(this, getStatusLineManager()));
- *     return findBarDecorator.get();
+ * 	if (findBarDecorator == null) {
+ * 		findBarDecorator = FindBarDecoratorFactory.createFindBarDecorator(this, getStatusLineManager());
+ * 	}
+ * 	return findBarDecorator;
  * }
  * </pre>
  * @author schitale
