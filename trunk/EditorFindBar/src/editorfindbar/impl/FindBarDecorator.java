@@ -391,8 +391,8 @@ public class FindBarDecorator implements IFindBarDecorator {
 		}
 		if (wasExcluded) {
 			combo.addModifyListener(modifyListener);
-			adjustEnablement();
 		}
+		adjustEnablement();
 		boolean comboHasFocus = combo.isFocusControl();
 		if (!comboHasFocus) {
 			combo.setFocus();
