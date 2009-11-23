@@ -1,6 +1,10 @@
 package editor.editors;
 
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.rules.IPredicateRule;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.MultiLineRule;
+import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.Token;
 
 public class XMLPartitionScanner extends RuleBasedPartitionScanner {
 	public final static String XML_COMMENT = "__xml_comment";
