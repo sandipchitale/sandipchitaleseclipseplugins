@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionException;
@@ -48,6 +49,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.contexts.IContextActivation;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -125,10 +128,13 @@ public class FindBarDecorator implements IFindBarDecorator {
 		combo.setLayoutData(comboGridData);
 		combo.setText("");
 		combo.addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent e) {}
+			public void focusLost(FocusEvent e) {
+				findBarContext(false);
+			}
 
 			public void focusGained(FocusEvent e) {
 				combo.setForeground(null);
+				findBarContext(true);
 			}
 		});
 
@@ -220,6 +226,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 				public void widgetSelected(SelectionEvent e) {
 					find(true, true);
 					showCountTotal();
+					adjustRegularExpressionState();
 				}
 
 				public void widgetDefaultSelected(SelectionEvent e) {
@@ -253,20 +260,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 				false, false));
 		showFindReplaceDialog.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				IWorkbenchPartSite site = textEditor.getSite();
-				ICommandService commandService = (ICommandService) site.getService(ICommandService.class);
-				Command findReplacecommand = commandService.getCommand("org.eclipse.ui.edit.findReplace");
-				IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
-				if (handlerService != null) {
-					try {
-						handlerService.executeCommand(
-								new ParameterizedCommand(findReplacecommand, null), null);
-					} catch (ExecutionException e1) {
-					} catch (NotDefinedException e1) {
-					} catch (NotEnabledException e1) {
-					} catch (NotHandledException e1) {
-					}
-				}
+				showFindReplaceDialog();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -297,6 +291,9 @@ public class FindBarDecorator implements IFindBarDecorator {
 	};
 	private Composite findBar;
 	private GridData findBarGridData;
+	
+	private static final String FIND_BAR_CONTEXT_ID = "org.eclipse.ui.textEditorScope.findbar";
+	private IContextActivation findBarContextActivation;
 
 	private ModifyListener modifyListener = new ModifyListener() {
 		private String lastText = "";
@@ -310,6 +307,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 			}
 			lastText = text;
 			adjustEnablement();
+			adjustRegularExpressionState();
 			if ("".equals(text)) {
 				ISelectionProvider selectionProvider = textEditor.getSelectionProvider();
 				ISelection selection = selectionProvider.getSelection();
@@ -343,6 +341,25 @@ public class FindBarDecorator implements IFindBarDecorator {
 		count.setText("");
 		wholeWord.setEnabled((!"".equals(text)) && (isWord(text)));
 	}
+	
+	private void adjustRegularExpressionState() {
+		if (regularExpression == null) {
+			return;
+		}
+		regularExpression.setForeground(null);
+		String findText = combo.getText();
+		if ("".equals(findText)) {
+			return;
+		}
+		if (regularExpression.getSelection()) {
+			try {
+				Pattern.compile(findText);
+				regularExpression.setForeground(null);
+			} catch (PatternSyntaxException pse) {
+				regularExpression.setForeground(regularExpression.getDisplay().getSystemColor(SWT.COLOR_RED));
+			}
+		}
+	}
 
 	private void hideFindBar() {
 		if (findBarGridData.exclude == false) {
@@ -351,6 +368,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 			incrementalOffset = -1;
 			combo.removeModifyListener(modifyListener);
 			findBar.removeTraverseListener(traverseListener);
+			findBarContext(false);
 		}
 		textEditor.setFocus();
 	}
@@ -525,6 +543,36 @@ public class FindBarDecorator implements IFindBarDecorator {
 			}
 		}
 		count.setText(String.valueOf(total));
+	}
+	
+	private void showFindReplaceDialog() {
+		IWorkbenchPartSite site = textEditor.getSite();
+		ICommandService commandService = (ICommandService) site.getService(ICommandService.class);
+		Command findReplacecommand = commandService.getCommand("org.eclipse.ui.edit.findReplace");
+		IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
+		if (handlerService != null) {
+			try {
+				handlerService.executeCommand(
+						new ParameterizedCommand(findReplacecommand, null), null);
+			} catch (ExecutionException e1) {
+			} catch (NotDefinedException e1) {
+			} catch (NotEnabledException e1) {
+			} catch (NotHandledException e1) {
+			}
+		}
+	}	
+	
+	private void findBarContext(boolean activate) {
+		IWorkbenchPartSite site = textEditor.getSite();
+		IContextService contextService = (IContextService) site.getService(IContextService.class);
+		if (activate) {
+			findBarContextActivation = contextService.activateContext(FIND_BAR_CONTEXT_ID);
+		} else {
+			if (findBarContextActivation != null); {
+				contextService.deactivateContext(findBarContextActivation);
+				findBarContextActivation = null;
+			}
+		}
 	}
 
 	/**
