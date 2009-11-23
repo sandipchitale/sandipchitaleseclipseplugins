@@ -8,12 +8,25 @@
             id="org.eclipse.ui.edit.find.bar"
             name="Show Find bar">
       </command>
+      <context
+            description="Find Bar Context is active when the find text box has the focus."
+            id="org.eclipse.ui.textEditorScope.findbar"
+            name="Find Bar Context"
+            parent="org.eclipse.ui.textEditorScope"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="org.eclipse.ui.edit.find.bar"
             contextId="org.eclipse.ui.textEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+F">
+      </key>
+      <key
+            commandId="org.eclipse.ui.edit.findReplace"
+            contextId="org.eclipse.ui.textEditorScope.findbar"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+F">
       </key>
