@@ -11,7 +11,7 @@ import editorfindbar.impl.FindBarDecorator;
  * The typical usage is as follows:
  * <pre>
  * public void createPartControl(Composite parent) {
- *     Composite findBarComposite = getfindBarDecorator().createFindBarComposite(parent);
+ *     Composite findBarComposite = getfindBarDecorator().createFindBarComposite(parent, getStatusLineManager());
  *     super.createPartControl(findBarComposite);
  *     getfindBarDecorator().createFindBar(getSourceViewer());
  * }
@@ -29,12 +29,21 @@ import editorfindbar.impl.FindBarDecorator;
  * 	return findBarDecorator;
  * }
  * </pre>
+ * 
+ * @see ITextEditor
+ * 
  * @author schitale
  *
  */
 public class FindBarDecoratorFactory {
-	public static IFindBarDecorator createFindBarDecorator(ITextEditor textEditor,
-			IStatusLineManager statusLineManager) {
+	/**
+	 * Returns the Find Bar decorator for the texteEditor.
+	 *  
+	 * @param textEditor The textEditor to which the Find Bar is added
+	 * @param statusLineManager The statusLineManager for the workbench window containing the textEditor
+	 * @return the Find Bar decorator for the texteEditor
+	 */
+	public static IFindBarDecorator createFindBarDecorator(ITextEditor textEditor, IStatusLineManager statusLineManager) {
 		return new FindBarDecorator(textEditor, statusLineManager);
 	}
 }
