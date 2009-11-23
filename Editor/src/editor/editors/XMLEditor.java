@@ -1,7 +1,5 @@
 package editor.editors;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
 
