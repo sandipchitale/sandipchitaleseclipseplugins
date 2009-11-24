@@ -24,19 +24,14 @@ public class XMLEditor extends TextEditor implements IFindBarDecorated {
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		Composite findBarComposite = getfindBarDecorator().createFindBarComposite(parent);
+		Composite findBarComposite = getFindBarDecorator().createFindBarComposite(parent);
 		super.createPartControl(findBarComposite);
-		getfindBarDecorator().createFindBar(getSourceViewer());
-	}
-	
-	@Override
-	protected void createActions() {
-		super.createActions();
-		getfindBarDecorator().createActions();
+		getFindBarDecorator().createFindBar(getSourceViewer());
 	}
 
 	private IFindBarDecorator findBarDecorator;
-	private IFindBarDecorator getfindBarDecorator() {
+	
+	public IFindBarDecorator getFindBarDecorator() {
 		if (findBarDecorator == null) {
 			findBarDecorator = FindBarDecoratorFactory.createFindBarDecorator(this, getStatusLineManager());
 		}
