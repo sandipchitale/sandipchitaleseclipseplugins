@@ -4,9 +4,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
 
 import editorfindbar.api.FindBarDecoratorFactory;
+import editorfindbar.api.IFindBarDecorated;
 import editorfindbar.api.IFindBarDecorator;
 
-public class XMLEditor extends TextEditor {
+public class XMLEditor extends TextEditor implements IFindBarDecorated {
 
 	private ColorManager colorManager;
 
