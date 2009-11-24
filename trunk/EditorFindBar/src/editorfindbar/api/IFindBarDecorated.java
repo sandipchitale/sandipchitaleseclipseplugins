@@ -7,4 +7,6 @@ package editorfindbar.api;
  * @author schitale
  *
  */
-public interface IFindBarDecorated {}
+public interface IFindBarDecorated {
+	IFindBarDecorator getFindBarDecorator();
+}
