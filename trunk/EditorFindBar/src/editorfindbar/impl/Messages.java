@@ -11,6 +11,8 @@ public class Messages extends NLS {
 	public static String FindBarDecorator_LABEL_WholeWord;
 	public static String FindBarDecorator_MSG_StringNotFound;
 	public static String FindBarDecorator_TOOLTIP_HideFindBar;
+	public static String FindBarDecorator_TOOLTIP_ShowMatchCount;
+	public static String FindBarDecorator_TOOLTIP_MatchCount;
 	public static String FindBarDecorator_TOOLTIP_ShowFindReplaceDialog;
 	static {
 		// initialize resource bundle

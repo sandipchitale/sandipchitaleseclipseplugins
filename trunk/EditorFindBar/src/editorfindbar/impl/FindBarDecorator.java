@@ -215,6 +215,7 @@ public class FindBarDecorator implements IFindBarDecorator {
 		
 		countTotal = new Button(findBar, SWT.TOGGLE);
 		countTotal.setText("\u2211"); //$NON-NLS-1$
+		countTotal.setToolTipText(Messages.FindBarDecorator_TOOLTIP_ShowMatchCount);
 		countTotal.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		countTotal.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -227,7 +228,8 @@ public class FindBarDecorator implements IFindBarDecorator {
 		
 		count = new Label(findBar, SWT.NONE);
 		count.setText("      "); //$NON-NLS-1$
-		countTotal.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		count.setToolTipText(Messages.FindBarDecorator_TOOLTIP_MatchCount);
+		count.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		Label streach = new Label(findBar, SWT.PUSH);
 		streach.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
