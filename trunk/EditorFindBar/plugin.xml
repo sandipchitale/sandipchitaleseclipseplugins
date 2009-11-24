@@ -72,4 +72,26 @@
             parentId="org.eclipse.ui.textEditorScope">
       </context>
    </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="editorfindbar.impl.ShowFindReplaceDialogHandler"
+            commandId="org.eclipse.ui.edit.find.bar">
+         <enabledWhen>
+            <with
+                  variable="activeEditor">
+               <not>
+                  <or>
+                     <instanceof
+                           value="editorfindbar.api.IFindBarDecorated">
+                     </instanceof>
+                     <adapt
+                           type="editorfindbar.api.IFindBarDecorated">
+                     </adapt>
+                  </or>
+               </not>
+            </with>
+         </enabledWhen>
+      </handler>
+   </extension>
 </plugin>
