@@ -11,7 +11,7 @@ import editorfindbar.impl.FindBarDecorator;
  * The typical usage is as follows:
  * <pre>
  * public void createPartControl(Composite parent) {
- *     Composite findBarComposite = getfindBarDecorator().createFindBarComposite(parent, getStatusLineManager());
+ *     Composite findBarComposite = getfindBarDecorator().createFindBarComposite(parent);
  *     super.createPartControl(findBarComposite);
  *     getfindBarDecorator().createFindBar(getSourceViewer());
  * }
