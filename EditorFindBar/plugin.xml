@@ -75,23 +75,8 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="editorfindbar.impl.ShowFindReplaceDialogHandler"
+            class="editorfindbar.impl.ShowFindBarHandler"
             commandId="org.eclipse.ui.edit.find.bar">
-         <enabledWhen>
-            <with
-                  variable="activeEditor">
-               <not>
-                  <or>
-                     <instanceof
-                           value="editorfindbar.api.IFindBarDecorated">
-                     </instanceof>
-                     <adapt
-                           type="editorfindbar.api.IFindBarDecorated">
-                     </adapt>
-                  </or>
-               </not>
-            </with>
-         </enabledWhen>
       </handler>
    </extension>
 </plugin>
