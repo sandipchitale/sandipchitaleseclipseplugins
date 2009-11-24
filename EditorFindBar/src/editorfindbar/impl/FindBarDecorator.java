@@ -54,6 +54,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import editorfindbar.Activator;
+import editorfindbar.api.IFindBarDecorated;
 import editorfindbar.api.IFindBarDecorator;
 
 public class FindBarDecorator implements IFindBarDecorator {
@@ -250,13 +251,17 @@ public class FindBarDecorator implements IFindBarDecorator {
 	}
 	
 	public void createActions() {
-		textEditor.setAction(SHOW_FIND_BAR_COMMAND_ID, new ShowFindBarAction());
-		
-		// Activate handlers
-		IHandlerService handlerService = (IHandlerService) textEditor.getSite().getService(IHandlerService.class);
-		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.hide", new HideFindBarHandler()); //$NON-NLS-1$
-		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
-		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.findNext", new FindNextHandler()); //$NON-NLS-1$
+		if (textEditor instanceof IFindBarDecorated || (textEditor.getAdapter(IFindBarDecorated.class) instanceof IFindBarDecorated)) {
+			textEditor.setAction(SHOW_FIND_BAR_COMMAND_ID, new ShowFindBarAction());
+			
+			textEditor.setActionActivationCode(SHOW_FIND_BAR_COMMAND_ID, (char) 6, SWT.DEFAULT, SWT.MOD1);
+			
+			// Activate handlers
+			IHandlerService handlerService = (IHandlerService) textEditor.getSite().getService(IHandlerService.class);
+			handlerService.activateHandler("org.eclipse.ui.edit.find.bar.hide", new HideFindBarHandler()); //$NON-NLS-1$
+			handlerService.activateHandler("org.eclipse.ui.edit.find.bar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
+			handlerService.activateHandler("org.eclipse.ui.edit.find.bar.findNext", new FindNextHandler()); //$NON-NLS-1$
+		}
 	}
 
 	private Combo combo;

@@ -6,7 +6,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import editorfindbar.impl.FindBarDecorator;
 
 /**
- * This is a factory for FindBarDecorator.
+ * This is a factory for Find Bar Decorator.
  * <p>
  * The typical usage is as follows:
  * <pre>
@@ -30,7 +30,11 @@ import editorfindbar.impl.FindBarDecorator;
  * }
  * </pre>
  * 
+ * In addition the textEdior must either implement <code>IFindBarDecorated</code> or
+ * adapt to <code>IFindBarDecorated</code>.
+ * 
  * @see ITextEditor
+ * @see IFindBarDecorated
  * 
  * @author schitale
  *
