@@ -13,6 +13,7 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.jface.bindings.Binding;
+import org.eclipse.jface.bindings.Scheme;
 import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.bindings.keys.KeySequence;
@@ -26,16 +27,13 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -114,7 +112,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
 			
 			String schemeId = commandKeybinding.getSchemeId();
-			if (schemeId.equals("") || schemeId.equals(activeSchemeId)) {
+			if (schemeId.equals("") || !schemeId.equals(activeSchemeId)) {
 				return true;
 			}
 			return false;
@@ -159,20 +157,20 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			
 			Binding[] bindings = bindingService.getBindings();
 			for (Binding binding : bindings) {
-					ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
-					if (parameterizedCommand != null) {
-						String commandId = parameterizedCommand.getId();
-						commands.remove(commandId);
-						String contextId = binding.getContextId();
-						try {
-							commandKeybindings.add(
-									new CommandKeybinding(parameterizedCommand.getName(),
-											binding.getTriggerSequence(),
-											contextService.getContext(contextId).getName(),
-											binding.getSchemeId()));
-						} catch (NotDefinedException e) {
-						}
+				ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
+				if (parameterizedCommand != null) {
+					String commandId = parameterizedCommand.getId();
+					commands.remove(commandId);
+					String contextId = binding.getContextId();
+					try {
+						commandKeybindings.add(
+								new CommandKeybinding(parameterizedCommand.getName(),
+										binding.getTriggerSequence(),
+										contextService.getContext(contextId).getName(),
+										binding.getSchemeId()));
+					} catch (NotDefinedException e) {
 					}
+				}
 			}
 			Set<Entry<String,Command>> entrySet = commands.entrySet();
 			for (Entry<String, Command> entry : entrySet) {
@@ -254,6 +252,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private Table table;
 	private TableViewer tableViewer;
 	
+	private Combo schemeFilterCombo;
 	private Text commandSearchText;
 	private Text keySequenceSearchText;
 	private KeySequenceText keySequenceSearchKeySequenceText;
@@ -264,24 +263,44 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		GridLayout layout = (GridLayout) dialogArea.getLayout();
-		layout.numColumns = 4;
+		layout.numColumns = 2;
 		layout.makeColumnsEqualWidth = false;
+		
+		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
+		schemeFilterLabel.setText("Scheme Filter: ");
+		GridData schemeFilterLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		schemeFilterLabel.setLayoutData(schemeFilterLabelGridData);
+		
+		schemeFilterCombo = new Combo(dialogArea, SWT.DROP_DOWN|SWT.READ_ONLY);
+		GridData schemeFilterComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
+		
+		Label commandSearchLabel = new Label(dialogArea, SWT.RIGHT);
+		commandSearchLabel.setText("Command Search: ");
+		GridData commandSearchLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		commandSearchLabel.setLayoutData(commandSearchLabelGridData);
 		
 		commandSearchText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
 		GridData commandSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		commandSearchTextGridData.widthHint = 200;
 		commandSearchText.setLayoutData(commandSearchTextGridData);
+		
+		Label keySequenceSearchLabel = new Label(dialogArea, SWT.RIGHT);
+		keySequenceSearchLabel.setText("Keysequence Search :");
+		GridData keySequenceSearchLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		keySequenceSearchLabel.setLayoutData(keySequenceSearchLabelGridData);
 		
 		keySequenceSearchText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
 		GridData keySequenceSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		keySequenceSearchTextGridData.widthHint = 250;
 		keySequenceSearchText.setLayoutData(keySequenceSearchTextGridData);
-		
 		keySequenceSearchKeySequenceText = new KeySequenceText(keySequenceSearchText);
+		
+		Label nonModifierKeySequenceLabel = new Label(dialogArea, SWT.RIGHT);
+		nonModifierKeySequenceLabel.setText("Natural Keysequence Search :");
+		GridData nonModifierKeySequenceLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		nonModifierKeySequenceLabel.setLayoutData(nonModifierKeySequenceLabelGridData);
 		
 		nonModifierKeySequenceText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
 		GridData nonModifierKeySequenceGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		nonModifierKeySequenceGridData.widthHint = 100;
 		nonModifierKeySequenceText.setLayoutData(nonModifierKeySequenceGridData);
 		nonModifierKeySequenceKeySequenceText = new KeySequenceText(nonModifierKeySequenceText);
 		
@@ -306,15 +325,11 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		};
 		nonModifierKeySequenceText.addModifyListener(modifyListener);
 		
-		Label padding = new Label(dialogArea, SWT.NONE);
-		GridData paddingGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		paddingGridData.widthHint = 100;
-		padding.setLayoutData(paddingGridData);
 		
 		// Place a table inside the tab.
 		table = new Table(dialogArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
 		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
-		tableLayoutData.horizontalSpan = 4;
+		tableLayoutData.horizontalSpan = 2;
 		table.setLayoutData(tableLayoutData);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -343,6 +358,20 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	    
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		tableViewer.setInput(workbench);
+		
+		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
+		
+		Scheme[] definedSchemes = bindingService.getDefinedSchemes();
+		for (Scheme scheme : definedSchemes) {
+			try {
+				schemeFilterCombo.add(scheme.getName());
+			} catch (NotDefinedException e1) {
+			}
+		}
+		try {
+			schemeFilterCombo.setText(bindingService.getActiveScheme().getName());
+		} catch (NotDefinedException e1) {
+		}
 		
 		setTitleText("Search using Command, Key Sequence or Natural Key Sequence");
 		return dialogArea;
