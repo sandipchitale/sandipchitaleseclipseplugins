@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -37,17 +38,19 @@ import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.keys.IBindingService;
 
 public class CommandKeybindingXREFDialog extends PopupDialog {
+	
 	private static class CommandKeybinding {
 		private String commandName;
 		private String keySequence;
 		private String nonModifierKeySequence;
 		private String context;
+		private String schemeId;
 
 		private CommandKeybinding(String commandName) {
-			this(commandName, null, null);			
+			this(commandName, null, null, null);			
 		}
 		
-		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context) {
+		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId) {
 			this.commandName = commandName;
 			this.keySequence = "";
 			this.nonModifierKeySequence = "";
@@ -62,10 +65,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 					this.nonModifierKeySequence += KeyStroke.getInstance(keyStroke.getNaturalKey()).format();
 				}
 			}
-			this.context = "";
-			if (context != null) {
-				this.context = context;
-			}
+			this.context = (context == null ? "" : context);
+			this.schemeId = (schemeId == null ? "" : schemeId);
 		}
 
 		private String getCommandName() {
@@ -82,11 +83,34 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		private String getContext() {
 			return context;
-		}		
+		}
+		
+		public String getSchemeId() {
+			return schemeId;
+		}
+	}
+	
+	private static class CommandKeybindingXREFSchemeIdFilter extends ViewerFilter {
+		private final String activeSchemeId;
+
+		CommandKeybindingXREFSchemeIdFilter(String activeSchemeId) {
+			this.activeSchemeId = activeSchemeId;
+		}
+
+		@Override
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
+			
+			String schemeId = commandKeybinding.getSchemeId();
+			if (schemeId.equals("") || schemeId.equals(activeSchemeId)) {
+				return true;
+			}
+			return false;
+		}
 	}
 	
 	private static class CommandKeybindingXREFContentProvider implements IStructuredContentProvider {
-
 		private CommandKeybinding[] commandKeybindings;
 		
 		@Override
@@ -96,11 +120,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		@Override
 		public void dispose() {
-			
+			commandKeybindings = null;
 		}
 
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			TableViewer tableViewer = (TableViewer) viewer;
+			tableViewer.setFilters(new ViewerFilter[0]);
+			
 			IWorkbench workbench = (IWorkbench)newInput;
 			List<CommandKeybinding> commandKeybindings = new LinkedList<CommandKeybinding>();
 			ICommandService commandService = (ICommandService) workbench.getService(ICommandService.class);
@@ -112,20 +139,25 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			IContextService contextService = (IContextService) workbench.getService(IContextService.class);
 			IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
 			String activeSchemeId  = bindingService.getActiveScheme().getId();
+			
+			tableViewer.addFilter(new CommandKeybindingXREFSchemeIdFilter(activeSchemeId));
+			
 			Binding[] bindings = bindingService.getBindings();
 			for (Binding binding : bindings) {
-				if (activeSchemeId.equals(binding.getSchemeId())) {
 					ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
 					if (parameterizedCommand != null) {
 						String commandId = parameterizedCommand.getId();
 						commands.remove(commandId);
 						String contextId = binding.getContextId();
 						try {
-							commandKeybindings.add(new CommandKeybinding(parameterizedCommand.getName(), binding.getTriggerSequence(), contextService.getContext(contextId).getName()));
+							commandKeybindings.add(
+									new CommandKeybinding(parameterizedCommand.getName(),
+											binding.getTriggerSequence(),
+											contextService.getContext(contextId).getName(),
+											binding.getSchemeId()));
 						} catch (NotDefinedException e) {
 						}
 					}
-				}
 			}
 			Set<Entry<String,Command>> entrySet = commands.entrySet();
 			for (Entry<String, Command> entry : entrySet) {
@@ -219,20 +251,20 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tc = new TableColumn(table, SWT.LEFT, 1);
 		tc.setText("KS");
-		tc.setWidth(200);
+		tc.setWidth(250);
 		
 		tc = new TableColumn(table, SWT.LEFT, 2);
 		tc.setText("NKS");
-		tc.setWidth(150);
+		tc.setWidth(100);
 		
 		tc = new TableColumn(table, SWT.LEFT, 3);
 		tc.setText("Context");
-		tc.setWidth(150);
+		tc.setWidth(100);
 		
 	    // Pack the columns
-	    for (int i = 0, n = table.getColumnCount(); i < n; i++) {
-	      table.getColumn(i).pack();
-	    }
+//	    for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+//	      table.getColumn(i).pack();
+//	    }
 	    
 		tableViewer.setInput(PlatformUI.getWorkbench());
 
