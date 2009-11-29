@@ -273,42 +273,28 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		GridData nonModifierKeySequenceGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		nonModifierKeySequenceGridData.widthHint = 100;
 		nonModifierKeySequenceText.setLayoutData(nonModifierKeySequenceGridData);
-		
-		nonModifierKeySequenceText.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				e.stateMask = SWT.NONE;
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				e.stateMask = SWT.NONE;
-			}
-		});
-		
 		nonModifierKeySequenceKeySequenceText = new KeySequenceText(nonModifierKeySequenceText);
 		
-//		final ModifyListener modifyListener = new ModifyListener() {
-//			@Override
-//			public void modifyText(ModifyEvent e) {
-//				KeySequence keySequence = nonModifierKeySequenceKeySequenceText.getKeySequence();
-//				if (keySequence.isComplete()) {
-//					try {
-//						nonModifierKeySequenceText.removeModifyListener(this);
-//						KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
-//						for (int i = 0; i < keyStrokes.length; i++) {
-//							keyStrokes[i] = KeyStroke.getInstance(keyStrokes[i].getNaturalKey());
-//						}
-//						keySequence = KeySequence.getInstance(keyStrokes);
-//						nonModifierKeySequenceKeySequenceText.setKeySequence(keySequence);
-//					} finally {
-//						nonModifierKeySequenceText.addModifyListener(this);
-//					}
-//				}
-//			}
-//		};
-		
-		
+		final ModifyListener modifyListener = new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				KeySequence keySequence = nonModifierKeySequenceKeySequenceText.getKeySequence();
+				if (keySequence.isComplete()) {
+					try {
+						nonModifierKeySequenceText.removeModifyListener(this);
+						KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
+						for (int i = 0; i < keyStrokes.length; i++) {
+							keyStrokes[i] = KeyStroke.getInstance(keyStrokes[i].getNaturalKey());
+						}
+						keySequence = KeySequence.getInstance(keyStrokes);
+						nonModifierKeySequenceKeySequenceText.setKeySequence(keySequence);
+					} finally {
+						nonModifierKeySequenceText.addModifyListener(this);
+					}
+				}
+			}
+		};
+		nonModifierKeySequenceText.addModifyListener(modifyListener);
 		
 		Label padding = new Label(dialogArea, SWT.NONE);
 		GridData paddingGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
