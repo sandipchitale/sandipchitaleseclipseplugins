@@ -15,6 +15,8 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.bindings.TriggerSequence;
+import org.eclipse.jface.bindings.keys.KeySequence;
+import org.eclipse.jface.bindings.keys.KeySequenceText;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -24,13 +26,22 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -144,7 +155,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			IContextService contextService = (IContextService) workbench.getService(IContextService.class);
 			IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
 			String activeSchemeId  = bindingService.getActiveScheme().getId();
-			
 			tableViewer.addFilter(new CommandKeybindingXREFSchemeIdFilter(activeSchemeId));
 			
 			Binding[] bindings = bindingService.getBindings();
@@ -234,13 +244,82 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private Table table;
 	private TableViewer tableViewer;
 	
+	private Text commandSearchText;
+	private Text keySequenceSearchText;
+	private KeySequenceText keySequenceSearchKeySequenceText;
+	private Text nonModifierKeySequenceText;
+	private KeySequenceText nonModifierKeySequenceKeySequenceText;
+	
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
+		GridLayout layout = (GridLayout) dialogArea.getLayout();
+		layout.numColumns = 4;
+		layout.makeColumnsEqualWidth = false;
+		
+		commandSearchText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
+		GridData commandSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		commandSearchTextGridData.widthHint = 200;
+		commandSearchText.setLayoutData(commandSearchTextGridData);
+		
+		keySequenceSearchText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
+		GridData keySequenceSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		keySequenceSearchTextGridData.widthHint = 250;
+		keySequenceSearchText.setLayoutData(keySequenceSearchTextGridData);
+		
+		keySequenceSearchKeySequenceText = new KeySequenceText(keySequenceSearchText);
+		
+		nonModifierKeySequenceText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
+		GridData nonModifierKeySequenceGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		nonModifierKeySequenceGridData.widthHint = 100;
+		nonModifierKeySequenceText.setLayoutData(nonModifierKeySequenceGridData);
+		
+		nonModifierKeySequenceText.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				e.stateMask = SWT.NONE;
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				e.stateMask = SWT.NONE;
+			}
+		});
+		
+		nonModifierKeySequenceKeySequenceText = new KeySequenceText(nonModifierKeySequenceText);
+		
+//		final ModifyListener modifyListener = new ModifyListener() {
+//			@Override
+//			public void modifyText(ModifyEvent e) {
+//				KeySequence keySequence = nonModifierKeySequenceKeySequenceText.getKeySequence();
+//				if (keySequence.isComplete()) {
+//					try {
+//						nonModifierKeySequenceText.removeModifyListener(this);
+//						KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
+//						for (int i = 0; i < keyStrokes.length; i++) {
+//							keyStrokes[i] = KeyStroke.getInstance(keyStrokes[i].getNaturalKey());
+//						}
+//						keySequence = KeySequence.getInstance(keyStrokes);
+//						nonModifierKeySequenceKeySequenceText.setKeySequence(keySequence);
+//					} finally {
+//						nonModifierKeySequenceText.addModifyListener(this);
+//					}
+//				}
+//			}
+//		};
+		
+		
+		
+		Label padding = new Label(dialogArea, SWT.NONE);
+		GridData paddingGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		paddingGridData.widthHint = 100;
+		padding.setLayoutData(paddingGridData);
 		
 		// Place a table inside the tab.
 		table = new Table(dialogArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
-		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
+		tableLayoutData.horizontalSpan = 4;
+		table.setLayoutData(tableLayoutData);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
@@ -266,8 +345,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		tc.setText("Context");
 		tc.setWidth(100);
 	    
-		tableViewer.setInput(PlatformUI.getWorkbench());
-
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		tableViewer.setInput(workbench);
+		
+		setTitleText("Search using Command, Key Sequence or Natural Key Sequence");
 		return dialogArea;
 	}
 	
