@@ -186,6 +186,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 				@Override
 				public int compare(CommandKeybinding o1, CommandKeybinding o2) {
+					if ("".equals(o1.getKeySequence())) {
+						if ("".equals(o2.getKeySequence())) {
+							return o1.getCommandName().compareTo(o2.getCommandName());
+						} else {
+							return 1;
+						}
+					}
+					if ("".equals(o2.getKeySequence())) {
+							return -1;
+					}
 					return o1.getCommandName().compareTo(o2.getCommandName());
 				}
 			});
