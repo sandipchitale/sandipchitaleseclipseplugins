@@ -125,6 +125,11 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			if (newInput == null) {
+				commandKeybindings = new CommandKeybinding[0];
+				return;
+			}
+			
 			TableViewer tableViewer = (TableViewer) viewer;
 			tableViewer.setFilters(new ViewerFilter[0]);
 			
@@ -260,11 +265,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		tc = new TableColumn(table, SWT.LEFT, 3);
 		tc.setText("Context");
 		tc.setWidth(100);
-		
-	    // Pack the columns
-//	    for (int i = 0, n = table.getColumnCount(); i < n; i++) {
-//	      table.getColumn(i).pack();
-//	    }
 	    
 		tableViewer.setInput(PlatformUI.getWorkbench());
 
