@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -27,6 +29,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Image;
@@ -48,6 +52,8 @@ import org.eclipse.ui.keys.IBindingService;
 
 public class CommandKeybindingXREFDialog extends PopupDialog {
 	
+	private static final Point INITIAL_SIZE = new Point(700, 400);
+
 	private static class CommandKeybinding {
 		private String commandName;
 		private String keySequence;
@@ -100,9 +106,12 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	}
 	
 	private static class CommandKeybindingXREFSchemeIdFilter extends ViewerFilter {
-		private final String activeSchemeId;
+		private String activeSchemeId;
 
-		CommandKeybindingXREFSchemeIdFilter(String activeSchemeId) {
+		CommandKeybindingXREFSchemeIdFilter() {
+		}
+		
+		public void setActiveSchemeId(String activeSchemeId) {
 			this.activeSchemeId = activeSchemeId;
 		}
 
@@ -112,14 +121,62 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
 			
 			String schemeId = commandKeybinding.getSchemeId();
-			if (schemeId.equals("") || !schemeId.equals(activeSchemeId)) {
+			if (schemeId.equals("") || schemeId.equals(activeSchemeId)) {
 				return true;
 			}
 			return false;
 		}
 	}
 	
-	private static class CommandKeybindingXREFContentProvider implements IStructuredContentProvider {
+	private static class CommandKeybindingXREFCommandFilter extends ViewerFilter {
+		private Pattern commandFilterPattern;
+
+		CommandKeybindingXREFCommandFilter() {
+		}
+		
+		public void setCommandFilterText(String commandFilterText) {
+			if ("".equals(commandFilterText)) {
+				commandFilterPattern = Pattern.compile(".*");
+				return;
+			}
+			int flags = 0;
+			if (commandFilterText.toLowerCase().equals(commandFilterText)) {
+				flags |= Pattern.CASE_INSENSITIVE;
+			}
+			boolean appendDotStar = true;
+			boolean prependAnchor = false;
+			if (commandFilterText.indexOf("?") != -1) {
+				appendDotStar = false;
+				commandFilterText = commandFilterText.replaceAll(Pattern.quote("?"), Matcher.quoteReplacement("."));
+			}
+			if (commandFilterText.indexOf("*") != -1) {
+				appendDotStar = false;
+				commandFilterText = commandFilterText.replaceAll(Pattern.quote("*"), Matcher.quoteReplacement(".*"));
+			}
+			if (commandFilterText.startsWith("^")) {
+				prependAnchor = true;
+				commandFilterText = commandFilterText.substring(1);
+			}
+			if (appendDotStar) {
+				commandFilterText = Pattern.quote(commandFilterText) + ".*";
+			}
+			if (prependAnchor) {
+				commandFilterText = "^" + commandFilterText;
+			} else {
+				commandFilterText = ".*" + commandFilterText;
+			}
+			commandFilterPattern = Pattern.compile(commandFilterText, flags);
+		}
+		
+		@Override
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
+			return commandFilterPattern.matcher(commandKeybinding.getCommandName()).matches();
+		}
+	}
+	
+	private class CommandKeybindingXREFContentProvider implements IStructuredContentProvider {
 		private CommandKeybinding[] commandKeybindings;
 		
 		@Override
@@ -152,9 +209,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 			IContextService contextService = (IContextService) workbench.getService(IContextService.class);
 			IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
-			String activeSchemeId  = bindingService.getActiveScheme().getId();
-			tableViewer.addFilter(new CommandKeybindingXREFSchemeIdFilter(activeSchemeId));
-			
+			commandKeybindingXREFSchemeIdFilter.setActiveSchemeId(bindingService.getActiveScheme().getId());
+
 			Binding[] bindings = bindingService.getBindings();
 			for (Binding binding : bindings) {
 				ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
@@ -245,22 +301,30 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 	}
 	
-	public CommandKeybindingXREFDialog() {
-		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PopupDialog.INFOPOPUP_SHELLSTYLE, true, true, true, true, true, "", "");		
-	}
-	
 	private Table table;
 	private TableViewer tableViewer;
 	
 	private Combo schemeFilterCombo;
+	private CommandKeybindingXREFSchemeIdFilter commandKeybindingXREFSchemeIdFilter;
+
 	private Text commandSearchText;
+	private CommandKeybindingXREFCommandFilter commandKeybindingXREFCommandFilter;
+	
 	private Text keySequenceSearchText;
 	private KeySequenceText keySequenceSearchKeySequenceText;
 	private Text nonModifierKeySequenceText;
 	private KeySequenceText nonModifierKeySequenceKeySequenceText;
 	
+	public CommandKeybindingXREFDialog() {
+		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PopupDialog.INFOPOPUP_SHELLSTYLE, true, true, true, true, true, "", "");		
+	}
+	
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		commandKeybindingXREFSchemeIdFilter = new CommandKeybindingXREFSchemeIdFilter();
+		
+		commandKeybindingXREFCommandFilter = new CommandKeybindingXREFCommandFilter();
+
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		GridLayout layout = (GridLayout) dialogArea.getLayout();
 		layout.numColumns = 2;
@@ -283,7 +347,28 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		commandSearchText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
 		GridData commandSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		commandSearchText.setLayoutData(commandSearchTextGridData);
-		
+		commandSearchText.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
+				setFilters(commandKeybindingXREFCommandFilter);
+				tableViewer.refresh();
+			}
+		});
+		commandSearchText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
+				tableViewer.refresh();
+			}
+		});
+
 		Label keySequenceSearchLabel = new Label(dialogArea, SWT.RIGHT);
 		keySequenceSearchLabel.setText("Keysequence Search :");
 		GridData keySequenceSearchLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -341,15 +426,15 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		TableColumn tc;
 		
 		tc = new TableColumn(table, SWT.LEFT, 0);
-		tc.setText("Command Name");
-		tc.setWidth(200);
+		tc.setText("Command");
+		tc.setWidth(250);
 		
 		tc = new TableColumn(table, SWT.LEFT, 1);
-		tc.setText("KS");
+		tc.setText("Keysequence");
 		tc.setWidth(250);
 		
 		tc = new TableColumn(table, SWT.LEFT, 2);
-		tc.setText("NKS");
+		tc.setText("Natural Keys");
 		tc.setWidth(100);
 		
 		tc = new TableColumn(table, SWT.LEFT, 3);
@@ -373,8 +458,13 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		} catch (NotDefinedException e1) {
 		}
 		
-		setTitleText("Search using Command, Key Sequence or Natural Key Sequence");
+		setTitleText("Search using Command Name (^, *, ? allowed), Key Sequence or Natural Key Sequence");
 		return dialogArea;
+	}
+	
+	private void setFilters(ViewerFilter viewFilter) {
+		tableViewer.setFilters(new ViewerFilter[] {commandKeybindingXREFSchemeIdFilter, viewFilter});
+		tableViewer.refresh();
 	}
 	
 	@Override
@@ -384,6 +474,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	
 	@Override
 	protected Point getDefaultSize() {
-		return new Point(700, 400);
+		return INITIAL_SIZE;
 	}
 }
