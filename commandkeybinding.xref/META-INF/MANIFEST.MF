@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Command Keybinding XREF
+Bundle-SymbolicName: commandkeybinding.xref;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: commandkeybinding.xref.Activator
+Bundle-Vendor: Sandip V. Chitale
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.expressions
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
