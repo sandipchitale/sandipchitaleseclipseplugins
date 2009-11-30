@@ -551,7 +551,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		} catch (NotDefinedException e1) {
 		}
 		
-		setInfoText("Search using Command Name (^, *, ? allowed), Key Sequence or Natural Key Sequence");
+		setInfoText("Search using Command Name (^, *, ? allowed), Key Sequence or Natural Keys");
 		return dialogArea;
 	}
 	
