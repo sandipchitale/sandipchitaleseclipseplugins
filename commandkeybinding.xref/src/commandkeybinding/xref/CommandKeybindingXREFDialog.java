@@ -51,6 +51,9 @@ import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.keys.IBindingService;
 
 public class CommandKeybindingXREFDialog extends PopupDialog {
+	public enum MODE {COMMAND, KEYSEQUENCE};
+	
+	private MODE mode = MODE.COMMAND;
 	
 	private static final Point INITIAL_SIZE = new Point(750, 400);
 
@@ -197,7 +200,30 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			return false;
 		}
 	}
-	
+
+	private static class CommandKeybindingXREFNonModifierKeySequenceFilter extends ViewerFilter {
+		private String nonModifierKeySequenceText;
+
+		CommandKeybindingXREFNonModifierKeySequenceFilter() {
+		}
+		
+		public void setNonModifierKeySequenceText(
+				String nonModifierKeySequenceText) {
+			this.nonModifierKeySequenceText = nonModifierKeySequenceText;
+		}
+
+		@Override
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
+			
+			if (nonModifierKeySequenceText.equals("") || commandKeybinding.getNonModifierKeySequence().startsWith(nonModifierKeySequenceText)) {
+				return true;
+			}
+			return false;
+		}
+	}
+
 	private class CommandKeybindingXREFContentProvider implements IStructuredContentProvider {
 		private CommandKeybinding[] commandKeybindings;
 		
@@ -338,9 +364,15 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 	private Text nonModifierKeySequenceText;
 	private KeySequenceText nonModifierKeySequenceKeySequenceText;
+	private CommandKeybindingXREFNonModifierKeySequenceFilter commandKeybindingXREFNonModifierKeySequenceFilter;
 	
 	public CommandKeybindingXREFDialog() {
-		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PopupDialog.INFOPOPUP_SHELLSTYLE, true, true, true, true, true, "", "");		
+		this(MODE.COMMAND);
+	}
+	
+	public CommandKeybindingXREFDialog(MODE mode) {
+		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PopupDialog.INFOPOPUP_SHELLSTYLE, true, true, true, true, true, "", "");
+		this.mode = mode;
 	}
 	
 	@Override
@@ -349,6 +381,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		commandKeybindingXREFCommandFilter = new CommandKeybindingXREFCommandFilter();
 		commandKeybindingXREFKeySequenceFilter = new CommandKeybindingXREFKeySequenceFilter();
+		commandKeybindingXREFNonModifierKeySequenceFilter = new CommandKeybindingXREFNonModifierKeySequenceFilter();
 
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		GridLayout layout = (GridLayout) dialogArea.getLayout();
@@ -399,6 +432,20 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		nonModifierKeySequenceText.setLayoutData(nonModifierKeySequenceGridData);
 		nonModifierKeySequenceKeySequenceText = new KeySequenceText(nonModifierKeySequenceText);
 		
+		nonModifierKeySequenceText.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				nonModifierKeySequenceText.setText("");
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				commandKeybindingXREFNonModifierKeySequenceFilter.setNonModifierKeySequenceText(nonModifierKeySequenceText.getText());
+				setFilters(commandKeybindingXREFNonModifierKeySequenceFilter);
+				tableViewer.refresh();
+			}
+		});
+		
 		final ModifyListener modifyListener = new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
@@ -412,6 +459,11 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 						}
 						keySequence = KeySequence.getInstance(keyStrokes);
 						nonModifierKeySequenceKeySequenceText.setKeySequence(keySequence);
+						
+						if (keySequence.isComplete()) {
+							commandKeybindingXREFNonModifierKeySequenceFilter.setNonModifierKeySequenceText(keySequence.format());
+							tableViewer.refresh();
+						}
 					} finally {
 						nonModifierKeySequenceText.addModifyListener(this);
 					}
@@ -487,7 +539,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		commandSearchText.addFocusListener(new FocusListener() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				
+				commandSearchText.setText("");
 			}
 			
 			@Override
@@ -509,6 +561,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	
 	@Override
 	protected Control getFocusControl() {
+		switch (mode) {
+			case KEYSEQUENCE:			
+				return keySequenceSearchText;
+		}
 		return commandSearchText;
 	}
 	
