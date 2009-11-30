@@ -12,7 +12,8 @@
          <commandParameter
                id="commandkeybinding.xref.show.mode"
                name="Mode (COMMAND or KEYSEQUENCE)"
-               optional="true">
+               optional="true"
+               values="commandkeybinding.xref.CommandKeybindingXREFDialog.MODEValues">
          </commandParameter>
       </command>
    </extension>

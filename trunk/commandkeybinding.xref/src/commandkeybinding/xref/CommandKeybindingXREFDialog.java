@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.IParameterValues;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.jface.bindings.Binding;
@@ -53,11 +54,24 @@ import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.keys.IBindingService;
 
 public class CommandKeybindingXREFDialog extends PopupDialog {
-	public enum MODE {COMMAND, KEYSEQUENCE};
+	public static enum MODE {COMMAND, KEYSEQUENCE};
 	
+	@SuppressWarnings("unchecked")
+	public static class MODEValues implements IParameterValues {
+		private static Map modeValueMap = new HashMap();
+		static {
+			modeValueMap.put(MODE.COMMAND.name(), MODE.COMMAND.name());
+			modeValueMap.put(MODE.KEYSEQUENCE.name(), MODE.KEYSEQUENCE.name());
+		}
+		public Map getParameterValues() {
+			return modeValueMap;
+		}
+	}
+
 	private MODE mode = MODE.COMMAND;
 	
 	private static final Point INITIAL_SIZE = new Point(750, 400);
+	
 
 	private static class CommandKeybinding {
 		private String commandName;
