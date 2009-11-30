@@ -393,6 +393,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		GridLayout layout = (GridLayout) dialogArea.getLayout();
 		layout.numColumns = 2;
 		layout.makeColumnsEqualWidth = false;
+		layout.marginWidth = 2;
 		
 		Label keySequenceSearchLabel = new Label(dialogArea, SWT.RIGHT);
 		keySequenceSearchLabel.setText("Keysequence Search :");
@@ -544,6 +545,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	protected Control createTitleControl(Composite parent) {
 		commandSearchText = new Text(parent, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
 		GridData commandSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		commandSearchTextGridData.horizontalIndent = 2;
 		commandSearchText.setLayoutData(commandSearchTextGridData);
 		commandSearchText.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
