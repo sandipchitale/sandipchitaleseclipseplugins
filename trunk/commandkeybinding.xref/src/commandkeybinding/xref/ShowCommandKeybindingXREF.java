@@ -8,10 +8,11 @@ public class ShowCommandKeybindingXREF extends AbstractHandler {
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		CommandKeybindingXREFDialog.MODE mode;
-		String parameterValue = event.getParameter("commandkeybinding.xref.show.mode");
 		try {
-			mode = CommandKeybindingXREFDialog.MODE.valueOf(parameterValue);
+			mode = CommandKeybindingXREFDialog.MODE.valueOf(event.getParameter("commandkeybinding.xref.show.mode"));
 		} catch (IllegalArgumentException iae) {
+			mode = CommandKeybindingXREFDialog.MODE.COMMAND;
+		} catch (NullPointerException iae) {
 			mode = CommandKeybindingXREFDialog.MODE.COMMAND;
 		}
 		CommandKeybindingXREFDialog commandKeybindingXREFDialog = new CommandKeybindingXREFDialog(mode);
