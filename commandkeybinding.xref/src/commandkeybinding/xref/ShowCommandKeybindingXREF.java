@@ -7,7 +7,14 @@ import org.eclipse.core.commands.ExecutionException;
 public class ShowCommandKeybindingXREF extends AbstractHandler {
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		CommandKeybindingXREFDialog commandKeybindingXREFDialog = new CommandKeybindingXREFDialog();
+		CommandKeybindingXREFDialog.MODE mode;
+		String parameterValue = event.getParameter("commandkeybinding.xref.show.mode");
+		try {
+			mode = CommandKeybindingXREFDialog.MODE.valueOf(parameterValue);
+		} catch (IllegalArgumentException iae) {
+			mode = CommandKeybindingXREFDialog.MODE.COMMAND;
+		}
+		CommandKeybindingXREFDialog commandKeybindingXREFDialog = new CommandKeybindingXREFDialog(mode);
 		commandKeybindingXREFDialog.open();
 		return null;
 	}
