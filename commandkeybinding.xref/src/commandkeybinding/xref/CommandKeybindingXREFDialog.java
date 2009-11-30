@@ -1,8 +1,10 @@
 package commandkeybinding.xref;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,16 +36,20 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -51,6 +57,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.internal.util.Util;
 import org.eclipse.ui.keys.IBindingService;
 
 public class CommandKeybindingXREFDialog extends PopupDialog {
@@ -405,7 +412,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		GridLayout layout = (GridLayout) dialogArea.getLayout();
-		layout.numColumns = 2;
+		layout.numColumns = 3;
 		layout.makeColumnsEqualWidth = false;
 		layout.marginWidth = 2;
 		
@@ -418,13 +425,15 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		GridData keySequenceSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		keySequenceSearchText.setLayoutData(keySequenceSearchTextGridData);
 		keySequenceSearchKeySequenceText = new KeySequenceText(keySequenceSearchText);
+		keySequenceSearchKeySequenceText.setKeyStrokeLimit(4);
 		
 		keySequenceSearchText.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
-				keySequenceSearchText.setText("");
+				keySequenceSearchText.setForeground(keySequenceSearchText.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 			}
 			
 			public void focusGained(FocusEvent e) {
+				keySequenceSearchText.setForeground(null);
 				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequenceSearchText.getText());
 				setFilters(commandKeybindingXREFKeySequenceFilter);
 				tableViewer.refresh();
@@ -440,6 +449,39 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		
+		// Button for adding trapped key strokes
+		final Button keySequenceSearchAddTrappedKeysButton = new Button(dialogArea, SWT.LEFT | SWT.ARROW);
+		GridData buttonAddKeyGridData = new GridData();
+		keySequenceSearchAddTrappedKeysButton.setLayoutData(buttonAddKeyGridData);
+
+		// Construct the menu to attach to the above button.
+		final Menu menuButtonAddKey = new Menu(keySequenceSearchAddTrappedKeysButton);
+		final Iterator trappedKeyItr = KeySequenceText.TRAPPED_KEYS.iterator();
+		while (trappedKeyItr.hasNext()) {
+			final KeyStroke trappedKey = (KeyStroke) trappedKeyItr.next();
+			final MenuItem menuItem = new MenuItem(menuButtonAddKey, SWT.PUSH);
+			menuItem.setText(trappedKey.format());
+			menuItem.addSelectionListener(new SelectionAdapter() {
+
+				public void widgetSelected(SelectionEvent e) {
+					keySequenceSearchKeySequenceText.insert(trappedKey);
+					keySequenceSearchText.setFocus();
+					keySequenceSearchText.setSelection(keySequenceSearchText.getTextLimit());
+				}
+			});
+		}
+		
+		keySequenceSearchAddTrappedKeysButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent selectionEvent) {
+				Point buttonLocation = keySequenceSearchAddTrappedKeysButton.getLocation();
+				buttonLocation = keySequenceSearchAddTrappedKeysButton.getParent().toDisplay(buttonLocation.x, buttonLocation.y);
+				Point buttonSize = keySequenceSearchAddTrappedKeysButton.getSize();
+				menuButtonAddKey.setLocation(buttonLocation.x, buttonLocation.y
+						+ buttonSize.y);
+				menuButtonAddKey.setVisible(true);
+			}
+		});
+		
 		Label nonModifierKeySequenceLabel = new Label(dialogArea, SWT.RIGHT);
 		nonModifierKeySequenceLabel.setText("Natural Keysequence Search :");
 		GridData nonModifierKeySequenceLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -447,15 +489,19 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		nonModifierKeySequenceText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
 		GridData nonModifierKeySequenceGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		nonModifierKeySequenceGridData.horizontalSpan = 1;
 		nonModifierKeySequenceText.setLayoutData(nonModifierKeySequenceGridData);
 		nonModifierKeySequenceKeySequenceText = new KeySequenceText(nonModifierKeySequenceText);
+		nonModifierKeySequenceKeySequenceText.setKeyStrokeLimit(4);
 		
 		nonModifierKeySequenceText.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
-				nonModifierKeySequenceText.setText("");
+				nonModifierKeySequenceText.setForeground(nonModifierKeySequenceText.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
+
 			}
 			
 			public void focusGained(FocusEvent e) {
+				nonModifierKeySequenceText.setForeground(null);
 				commandKeybindingXREFNonModifierKeySequenceFilter.setNonModifierKeySequenceText(nonModifierKeySequenceText.getText());
 				setFilters(commandKeybindingXREFNonModifierKeySequenceFilter);
 				tableViewer.refresh();
@@ -487,6 +533,40 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		};
 		nonModifierKeySequenceText.addModifyListener(modifyListener);
 		
+		// Button for adding trapped key strokes
+		final Button nonModifierKeySequenceSearchAddTrappedKeysButton = new Button(dialogArea, SWT.LEFT | SWT.ARROW);
+		GridData nonModifierKeySequenceSearchAddTrappedKeysButtonGridData = new GridData();
+		nonModifierKeySequenceSearchAddTrappedKeysButton.setLayoutData(nonModifierKeySequenceSearchAddTrappedKeysButtonGridData);
+
+		// Construct the menu to attach to the above button.
+		final Menu nonModifierKeySequenceSearchAddTrappedKeysButtonMenu = new Menu(nonModifierKeySequenceSearchAddTrappedKeysButton);
+		final Iterator trappedKeyItr1 = KeySequenceText.TRAPPED_KEYS.iterator();
+		while (trappedKeyItr1.hasNext()) {
+			final KeyStroke trappedKey = (KeyStroke) trappedKeyItr1.next();
+			if (trappedKey.getModifierKeys() == KeyStroke.NO_KEY) {
+				final MenuItem menuItem = new MenuItem(nonModifierKeySequenceSearchAddTrappedKeysButtonMenu, SWT.PUSH);
+				menuItem.setText(trappedKey.format());
+				menuItem.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						nonModifierKeySequenceKeySequenceText.insert(trappedKey);
+						nonModifierKeySequenceText.setFocus();
+						nonModifierKeySequenceText.setSelection(nonModifierKeySequenceText.getTextLimit());
+					}
+				});
+			}
+		}
+		
+		nonModifierKeySequenceSearchAddTrappedKeysButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent selectionEvent) {
+				Point buttonLocation = nonModifierKeySequenceSearchAddTrappedKeysButton.getLocation();
+				buttonLocation = nonModifierKeySequenceSearchAddTrappedKeysButton.getParent().toDisplay(buttonLocation.x, buttonLocation.y);
+				Point buttonSize = nonModifierKeySequenceSearchAddTrappedKeysButton.getSize();
+				nonModifierKeySequenceSearchAddTrappedKeysButtonMenu.setLocation(buttonLocation.x, buttonLocation.y
+						+ buttonSize.y);
+				nonModifierKeySequenceSearchAddTrappedKeysButtonMenu.setVisible(true);
+			}
+		});
+		
 		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
 		schemeFilterLabel.setText("Scheme Filter: ");
 		GridData schemeFilterLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -494,6 +574,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		schemeFilterCombo = new Combo(dialogArea, SWT.DROP_DOWN|SWT.READ_ONLY);
 		GridData schemeFilterComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		schemeFilterComboGridData.horizontalSpan = 2;
 		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
 		schemeFilterCombo.addSelectionListener(new SelectionListener() {
 
@@ -507,7 +588,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		table = new Table(dialogArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
 		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
-		tableLayoutData.horizontalSpan = 2;
+		tableLayoutData.horizontalSpan = 3;
 		table.setLayoutData(tableLayoutData);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
