@@ -7,23 +7,56 @@
             categoryId="org.eclipse.ui.category.help"
             defaultHandler="commandkeybinding.xref.ShowCommandKeybindingXREF"
             description="Show Command Keybinding XREF"
-            id="commandkeybinding.xref.showCommandSearch"
+            id="commandkeybinding.xref.show"
             name="Show Command Keybinding XREF">
+         <commandParameter
+               id="commandkeybinding.xref.show.mode"
+               name="Mode (COMMAND or KEYSEQUENCE)"
+               optional="true">
+         </commandParameter>
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="commandkeybinding.xref.showCommandSearch"
+            commandId="commandkeybinding.xref.show"
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+M3+L">
+         <parameter
+               id="commandkeybinding.xref.show.mode"
+               value="COMMAND">
+         </parameter>
       </key>
       <key
-            commandId="commandkeybinding.xref.showCommandSearch"
+            commandId="commandkeybinding.xref.show"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+M3+K">
+         <parameter
+               id="commandkeybinding.xref.show.mode"
+               value="KEYSEQUENCE">
+         </parameter>
+      </key>
+      <key
+            commandId="commandkeybinding.xref.show"
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.emacsAcceleratorConfiguration"
-            sequence="CTRL+H CTRL+W">
+            sequence="CTRL+H W">
+         <parameter
+               id="commandkeybinding.xref.show.mode"
+               value="COMMAND">
+         </parameter>
+      </key>
+      <key
+            commandId="commandkeybinding.xref.show"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.emacsAcceleratorConfiguration"
+            sequence="CTRL+H K">
+         <parameter
+               id="commandkeybinding.xref.show.mode"
+               value="KEYSEQUENCE">
+         </parameter>
       </key>
    </extension>
 
