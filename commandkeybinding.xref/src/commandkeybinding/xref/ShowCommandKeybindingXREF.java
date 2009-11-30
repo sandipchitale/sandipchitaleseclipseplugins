@@ -6,7 +6,6 @@ import org.eclipse.core.commands.ExecutionException;
 
 public class ShowCommandKeybindingXREF extends AbstractHandler {
 
-	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		CommandKeybindingXREFDialog commandKeybindingXREFDialog = new CommandKeybindingXREFDialog();
 		commandKeybindingXREFDialog.open();
