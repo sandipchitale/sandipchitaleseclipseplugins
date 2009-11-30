@@ -229,17 +229,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private class CommandKeybindingXREFContentProvider implements IStructuredContentProvider {
 		private CommandKeybinding[] commandKeybindings;
 		
-		@Override
 		public Object[] getElements(Object inputElement) {
 			return commandKeybindings;
 		}
 
-		@Override
 		public void dispose() {
 			commandKeybindings = null;
 		}
 
-		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if (newInput == null) {
 				commandKeybindings = new CommandKeybinding[0];
@@ -306,8 +303,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				}
 			}
 			Collections.sort(commandKeybindings, new Comparator<CommandKeybinding>() {
-
-				@Override
 				public int compare(CommandKeybinding o1, CommandKeybinding o2) {
 					if ("".equals(o1.getKeySequence())) {
 						if ("".equals(o2.getKeySequence())) {
@@ -329,12 +324,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	
 	private static class CommandKeybindingXREFLabelProvider implements ITableLabelProvider {
 
-		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
 		}
 
-		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
 			switch (columnIndex) {
@@ -350,24 +343,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			return null;
 		}
 
-		@Override
-		public void addListener(ILabelProviderListener listener) {
-		}
+		public void addListener(ILabelProviderListener listener) {}
 
-		@Override
-		public void dispose() {
-			
-		}
+		public void dispose() {}
 
-		@Override
 		public boolean isLabelProperty(Object element, String property) {
 			return false;
 		}
 
-		@Override
 		public void removeListener(ILabelProviderListener listener) {
 		}
-		
 	}
 	
 	private Table table;
@@ -420,12 +405,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		keySequenceSearchKeySequenceText = new KeySequenceText(keySequenceSearchText);
 		
 		keySequenceSearchText.addFocusListener(new FocusListener() {
-			@Override
 			public void focusLost(FocusEvent e) {
 				keySequenceSearchText.setText("");
 			}
 			
-			@Override
 			public void focusGained(FocusEvent e) {
 				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequenceSearchText.getText());
 				setFilters(commandKeybindingXREFKeySequenceFilter);
@@ -433,7 +416,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		keySequenceSearchText.addModifyListener(new ModifyListener() {
-			@Override
 			public void modifyText(ModifyEvent e) {
 				KeySequence keySequence = keySequenceSearchKeySequenceText.getKeySequence();
 				if (keySequence.isComplete()) {
@@ -454,12 +436,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		nonModifierKeySequenceKeySequenceText = new KeySequenceText(nonModifierKeySequenceText);
 		
 		nonModifierKeySequenceText.addFocusListener(new FocusListener() {
-			@Override
 			public void focusLost(FocusEvent e) {
 				nonModifierKeySequenceText.setText("");
 			}
 			
-			@Override
 			public void focusGained(FocusEvent e) {
 				commandKeybindingXREFNonModifierKeySequenceFilter.setNonModifierKeySequenceText(nonModifierKeySequenceText.getText());
 				setFilters(commandKeybindingXREFNonModifierKeySequenceFilter);
@@ -468,7 +448,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		});
 		
 		final ModifyListener modifyListener = new ModifyListener() {
-			@Override
 			public void modifyText(ModifyEvent e) {
 				KeySequence keySequence = nonModifierKeySequenceKeySequenceText.getKeySequence();
 				if (keySequence.isComplete()) {
@@ -502,14 +481,12 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		GridData schemeFilterComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
 		schemeFilterCombo.addSelectionListener(new SelectionListener() {
-			
-			@Override
+
 			public void widgetSelected(SelectionEvent e) {
 				commandKeybindingXREFSchemeIdFilter.setActiveScheme(schemeFilterCombo.getText());
 				tableViewer.refresh();
 			}
-			
-			@Override
+
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
@@ -569,12 +546,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		GridData commandSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		commandSearchText.setLayoutData(commandSearchTextGridData);
 		commandSearchText.addFocusListener(new FocusListener() {
-			@Override
 			public void focusLost(FocusEvent e) {
 				commandSearchText.setText("");
 			}
 			
-			@Override
 			public void focusGained(FocusEvent e) {
 				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
 				setFilters(commandKeybindingXREFCommandFilter);
@@ -582,7 +557,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		commandSearchText.addModifyListener(new ModifyListener() {
-			@Override
 			public void modifyText(ModifyEvent e) {
 				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
 				tableViewer.refresh();
