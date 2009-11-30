@@ -33,6 +33,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -109,13 +111,13 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	}
 	
 	private static class CommandKeybindingXREFSchemeIdFilter extends ViewerFilter {
-		private String activeSchemeId;
+		private String activeScheme;
 
 		CommandKeybindingXREFSchemeIdFilter() {
 		}
 		
-		public void setActiveSchemeId(String activeSchemeId) {
-			this.activeSchemeId = activeSchemeId;
+		public void setActiveScheme(String activeScheme) {
+			this.activeScheme = activeScheme;
 		}
 
 		@Override
@@ -124,7 +126,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
 			
 			String schemeId = commandKeybinding.getSchemeId();
-			if (schemeId.equals("") || schemeId.equals(activeSchemeId)) {
+			if (schemeId.equals("") || schemeId.equals(activeScheme)) {
 				return true;
 			}
 			return false;
@@ -257,8 +259,22 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 			IContextService contextService = (IContextService) workbench.getService(IContextService.class);
 			IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
-			commandKeybindingXREFSchemeIdFilter.setActiveSchemeId(bindingService.getActiveScheme().getId());
-
+			
+			Map<String, String> idToName = new HashMap<String, String>();
+			Scheme[] definedSchemes = bindingService.getDefinedSchemes();
+			for (Scheme scheme : definedSchemes) {
+				try {
+					idToName.put(scheme.getId(), scheme.getName());
+				} catch (NotDefinedException e) {
+				}
+			}
+			Scheme activeScheme = bindingService.getActiveScheme();
+			String activeSchemeName = activeScheme.getId();
+			try {
+				activeSchemeName = activeScheme.getName();
+			} catch (NotDefinedException e1) {
+			}
+			commandKeybindingXREFSchemeIdFilter.setActiveScheme(activeSchemeName);
 			Binding[] bindings = bindingService.getBindings();
 			for (Binding binding : bindings) {
 				ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
@@ -267,11 +283,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 					commands.remove(commandId);
 					String contextId = binding.getContextId();
 					try {
+						String schemeId = binding.getSchemeId();
+						String schemeName = idToName.get(schemeId);
+						if (schemeName == null) {
+							schemeName = schemeId;
+						}
 						commandKeybindings.add(
 								new CommandKeybinding(parameterizedCommand.getName(),
 										binding.getTriggerSequence(),
 										contextService.getContext(contextId).getName(),
-										binding.getSchemeId()));
+										schemeName));
 					} catch (NotDefinedException e) {
 					}
 				}
@@ -480,6 +501,17 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		schemeFilterCombo = new Combo(dialogArea, SWT.DROP_DOWN|SWT.READ_ONLY);
 		GridData schemeFilterComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
+		schemeFilterCombo.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				commandKeybindingXREFSchemeIdFilter.setActiveScheme(schemeFilterCombo.getText());
+				tableViewer.refresh();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
 		
 		table = new Table(dialogArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
 		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
@@ -496,11 +528,11 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tc = new TableColumn(table, SWT.LEFT, 0);
 		tc.setText("Command");
-		tc.setWidth(250);
+		tc.setWidth(275);
 		
 		tc = new TableColumn(table, SWT.LEFT, 1);
 		tc.setText("Keysequence");
-		tc.setWidth(250);
+		tc.setWidth(200);
 		
 		tc = new TableColumn(table, SWT.LEFT, 2);
 		tc.setText("Natural Keys");
@@ -508,7 +540,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tc = new TableColumn(table, SWT.LEFT, 3);
 		tc.setText("Context");
-		tc.setWidth(100);
+		tc.setWidth(125);
 	    
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		tableViewer.setInput(workbench);
