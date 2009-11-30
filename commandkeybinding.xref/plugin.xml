@@ -7,9 +7,24 @@
             categoryId="org.eclipse.ui.category.help"
             defaultHandler="commandkeybinding.xref.ShowCommandKeybindingXREF"
             description="Show Command Keybinding XREF"
-            id="commandkeybinding.xref.show"
+            id="commandkeybinding.xref.showCommandSearch"
             name="Show Command Keybinding XREF">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="commandkeybinding.xref.showCommandSearch"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+M3+L">
+      </key>
+      <key
+            commandId="commandkeybinding.xref.showCommandSearch"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.emacsAcceleratorConfiguration"
+            sequence="CTRL+H CTRL+W">
+      </key>
    </extension>
 
 </plugin>
