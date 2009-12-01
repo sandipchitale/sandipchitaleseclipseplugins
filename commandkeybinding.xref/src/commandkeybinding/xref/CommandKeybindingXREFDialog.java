@@ -260,7 +260,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			tableViewer.setFilters(new ViewerFilter[0]);
 			
 			IWorkbench workbench = (IWorkbench)newInput;
-			List<CommandKeybinding> commandKeybindings = new LinkedList<CommandKeybinding>();
 			ICommandService commandService = (ICommandService) workbench.getService(ICommandService.class);
 			Map<String, Command> commands = new HashMap<String, Command>();
 			Command[] definedCommands = commandService.getDefinedCommands();
@@ -285,6 +284,19 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			} catch (NotDefinedException e1) {
 			}
 			commandKeybindingXREFSchemeIdFilter.setActiveScheme(activeSchemeName);
+
+			List<CommandKeybinding> commandKeybindings = new LinkedList<CommandKeybinding>();
+			
+			Comparator<CommandKeybinding> comprator = new Comparator<CommandKeybinding>() {
+				public int compare(CommandKeybinding o1, CommandKeybinding o2) {
+					return o1.getCommandName().compareTo(o2.getCommandName());
+				}
+			};
+			
+			List<CommandKeybinding> commandKeybindingsForAllPlatforms = new LinkedList<CommandKeybinding>();
+			List<CommandKeybinding> commandKeybindingsForPlatform = new LinkedList<CommandKeybinding>();
+			List<CommandKeybinding> commandKeybindingsForOtherPlatforms = new LinkedList<CommandKeybinding>();
+
 			Binding[] bindings = bindingService.getBindings();
 			for (Binding binding : bindings) {
 				ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
@@ -299,39 +311,51 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 						if (schemeName == null) {
 							schemeName = schemeId;
 						}
-						commandKeybindings.add(
-								new CommandKeybinding(parameterizedCommand.getName(),
-										binding.getTriggerSequence(),
-										contextService.getContext(contextId).getName(),
-										schemeName,
-										platform));
+						if (platform == null) {
+							commandKeybindingsForAllPlatforms.add(
+									new CommandKeybinding(parameterizedCommand.getName(),
+											binding.getTriggerSequence(),
+											contextService.getContext(contextId).getName(),
+											schemeName,
+											platform));
+						} else if (SWT.getPlatform().equals(platform)) {
+							commandKeybindingsForPlatform.add(
+									new CommandKeybinding(parameterizedCommand.getName(),
+											binding.getTriggerSequence(),
+											contextService.getContext(contextId).getName(),
+											schemeName,
+											platform));
+						} else {
+							commandKeybindingsForOtherPlatforms.add(
+									new CommandKeybinding(parameterizedCommand.getName(),
+											binding.getTriggerSequence(),
+											contextService.getContext(contextId).getName(),
+											schemeName,
+											platform));
+							
+						}
 					} catch (NotDefinedException e) {
 					}
 				}
 			}
+			
+			List<CommandKeybinding> unboundCommands = new LinkedList<CommandKeybinding>();
 			Set<Entry<String,Command>> entrySet = commands.entrySet();
 			for (Entry<String, Command> entry : entrySet) {
 				Command command = entry.getValue();
 				try {
-					commandKeybindings.add(new CommandKeybinding(command.getName()));
+					unboundCommands.add(new CommandKeybinding(command.getName()));
 				} catch (NotDefinedException e) {
 				}
 			}
-			Collections.sort(commandKeybindings, new Comparator<CommandKeybinding>() {
-				public int compare(CommandKeybinding o1, CommandKeybinding o2) {
-					if ("".equals(o1.getKeySequence())) {
-						if ("".equals(o2.getKeySequence())) {
-							return o1.getCommandName().compareTo(o2.getCommandName());
-						} else {
-							return 1;
-						}
-					}
-					if ("".equals(o2.getKeySequence())) {
-							return -1;
-					}
-					return o1.getCommandName().compareTo(o2.getCommandName());
-				}
-			});
+			Collections.sort(commandKeybindingsForPlatform, comprator);
+			commandKeybindings.addAll(commandKeybindingsForPlatform);
+			Collections.sort(commandKeybindingsForAllPlatforms, comprator);
+			commandKeybindings.addAll(commandKeybindingsForAllPlatforms);
+			Collections.sort(commandKeybindingsForOtherPlatforms, comprator);
+			commandKeybindings.addAll(commandKeybindingsForOtherPlatforms);
+			Collections.sort(unboundCommands, comprator);
+			commandKeybindings.addAll(unboundCommands);
 			this.commandKeybindings = new CommandKeybinding[commandKeybindings.size()];
 			this.commandKeybindings = commandKeybindings.toArray(this.commandKeybindings);
 		}
@@ -462,12 +486,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			} catch (NotDefinedException e1) {
 			}
 		}
+		String activeSchemName = bindingService.getActiveScheme().getId();
 		try {
-			schemeFilterCombo.setText(bindingService.getActiveScheme().getName());
+			activeSchemName = bindingService.getActiveScheme().getName();
+			schemeFilterCombo.setText(activeSchemName);
 		} catch (NotDefinedException e1) {
 		}
 		
-		setInfoText("Search using Command Name (^, *, ? allowed) or Key Sequence");
+		setInfoText("Search using Command Name (^, *, ? allowed) or Key Sequence. | Current platform: " + SWT.getPlatform() + " | Active Scheme: " + activeSchemName);
 		return dialogArea;
 	}
 	
