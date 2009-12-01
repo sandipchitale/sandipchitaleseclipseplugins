@@ -417,7 +417,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tc = new TableColumn(table, SWT.LEFT, 2);
 		tc.setText("Context");
-		tc.setWidth(250);
+		tc.setWidth(225);
 	    
 		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
 		schemeFilterLabel.setText("Scheme:");
