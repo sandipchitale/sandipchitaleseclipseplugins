@@ -87,7 +87,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private String platform;
 
 		private CommandKeybinding(String commandName) {
-			this(commandName, null, null, null, null);			
+			this(commandName, null, null, null, "");			
 		}
 		
 		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform) {
