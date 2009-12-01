@@ -281,23 +281,26 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			commandKeybindingXREFSchemeIdFilter.setActiveScheme(activeSchemeName);
 			Binding[] bindings = bindingService.getBindings();
 			for (Binding binding : bindings) {
-				ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
-				if (parameterizedCommand != null) {
-					String commandId = parameterizedCommand.getId();
-					commands.remove(commandId);
-					String contextId = binding.getContextId();
-					try {
-						String schemeId = binding.getSchemeId();
-						String schemeName = idToName.get(schemeId);
-						if (schemeName == null) {
-							schemeName = schemeId;
+				String platform = binding.getPlatform();
+				if (platform == null || SWT.getPlatform().equals(platform)) {
+					ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
+					if (parameterizedCommand != null) {
+						String commandId = parameterizedCommand.getId();
+						commands.remove(commandId);
+						String contextId = binding.getContextId();
+						try {
+							String schemeId = binding.getSchemeId();
+							String schemeName = idToName.get(schemeId);
+							if (schemeName == null) {
+								schemeName = schemeId;
+							}
+							commandKeybindings.add(
+									new CommandKeybinding(parameterizedCommand.getName(),
+											binding.getTriggerSequence(),
+											contextService.getContext(contextId).getName(),
+											schemeName));
+						} catch (NotDefinedException e) {
 						}
-						commandKeybindings.add(
-								new CommandKeybinding(parameterizedCommand.getName(),
-										binding.getTriggerSequence(),
-										contextService.getContext(contextId).getName(),
-										schemeName));
-					} catch (NotDefinedException e) {
 					}
 				}
 			}
