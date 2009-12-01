@@ -84,12 +84,13 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private String naturalKeySequence;
 		private String context;
 		private String schemeId;
+		private String platform;
 
 		private CommandKeybinding(String commandName) {
-			this(commandName, null, null, null);			
+			this(commandName, null, null, null, null);			
 		}
 		
-		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId) {
+		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform) {
 			this.commandName = commandName;
 			this.keySequence = "";
 			this.naturalKeySequence = "";
@@ -106,6 +107,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 			this.context = (context == null ? "" : context);
 			this.schemeId = (schemeId == null ? "" : schemeId);
+			this.platform = (platform == null ? "" : platform);
 		}
 
 		private String getCommandName() {
@@ -126,6 +128,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		public String getSchemeId() {
 			return schemeId;
+		}
+		
+		public String getPlatform() {
+			return platform;
 		}
 	}
 	
@@ -281,26 +287,25 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			commandKeybindingXREFSchemeIdFilter.setActiveScheme(activeSchemeName);
 			Binding[] bindings = bindingService.getBindings();
 			for (Binding binding : bindings) {
-				String platform = binding.getPlatform();
-				if (platform == null || SWT.getPlatform().equals(platform)) {
-					ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
-					if (parameterizedCommand != null) {
-						String commandId = parameterizedCommand.getId();
-						commands.remove(commandId);
-						String contextId = binding.getContextId();
-						try {
-							String schemeId = binding.getSchemeId();
-							String schemeName = idToName.get(schemeId);
-							if (schemeName == null) {
-								schemeName = schemeId;
-							}
-							commandKeybindings.add(
-									new CommandKeybinding(parameterizedCommand.getName(),
-											binding.getTriggerSequence(),
-											contextService.getContext(contextId).getName(),
-											schemeName));
-						} catch (NotDefinedException e) {
+				ParameterizedCommand parameterizedCommand = binding.getParameterizedCommand();
+				if (parameterizedCommand != null) {
+					String commandId = parameterizedCommand.getId();
+					commands.remove(commandId);
+					String platform = binding.getPlatform();
+					String contextId = binding.getContextId();
+					try {
+						String schemeId = binding.getSchemeId();
+						String schemeName = idToName.get(schemeId);
+						if (schemeName == null) {
+							schemeName = schemeId;
 						}
+						commandKeybindings.add(
+								new CommandKeybinding(parameterizedCommand.getName(),
+										binding.getTriggerSequence(),
+										contextService.getContext(contextId).getName(),
+										schemeName,
+										platform));
+					} catch (NotDefinedException e) {
 					}
 				}
 			}
@@ -347,6 +352,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				return commandKeybinding.getKeySequence();
 			case 2:
 				return commandKeybinding.getContext();
+			case 3:
+				return commandKeybinding.getPlatform();
 			}
 			return null;
 		}
@@ -412,7 +419,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tc = new TableColumn(table, SWT.LEFT, 0);
 		tc.setText("Command");
-		tc.setWidth(300);
+		tc.setWidth(250);
 		
 		tc = new TableColumn(table, SWT.LEFT, 1);
 		tc.setText("Keysequence");
@@ -421,6 +428,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		tc = new TableColumn(table, SWT.LEFT, 2);
 		tc.setText("Context");
 		tc.setWidth(225);
+		
+		tc = new TableColumn(table, SWT.LEFT, 3);
+		tc.setText("Platform");
+		tc.setWidth(50);
 	    
 		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
 		schemeFilterLabel.setText("Scheme:");
