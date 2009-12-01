@@ -107,7 +107,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 			this.context = (context == null ? "" : context);
 			this.schemeId = (schemeId == null ? "" : schemeId);
-			this.platform = (platform == null ? "" : platform);
+			this.platform = (platform == null ? "all" : platform);
 		}
 
 		private String getCommandName() {
