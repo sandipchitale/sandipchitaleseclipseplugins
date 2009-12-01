@@ -1,5 +1,6 @@
 package commandkeybinding.xref;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IParameterValues;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.commands.contexts.Context;
 import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.bindings.Scheme;
 import org.eclipse.jface.bindings.Trigger;
@@ -509,7 +511,79 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		} catch (NotDefinedException e1) {
 		}
 		
-		setInfoText("Search using Command Name (^, *, ? allowed) or Key Sequence. | U = User override | Current platform: " + SWT.getPlatform() + " | Active Scheme: " + activeSchemName);
+		IContextService contextService = (IContextService) workbench.getService(IContextService.class);
+		
+		Collection activeContextIds = contextService.getActiveContextIds();
+		
+		Map<Context, List<Context>> contextToContextParents = new HashMap<Context, List<Context>>();
+		for (Iterator iterator = activeContextIds.iterator(); iterator
+				.hasNext();) {
+			String activeContextId = (String) iterator.next();
+			Context context = contextService.getContext(activeContextId);
+			if (!context.isDefined()) {
+				continue;
+			}
+			Context theContext = context;
+			List<Context> parentContexts = new LinkedList<Context>();
+			boolean actionSetContext = false;
+			while (context != null) {
+				parentContexts.add(context);
+				try {
+					activeContextId = context.getParentId();
+					// No more parents
+					if (activeContextId == null) {
+						if ("org.eclipse.ui.contexts.actionSet".equals(context.getId())) {
+							actionSetContext = true;
+						}
+						break;
+					}
+					context = contextService.getContext(activeContextId);
+				} catch (NotDefinedException e1) {
+					break;
+				}
+			}
+			if (!actionSetContext) {
+				contextToContextParents.put(theContext, parentContexts);
+			}
+		}
+		int lastSize = -1;
+		Set<Context> keySet = contextToContextParents.keySet();
+		List<Context> currentContext = null;
+		for (Context context : keySet) {
+			List<Context> contexts = contextToContextParents.get(context);
+			if (lastSize < contexts.size()) {
+				lastSize = contexts.size();
+				currentContext = contexts;
+			}
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		if (currentContext != null) {
+			sb.append("Current context: ");
+			int i = 0;
+			for (Iterator iterator = currentContext.iterator(); iterator
+					.hasNext();) {
+				Context context = (Context) iterator.next();
+				if (i > 0) {
+					sb.append(" < ");
+				}
+				try {
+					sb.append(context.getName());
+				} catch (NotDefinedException e1) {
+					sb.append(context.getId());
+				}
+				i++;
+			}
+			sb.append("\n");
+		}
+		System.out.println(currentContext);
+		
+		setInfoText(
+				sb +
+				"Search using Command Name (^, *, ? allowed) or Key Sequence. " +
+				"| U = User override " +
+				"| Current platform: " + SWT.getPlatform() + " " +
+			    "| Active Scheme: " + activeSchemName);
 		return dialogArea;
 	}
 	
