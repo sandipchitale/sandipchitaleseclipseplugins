@@ -1,6 +1,5 @@
 package commandkeybinding.xref;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -57,7 +56,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.contexts.IContextService;
-import org.eclipse.ui.internal.util.Util;
 import org.eclipse.ui.keys.IBindingService;
 
 public class CommandKeybindingXREFDialog extends PopupDialog {
@@ -83,7 +81,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private static class CommandKeybinding {
 		private String commandName;
 		private String keySequence;
-		private String nonModifierKeySequence;
+		private String naturalKeySequence;
 		private String context;
 		private String schemeId;
 
@@ -94,16 +92,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId) {
 			this.commandName = commandName;
 			this.keySequence = "";
-			this.nonModifierKeySequence = "";
+			this.naturalKeySequence = "";
 			if (keySequence != null) {
 				this.keySequence = keySequence.format();
 				Trigger[] triggers = keySequence.getTriggers();
 				for (Trigger trigger : triggers) {
-					if (this.nonModifierKeySequence.length() > 0) {
-						this.nonModifierKeySequence += " ";
+					if (this.naturalKeySequence.length() > 0) {
+						this.naturalKeySequence += " ";
 					}
 					KeyStroke keyStroke = (KeyStroke) trigger;
-					this.nonModifierKeySequence += KeyStroke.getInstance(keyStroke.getNaturalKey()).format();
+					this.naturalKeySequence += KeyStroke.getInstance(keyStroke.getNaturalKey()).format();
 				}
 			}
 			this.context = (context == null ? "" : context);
@@ -118,8 +116,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			return keySequence;
 		}
 
-		private String getNonModifierKeySequence() {
-			return nonModifierKeySequence;
+		private String getNaturalKeySequence() {
+			return naturalKeySequence;
 		}
 
 		private String getContext() {
@@ -204,12 +202,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	
 	private static class CommandKeybindingXREFKeySequenceFilter extends ViewerFilter {
 		private String keySequenceText;
-
+		private boolean naturalKeySequence;
+		
 		CommandKeybindingXREFKeySequenceFilter() {
 		}
 		
-		public void setKeySequenceText(String keySequenceText) {
+		public void setKeySequenceText(String keySequenceText, boolean naturalKeySequence) {
 			this.keySequenceText = keySequenceText;
+			this.naturalKeySequence = naturalKeySequence;
 		}
 
 		@Override
@@ -217,31 +217,17 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				Object element) {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
 			
-			if (keySequenceText.equals("") || commandKeybinding.getKeySequence().startsWith(keySequenceText)) {
+			if (keySequenceText.equals("")) {
 				return true;
 			}
-			return false;
-		}
-	}
-
-	private static class CommandKeybindingXREFNonModifierKeySequenceFilter extends ViewerFilter {
-		private String nonModifierKeySequenceText;
-
-		CommandKeybindingXREFNonModifierKeySequenceFilter() {
-		}
-		
-		public void setNonModifierKeySequenceText(
-				String nonModifierKeySequenceText) {
-			this.nonModifierKeySequenceText = nonModifierKeySequenceText;
-		}
-
-		@Override
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
-			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
-			
-			if (nonModifierKeySequenceText.equals("") || commandKeybinding.getNonModifierKeySequence().startsWith(nonModifierKeySequenceText)) {
-				return true;
+			if (naturalKeySequence) {
+				if (commandKeybinding.getNaturalKeySequence().startsWith(keySequenceText)) {
+					return true;
+				}
+			} else {
+				if (commandKeybinding.getKeySequence().startsWith(keySequenceText)) {
+					return true;
+				}
 			}
 			return false;
 		}
@@ -357,8 +343,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			case 1:
 				return commandKeybinding.getKeySequence();
 			case 2:
-				return commandKeybinding.getNonModifierKeySequence();
-			case 3:
 				return commandKeybinding.getContext();
 			}
 			return null;
@@ -388,10 +372,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private Text keySequenceSearchText;
 	private KeySequenceText keySequenceSearchKeySequenceText;
 	private CommandKeybindingXREFKeySequenceFilter commandKeybindingXREFKeySequenceFilter;
-
-	private Text nonModifierKeySequenceText;
-	private KeySequenceText nonModifierKeySequenceKeySequenceText;
-	private CommandKeybindingXREFNonModifierKeySequenceFilter commandKeybindingXREFNonModifierKeySequenceFilter;
 	
 	public CommandKeybindingXREFDialog() {
 		this(MODE.COMMAND);
@@ -405,23 +385,119 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		commandKeybindingXREFSchemeIdFilter = new CommandKeybindingXREFSchemeIdFilter();
-		
 		commandKeybindingXREFCommandFilter = new CommandKeybindingXREFCommandFilter();
 		commandKeybindingXREFKeySequenceFilter = new CommandKeybindingXREFKeySequenceFilter();
-		commandKeybindingXREFNonModifierKeySequenceFilter = new CommandKeybindingXREFNonModifierKeySequenceFilter();
 
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		GridLayout layout = (GridLayout) dialogArea.getLayout();
-		layout.numColumns = 3;
+		layout.numColumns = 2;
 		layout.makeColumnsEqualWidth = false;
 		layout.marginWidth = 2;
 		
-		Label keySequenceSearchLabel = new Label(dialogArea, SWT.RIGHT);
-		keySequenceSearchLabel.setText("Keysequence Search :");
+		table = new Table(dialogArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
+		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
+		tableLayoutData.horizontalSpan = 2;
+		table.setLayoutData(tableLayoutData);
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		
+		tableViewer = new TableViewer(table);
+		tableViewer.setContentProvider(new CommandKeybindingXREFContentProvider());
+		tableViewer.setLabelProvider(new CommandKeybindingXREFLabelProvider());
+		
+		TableColumn tc;
+		
+		tc = new TableColumn(table, SWT.LEFT, 0);
+		tc.setText("Command");
+		tc.setWidth(300);
+		
+		tc = new TableColumn(table, SWT.LEFT, 1);
+		tc.setText("Keysequence");
+		tc.setWidth(200);
+		
+		tc = new TableColumn(table, SWT.LEFT, 2);
+		tc.setText("Context");
+		tc.setWidth(250);
+	    
+		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
+		schemeFilterLabel.setText("Scheme:");
+		GridData schemeFilterLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		schemeFilterLabel.setLayoutData(schemeFilterLabelGridData);
+		
+		schemeFilterCombo = new Combo(dialogArea, SWT.DROP_DOWN|SWT.READ_ONLY);
+		GridData schemeFilterComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
+		schemeFilterCombo.addSelectionListener(new SelectionListener() {
+
+			public void widgetSelected(SelectionEvent e) {
+				commandKeybindingXREFSchemeIdFilter.setActiveScheme(schemeFilterCombo.getText());
+				tableViewer.refresh();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		tableViewer.setInput(workbench);
+		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
+		
+		Scheme[] definedSchemes = bindingService.getDefinedSchemes();
+		for (Scheme scheme : definedSchemes) {
+			try {
+				schemeFilterCombo.add(scheme.getName());
+			} catch (NotDefinedException e1) {
+			}
+		}
+		try {
+			schemeFilterCombo.setText(bindingService.getActiveScheme().getName());
+		} catch (NotDefinedException e1) {
+		}
+		
+		setInfoText("Search using Command Name (^, *, ? allowed) or Key Sequence");
+		return dialogArea;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Control createTitleControl(Composite parent) {
+		Composite titleArea = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(5, false);
+		titleArea.setLayout(layout);
+
+		titleArea.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
+		Label commandSearchLabel = new Label(titleArea, SWT.RIGHT);
+		commandSearchLabel.setText("Command:");
+		GridData commandSearchLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		commandSearchLabel.setLayoutData(commandSearchLabelGridData);
+		
+		commandSearchText = new Text(titleArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
+		GridData commandSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		commandSearchText.setLayoutData(commandSearchTextGridData);
+		commandSearchText.addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent e) {
+				commandSearchText.setText("");
+			}
+			
+			public void focusGained(FocusEvent e) {
+				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
+				setFilters(commandKeybindingXREFCommandFilter);
+				tableViewer.refresh();
+			}
+		});
+		commandSearchText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
+				tableViewer.refresh();
+			}
+		});
+		
+		Label keySequenceSearchLabel = new Label(titleArea, SWT.RIGHT);
+		keySequenceSearchLabel.setText("Keysequence:");
 		GridData keySequenceSearchLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		keySequenceSearchLabel.setLayoutData(keySequenceSearchLabelGridData);
 		
-		keySequenceSearchText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
+		keySequenceSearchText = new Text(titleArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
 		GridData keySequenceSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		keySequenceSearchText.setLayoutData(keySequenceSearchTextGridData);
 		keySequenceSearchKeySequenceText = new KeySequenceText(keySequenceSearchText);
@@ -434,7 +510,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			
 			public void focusGained(FocusEvent e) {
 				keySequenceSearchText.setForeground(null);
-				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequenceSearchText.getText());
+				KeySequence keySequence = keySequenceSearchKeySequenceText.getKeySequence();
+				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequenceSearchText.getText(), isNaturalKeySequence(keySequence));
 				setFilters(commandKeybindingXREFKeySequenceFilter);
 				tableViewer.refresh();
 			}
@@ -443,15 +520,15 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			public void modifyText(ModifyEvent e) {
 				KeySequence keySequence = keySequenceSearchKeySequenceText.getKeySequence();
 				if (keySequence.isComplete()) {
-					commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format());
+					commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence));
 					tableViewer.refresh();
 				}
 			}
 		});
 		
 		// Button for adding trapped key strokes
-		final Button keySequenceSearchAddTrappedKeysButton = new Button(dialogArea, SWT.LEFT | SWT.ARROW);
-		GridData buttonAddKeyGridData = new GridData();
+		final Button keySequenceSearchAddTrappedKeysButton = new Button(titleArea, SWT.LEFT | SWT.ARROW);
+		GridData buttonAddKeyGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		keySequenceSearchAddTrappedKeysButton.setLayoutData(buttonAddKeyGridData);
 
 		// Construct the menu to attach to the above button.
@@ -481,184 +558,17 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				menuButtonAddKey.setVisible(true);
 			}
 		});
-		
-		Label nonModifierKeySequenceLabel = new Label(dialogArea, SWT.RIGHT);
-		nonModifierKeySequenceLabel.setText("Natural Keysequence Search :");
-		GridData nonModifierKeySequenceLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		nonModifierKeySequenceLabel.setLayoutData(nonModifierKeySequenceLabelGridData);
-		
-		nonModifierKeySequenceText = new Text(dialogArea, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
-		GridData nonModifierKeySequenceGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		nonModifierKeySequenceGridData.horizontalSpan = 1;
-		nonModifierKeySequenceText.setLayoutData(nonModifierKeySequenceGridData);
-		nonModifierKeySequenceKeySequenceText = new KeySequenceText(nonModifierKeySequenceText);
-		nonModifierKeySequenceKeySequenceText.setKeyStrokeLimit(4);
-		
-		nonModifierKeySequenceText.addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent e) {
-				nonModifierKeySequenceText.setForeground(nonModifierKeySequenceText.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
-
-			}
-			
-			public void focusGained(FocusEvent e) {
-				nonModifierKeySequenceText.setForeground(null);
-				commandKeybindingXREFNonModifierKeySequenceFilter.setNonModifierKeySequenceText(nonModifierKeySequenceText.getText());
-				setFilters(commandKeybindingXREFNonModifierKeySequenceFilter);
-				tableViewer.refresh();
-			}
-		});
-		
-		final ModifyListener modifyListener = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				KeySequence keySequence = nonModifierKeySequenceKeySequenceText.getKeySequence();
-				if (keySequence.isComplete()) {
-					try {
-						nonModifierKeySequenceText.removeModifyListener(this);
-						KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
-						for (int i = 0; i < keyStrokes.length; i++) {
-							keyStrokes[i] = KeyStroke.getInstance(keyStrokes[i].getNaturalKey());
-						}
-						keySequence = KeySequence.getInstance(keyStrokes);
-						nonModifierKeySequenceKeySequenceText.setKeySequence(keySequence);
-						
-						if (keySequence.isComplete()) {
-							commandKeybindingXREFNonModifierKeySequenceFilter.setNonModifierKeySequenceText(keySequence.format());
-							tableViewer.refresh();
-						}
-					} finally {
-						nonModifierKeySequenceText.addModifyListener(this);
-					}
-				}
-			}
-		};
-		nonModifierKeySequenceText.addModifyListener(modifyListener);
-		
-		// Button for adding trapped key strokes
-		final Button nonModifierKeySequenceSearchAddTrappedKeysButton = new Button(dialogArea, SWT.LEFT | SWT.ARROW);
-		GridData nonModifierKeySequenceSearchAddTrappedKeysButtonGridData = new GridData();
-		nonModifierKeySequenceSearchAddTrappedKeysButton.setLayoutData(nonModifierKeySequenceSearchAddTrappedKeysButtonGridData);
-
-		// Construct the menu to attach to the above button.
-		final Menu nonModifierKeySequenceSearchAddTrappedKeysButtonMenu = new Menu(nonModifierKeySequenceSearchAddTrappedKeysButton);
-		final Iterator trappedKeyItr1 = KeySequenceText.TRAPPED_KEYS.iterator();
-		while (trappedKeyItr1.hasNext()) {
-			final KeyStroke trappedKey = (KeyStroke) trappedKeyItr1.next();
-			if (trappedKey.getModifierKeys() == KeyStroke.NO_KEY) {
-				final MenuItem menuItem = new MenuItem(nonModifierKeySequenceSearchAddTrappedKeysButtonMenu, SWT.PUSH);
-				menuItem.setText(trappedKey.format());
-				menuItem.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						nonModifierKeySequenceKeySequenceText.insert(trappedKey);
-						nonModifierKeySequenceText.setFocus();
-						nonModifierKeySequenceText.setSelection(nonModifierKeySequenceText.getTextLimit());
-					}
-				});
-			}
-		}
-		
-		nonModifierKeySequenceSearchAddTrappedKeysButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent selectionEvent) {
-				Point buttonLocation = nonModifierKeySequenceSearchAddTrappedKeysButton.getLocation();
-				buttonLocation = nonModifierKeySequenceSearchAddTrappedKeysButton.getParent().toDisplay(buttonLocation.x, buttonLocation.y);
-				Point buttonSize = nonModifierKeySequenceSearchAddTrappedKeysButton.getSize();
-				nonModifierKeySequenceSearchAddTrappedKeysButtonMenu.setLocation(buttonLocation.x, buttonLocation.y
-						+ buttonSize.y);
-				nonModifierKeySequenceSearchAddTrappedKeysButtonMenu.setVisible(true);
-			}
-		});
-		
-		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
-		schemeFilterLabel.setText("Scheme Filter: ");
-		GridData schemeFilterLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		schemeFilterLabel.setLayoutData(schemeFilterLabelGridData);
-		
-		schemeFilterCombo = new Combo(dialogArea, SWT.DROP_DOWN|SWT.READ_ONLY);
-		GridData schemeFilterComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		schemeFilterComboGridData.horizontalSpan = 2;
-		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
-		schemeFilterCombo.addSelectionListener(new SelectionListener() {
-
-			public void widgetSelected(SelectionEvent e) {
-				commandKeybindingXREFSchemeIdFilter.setActiveScheme(schemeFilterCombo.getText());
-				tableViewer.refresh();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-		
-		table = new Table(dialogArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
-		GridData tableLayoutData = new GridData(GridData.FILL_BOTH);
-		tableLayoutData.horizontalSpan = 3;
-		table.setLayoutData(tableLayoutData);
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-		
-		tableViewer = new TableViewer(table);
-		tableViewer.setContentProvider(new CommandKeybindingXREFContentProvider());
-		tableViewer.setLabelProvider(new CommandKeybindingXREFLabelProvider());
-		
-		TableColumn tc;
-		
-		tc = new TableColumn(table, SWT.LEFT, 0);
-		tc.setText("Command");
-		tc.setWidth(275);
-		
-		tc = new TableColumn(table, SWT.LEFT, 1);
-		tc.setText("Keysequence");
-		tc.setWidth(200);
-		
-		tc = new TableColumn(table, SWT.LEFT, 2);
-		tc.setText("Natural Keys");
-		tc.setWidth(100);
-		
-		tc = new TableColumn(table, SWT.LEFT, 3);
-		tc.setText("Context");
-		tc.setWidth(125);
-	    
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		tableViewer.setInput(workbench);
-		
-		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
-		
-		Scheme[] definedSchemes = bindingService.getDefinedSchemes();
-		for (Scheme scheme : definedSchemes) {
-			try {
-				schemeFilterCombo.add(scheme.getName());
-			} catch (NotDefinedException e1) {
-			}
-		}
-		try {
-			schemeFilterCombo.setText(bindingService.getActiveScheme().getName());
-		} catch (NotDefinedException e1) {
-		}
-		
-		setInfoText("Search using Command Name (^, *, ? allowed), Key Sequence or Natural Keys");
-		return dialogArea;
+		return titleArea;
 	}
 	
-	@Override
-	protected Control createTitleControl(Composite parent) {
-		commandSearchText = new Text(parent, SWT.SINGLE|SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL);
-		GridData commandSearchTextGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		commandSearchText.setLayoutData(commandSearchTextGridData);
-		commandSearchText.addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent e) {
-				commandSearchText.setText("");
+	private static boolean isNaturalKeySequence(KeySequence keySequence) {
+		KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
+		for (KeyStroke keyStroke : keyStrokes) {
+			if (keyStroke.getModifierKeys() != KeyStroke.NO_KEY) {
+				return false;
 			}
-			
-			public void focusGained(FocusEvent e) {
-				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
-				setFilters(commandKeybindingXREFCommandFilter);
-				tableViewer.refresh();
-			}
-		});
-		commandSearchText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
-				tableViewer.refresh();
-			}
-		});
-		return commandSearchText;
+		}
+		return true;
 	}
 	
 	@Override
