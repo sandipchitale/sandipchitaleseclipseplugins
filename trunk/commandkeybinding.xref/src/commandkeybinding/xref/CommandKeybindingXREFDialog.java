@@ -85,12 +85,13 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private String context;
 		private String schemeId;
 		private String platform;
+		private final String type;
 
 		private CommandKeybinding(String commandName) {
-			this(commandName, null, null, null, "");			
+			this(commandName, null, null, null, "", "");			
 		}
 		
-		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform) {
+		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type) {
 			this.commandName = commandName;
 			this.keySequence = "";
 			this.naturalKeySequence = "";
@@ -108,6 +109,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			this.context = (context == null ? "" : context);
 			this.schemeId = (schemeId == null ? "" : schemeId);
 			this.platform = (platform == null ? "all" : platform);
+			this.type = type;
 		}
 
 		private String getCommandName() {
@@ -132,6 +134,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		public String getPlatform() {
 			return platform;
+		}
+		
+		public String getType() {
+			return type;
 		}
 	}
 	
@@ -311,27 +317,31 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 						if (schemeName == null) {
 							schemeName = schemeId;
 						}
+						String type = (binding.getType() == Binding.USER ? "U" : "");
 						if (platform == null) {
 							commandKeybindingsForAllPlatforms.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
 											contextService.getContext(contextId).getName(),
 											schemeName,
-											platform));
+											platform,
+											type));
 						} else if (SWT.getPlatform().equals(platform)) {
 							commandKeybindingsForPlatform.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
 											contextService.getContext(contextId).getName(),
 											schemeName,
-											platform));
+											platform,
+											type));
 						} else {
 							commandKeybindingsForOtherPlatforms.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
 											contextService.getContext(contextId).getName(),
 											schemeName,
-											platform));
+											platform,
+											type));
 							
 						}
 					} catch (NotDefinedException e) {
@@ -378,6 +388,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				return commandKeybinding.getContext();
 			case 3:
 				return commandKeybinding.getPlatform();
+			case 4:
+				return commandKeybinding.getType();
 			}
 			return null;
 		}
@@ -451,12 +463,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tc = new TableColumn(table, SWT.LEFT, 2);
 		tc.setText("Context");
-		tc.setWidth(225);
+		tc.setWidth(200);
 		
 		tc = new TableColumn(table, SWT.LEFT, 3);
 		tc.setText("Platform");
 		tc.setWidth(50);
-	    
+		
+		tc = new TableColumn(table, SWT.LEFT, 4);
+		tc.setText(" ");
+		tc.setWidth(20);
+		
 		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
 		schemeFilterLabel.setText("Scheme:");
 		GridData schemeFilterLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -493,7 +509,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		} catch (NotDefinedException e1) {
 		}
 		
-		setInfoText("Search using Command Name (^, *, ? allowed) or Key Sequence. | Current platform: " + SWT.getPlatform() + " | Active Scheme: " + activeSchemName);
+		setInfoText("Search using Command Name (^, *, ? allowed) or Key Sequence. | U = User override | Current platform: " + SWT.getPlatform() + " | Active Scheme: " + activeSchemName);
 		return dialogArea;
 	}
 	
