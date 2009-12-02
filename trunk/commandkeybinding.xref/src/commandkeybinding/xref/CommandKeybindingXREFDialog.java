@@ -14,10 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IParameterValues;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.commands.common.NotDefinedException;
@@ -63,7 +60,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
