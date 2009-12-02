@@ -729,7 +729,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	 */
 	private final void executeKeyBinding(final Event trigger) {
 		final IWorkbench workbench = PlatformUI.getWorkbench();
-		final IStatusLineManager statusLineManager = (IStatusLineManager) workbench.getActiveWorkbenchWindow().getService(IStatusLineManager.class);
 		
 		// Try to execute the corresponding command.
 		final int selectionIndex = table.getSelectionIndex();
@@ -740,11 +739,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			if (binding == null) {
 				Command command = commandKeybinding.getCommand();
 				if (command == null) {
-					if (statusLineManager != null) {
-						statusLineManager.setErrorMessage("No command for " + commandKeybinding.getCommandName());
-					} else {
-						workbench.getDisplay().beep();
-					}
+					workbench.getDisplay().beep();
 					return;
 				}
 				if (command.isDefined()) {
@@ -756,20 +751,12 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 					IContextService contextService = (IContextService) workbench.getService(IContextService.class);
 					Context context = contextService.getContext(contextId);
 					if (context == null) {
-						if (statusLineManager != null) {
-							statusLineManager.setErrorMessage("No context for " + contextId);
-						} else {
-							workbench.getDisplay().beep();
-						}
+						workbench.getDisplay().beep();
 						return;
 					} else if (currentContext.contains(context)) {
 						parameterizedCommand = binding.getParameterizedCommand();
 					} else {
-						if (statusLineManager != null) {
-							statusLineManager.setErrorMessage(contextId + " in not a current context.");
-						} else {
-							workbench.getDisplay().beep();
-						}
+						workbench.getDisplay().beep();
 						return;
 					}
 				} else {					
@@ -782,6 +769,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				UIJob job = new UIJob("") {
 					@Override
 					public IStatus runInUIThread(IProgressMonitor monitor) {
+						final IStatusLineManager statusLineManager = (IStatusLineManager) workbench.getActiveWorkbenchWindow().getService(IStatusLineManager.class);
 						IHandlerService handlerService = (IHandlerService) workbench.getService(IHandlerService.class);
 						try {
 							handlerService.executeCommand(finalParameterizedCommand, null);
