@@ -14,10 +14,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IParameterValues;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.commands.contexts.Context;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.bindings.Scheme;
 import org.eclipse.jface.bindings.Trigger;
@@ -48,17 +56,22 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.keys.IBindingService;
+import org.eclipse.ui.progress.UIJob;
 
 public class CommandKeybindingXREFDialog extends PopupDialog {
 	public static enum MODE {COMMAND, KEYSEQUENCE};
@@ -88,13 +101,17 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private String schemeId;
 		private String platform;
 		private final String type;
+		private Command command;
+		private final Binding binding;
 
-		private CommandKeybinding(String commandName) {
-			this(commandName, null, null, null, "", "");			
+		private CommandKeybinding(String commandName, Command command) {
+			this(commandName, null, null, null, "", "", null);
+			this.command = command;			
 		}
 		
-		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type) {
+		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type, Binding binding) {
 			this.commandName = commandName;
+			this.binding = binding;
 			this.keySequence = "";
 			this.naturalKeySequence = "";
 			if (keySequence != null) {
@@ -140,6 +157,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		public String getType() {
 			return type;
+		}
+		
+		public Command getCommand() {
+			return command;
+		}
+		
+		public Binding getBinding() {
+			return binding;
 		}
 	}
 	
@@ -327,7 +352,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 											contextService.getContext(contextId).getName(),
 											schemeName,
 											platform,
-											type));
+											type,
+											binding));
 						} else if (SWT.getPlatform().equals(platform)) {
 							commandKeybindingsForPlatform.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
@@ -335,7 +361,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 											contextService.getContext(contextId).getName(),
 											schemeName,
 											platform,
-											type));
+											type,
+											binding));
 						} else {
 							commandKeybindingsForOtherPlatforms.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
@@ -343,7 +370,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 											contextService.getContext(contextId).getName(),
 											schemeName,
 											platform,
-											type));
+											type,
+											binding));
 							
 						}
 					} catch (NotDefinedException e) {
@@ -356,7 +384,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			for (Entry<String, Command> entry : entrySet) {
 				Command command = entry.getValue();
 				try {
-					unboundCommands.add(new CommandKeybinding(command.getName()));
+					unboundCommands.add(new CommandKeybinding(command.getName(), command));
 				} catch (NotDefinedException e) {
 				}
 			}
@@ -430,6 +458,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		this.mode = mode;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		commandKeybindingXREFSchemeIdFilter = new CommandKeybindingXREFSchemeIdFilter();
@@ -491,6 +520,12 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		table.addListener(SWT.DefaultSelection, new Listener() {
+			public final void handleEvent(final Event event) {
+				executeKeyBinding(event);
+			}
 		});
 		
 		IWorkbench workbench = PlatformUI.getWorkbench();
@@ -576,7 +611,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 			sb.append("\n");
 		}
-		System.out.println(currentContext);
 		
 		setInfoText(
 				sb +
@@ -689,6 +723,55 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		return titleArea;
+	}
+	
+	/**
+	 * Handles the default selection event on the table of possible completions.
+	 * This attempts to execute the given command.
+	 */
+	private final void executeKeyBinding(final Event trigger) {
+		// Try to execute the corresponding command.
+		final int selectionIndex = table.getSelectionIndex();
+		if (selectionIndex >= 0) {
+			CommandKeybinding commandKeybinding = (CommandKeybinding) tableViewer.getElementAt(selectionIndex);
+			ParameterizedCommand parameterizedCommand = null;
+			Binding binding = commandKeybinding.getBinding();
+			if (binding == null) {
+				Command command = commandKeybinding.getCommand();
+				if (command == null) {
+					return;
+				}
+				if (command.isDefined()) {
+					parameterizedCommand = new ParameterizedCommand(command, null);
+				}
+			} else {
+				parameterizedCommand = binding.getParameterizedCommand();
+			}
+			if (parameterizedCommand != null) {
+				close();
+				final ParameterizedCommand finalParameterizedCommand = parameterizedCommand;
+				UIJob job = new UIJob("") {
+					@Override
+					public IStatus runInUIThread(IProgressMonitor monitor) {
+						final IWorkbench workbench = PlatformUI.getWorkbench();
+						IHandlerService handlerService = (IHandlerService) workbench.getService(IHandlerService.class);
+						IStatusLineManager statusLineManager = (IStatusLineManager) workbench.getActiveWorkbenchWindow().getService(IStatusLineManager.class);
+						try {
+							handlerService.executeCommand(finalParameterizedCommand, null);
+						} catch (CommandException e) {
+							if (statusLineManager != null) {
+								statusLineManager.setErrorMessage(e.getMessage());
+							} else {
+								workbench.getDisplay().beep();
+							}
+						} 
+						return Status.OK_STATUS;
+					}
+				};
+				job.setSystem(true);
+				job.schedule();
+			}
+		}
 	}
 	
 	private static boolean isNaturalKeySequence(KeySequence keySequence) {
