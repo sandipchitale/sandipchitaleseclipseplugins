@@ -444,6 +444,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private Text keySequenceSearchText;
 	private KeySequenceText keySequenceSearchKeySequenceText;
 	private CommandKeybindingXREFKeySequenceFilter commandKeybindingXREFKeySequenceFilter;
+
+	private List<Context> currentContext;
 	
 	public CommandKeybindingXREFDialog() {
 		this(MODE.COMMAND);
@@ -579,7 +581,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		}
 		int lastSize = -1;
 		Set<Context> keySet = contextToContextParents.keySet();
-		List<Context> currentContext = null;
+		currentContext = null;
 		for (Context context : keySet) {
 			List<Context> contexts = contextToContextParents.get(context);
 			if (lastSize < contexts.size()) {
@@ -726,6 +728,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	 * This attempts to execute the given command.
 	 */
 	private final void executeKeyBinding(final Event trigger) {
+		final IWorkbench workbench = PlatformUI.getWorkbench();
+		final IStatusLineManager statusLineManager = (IStatusLineManager) workbench.getActiveWorkbenchWindow().getService(IStatusLineManager.class);
+		
 		// Try to execute the corresponding command.
 		final int selectionIndex = table.getSelectionIndex();
 		if (selectionIndex >= 0) {
@@ -735,13 +740,41 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			if (binding == null) {
 				Command command = commandKeybinding.getCommand();
 				if (command == null) {
+					if (statusLineManager != null) {
+						statusLineManager.setErrorMessage("No command for " + commandKeybinding.getCommandName());
+					} else {
+						workbench.getDisplay().beep();
+					}
 					return;
 				}
 				if (command.isDefined()) {
 					parameterizedCommand = new ParameterizedCommand(command, null);
 				}
 			} else {
-				parameterizedCommand = binding.getParameterizedCommand();
+				String contextId = binding.getContextId();
+				if (contextId != null) {
+					IContextService contextService = (IContextService) workbench.getService(IContextService.class);
+					Context context = contextService.getContext(contextId);
+					if (context == null) {
+						if (statusLineManager != null) {
+							statusLineManager.setErrorMessage("No context for " + contextId);
+						} else {
+							workbench.getDisplay().beep();
+						}
+						return;
+					} else if (currentContext.contains(context)) {
+						parameterizedCommand = binding.getParameterizedCommand();
+					} else {
+						if (statusLineManager != null) {
+							statusLineManager.setErrorMessage(contextId + " in not a current context.");
+						} else {
+							workbench.getDisplay().beep();
+						}
+						return;
+					}
+				} else {					
+					parameterizedCommand = binding.getParameterizedCommand();
+				}
 			}
 			if (parameterizedCommand != null) {
 				close();
@@ -749,9 +782,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				UIJob job = new UIJob("") {
 					@Override
 					public IStatus runInUIThread(IProgressMonitor monitor) {
-						final IWorkbench workbench = PlatformUI.getWorkbench();
 						IHandlerService handlerService = (IHandlerService) workbench.getService(IHandlerService.class);
-						IStatusLineManager statusLineManager = (IStatusLineManager) workbench.getActiveWorkbenchWindow().getService(IStatusLineManager.class);
 						try {
 							handlerService.executeCommand(finalParameterizedCommand, null);
 						} catch (CommandException e) {
