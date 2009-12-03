@@ -88,7 +88,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 	private MODE mode = MODE.COMMAND;
 	
-	private static final Point INITIAL_SIZE = new Point(750, 400);
+	private static final Point INITIAL_SIZE = new Point(760, 400);
 	
 
 	private static class CommandKeybinding {
@@ -614,10 +614,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		setInfoText(
 				sb +
-				"Current platform: " + SWT.getPlatform() + " " +
-				"| Active Scheme: " + activeSchemName +
-				"Search using Command Name (^, *, ? allowed) or Key Sequence. " +
-				"| U = User override "
+				"Current platform: " + SWT.getPlatform() +
+				" | Active Scheme: " + activeSchemName + " " +
+				"\n" +
+				"Search using Command Name (^, *, ? allowed) or Key Sequence. U: User override "
 			    );
 		
 		selectNext();
