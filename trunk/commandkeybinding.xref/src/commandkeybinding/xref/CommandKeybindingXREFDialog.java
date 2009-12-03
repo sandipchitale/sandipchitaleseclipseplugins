@@ -30,6 +30,7 @@ import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.bindings.keys.KeySequence;
 import org.eclipse.jface.bindings.keys.KeySequenceText;
 import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -68,6 +69,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.progress.UIJob;
 
@@ -748,6 +750,20 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		return titleArea;
+	}
+	
+	protected IDialogSettings getDialogSettings() {
+		final IDialogSettings workbenchDialogSettings = WorkbenchPlugin
+				.getDefault().getDialogSettings();
+		IDialogSettings result = workbenchDialogSettings.getSection(getId());
+		if (result == null) {
+			result = workbenchDialogSettings.addNewSection(getId());
+		}
+		return result;
+	}
+
+	protected String getId() {
+		return getClass().getName(); //$NON-NLS-1$
 	}
 	
 	private void selectPrevious() {
