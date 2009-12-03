@@ -40,6 +40,8 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -522,7 +524,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		table.addListener(SWT.DefaultSelection, new Listener() {
 			public final void handleEvent(final Event event) {
-				executeKeyBinding(event);
+				executeKeyBinding();
 			}
 		});
 		
@@ -607,15 +609,18 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				}
 				i++;
 			}
-			sb.append("\n");
+			sb.append(" | ");
 		}
 		
 		setInfoText(
 				sb +
+				"Current platform: " + SWT.getPlatform() + " " +
+				"| Active Scheme: " + activeSchemName +
 				"Search using Command Name (^, *, ? allowed) or Key Sequence. " +
-				"| U = User override " +
-				"| Current platform: " + SWT.getPlatform() + " " +
-			    "| Active Scheme: " + activeSchemName);
+				"| U = User override "
+			    );
+		
+		selectNext();
 		return dialogArea;
 	}
 	
@@ -638,7 +643,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		commandSearchText.setLayoutData(commandSearchTextGridData);
 		commandSearchText.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
-				commandSearchText.setText("");
+				commandSearchText.setForeground(keySequenceSearchText.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 			}
 			
 			public void focusGained(FocusEvent e) {
@@ -651,6 +656,28 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			public void modifyText(ModifyEvent e) {
 				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
 				tableViewer.refresh();
+				if (tableViewer.getTable().getItemCount() > 0) {
+					tableViewer.getTable().select(0);
+				}
+			}
+		});
+		
+		commandSearchText.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == 0x0D) {
+					// Return key was pressed
+					executeKeyBinding();
+				} else if (e.keyCode == SWT.ARROW_DOWN) {
+					// Down key was pressed
+					selectNext();
+				} else if (e.keyCode == SWT.ARROW_UP) {
+					// Up key was pressed
+					selectPrevious();
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+				// NO-OP
 			}
 		});
 		
@@ -723,11 +750,43 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		return titleArea;
 	}
 	
+	private void selectPrevious() {
+		int itemCount = table.getItemCount();
+		if (itemCount > 1) {
+			int selectionIndex = table.getSelectionIndex();
+			if (selectionIndex == -1) {
+				selectionIndex = 0;
+			} else {
+				selectionIndex--;
+				if (selectionIndex < 0) {
+					selectionIndex = itemCount -1;
+				}
+			}
+			table.select(selectionIndex);
+		}
+	}
+
+	private void selectNext() {
+		int itemCount = table.getItemCount();
+		if (itemCount > 1) {
+			int selectionIndex = table.getSelectionIndex();
+			if (selectionIndex == -1) {
+				selectionIndex = 0;
+			} else {
+				selectionIndex++;
+				if (selectionIndex >= itemCount) {
+					selectionIndex = 0;
+				}
+			}
+			table.select(selectionIndex);
+		}
+	}
+	
 	/**
 	 * Handles the default selection event on the table of possible completions.
 	 * This attempts to execute the given command.
 	 */
-	private final void executeKeyBinding(final Event trigger) {
+	private final void executeKeyBinding() {
 		final IWorkbench workbench = PlatformUI.getWorkbench();
 		
 		// Try to execute the corresponding command.
