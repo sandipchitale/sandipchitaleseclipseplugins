@@ -32,8 +32,11 @@ import org.eclipse.jface.bindings.keys.KeySequenceText;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -48,6 +51,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -91,6 +96,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	
 	private static final Point INITIAL_SIZE = new Point(760, 400);
 	
+	private static final String SWT_PLATFORM = SWT.getPlatform();
 
 	private static class CommandKeybinding {
 		private String commandName;
@@ -344,7 +350,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 							schemeName = schemeId;
 						}
 						String type = (binding.getType() == Binding.USER ? "U" : "");
-						if (platform == null || SWT.getPlatform().equals(platform)) {
+						if (platform == null || SWT_PLATFORM.equals(platform)) {
 							commandKeybindingsForPlatform.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
@@ -391,7 +397,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		}
 	}
 	
-	private static class CommandKeybindingXREFLabelProvider implements ITableLabelProvider {
+	private static class CommandKeybindingXREFLabelProvider implements ITableLabelProvider, ITableColorProvider, ITableFontProvider {
+
+		private final Color disabledForeground;
+		private final Font boldFont;
+
+
+		public CommandKeybindingXREFLabelProvider(Color disabledForeground, Font boldFont) {
+			this.disabledForeground = disabledForeground;
+			this.boldFont = boldFont;
+		}
 
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
@@ -423,6 +438,30 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		}
 
 		public void removeListener(ILabelProviderListener listener) {
+		}
+
+		public Color getBackground(Object element, int columnIndex) {
+			return null;
+		}
+
+		public Color getForeground(Object element, int columnIndex) {
+			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
+			String platform = commandKeybinding.getPlatform();
+			if (commandKeybinding.getBinding() == null || (!"all".equals(platform) && !SWT_PLATFORM.equals(platform))) {
+				return disabledForeground;
+			}
+			return null;
+		}
+
+		public Font getFont(Object element, int columnIndex) {
+			if (columnIndex == 0) {
+				CommandKeybinding commandKeybinding = (CommandKeybinding) element;
+				String platform = commandKeybinding.getPlatform();
+				if ("all".equals(platform) || SWT_PLATFORM.equals(platform)) {
+					return boldFont;
+				}
+			}
+			return null;
 		}
 	}
 	
@@ -472,7 +511,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tableViewer = new TableViewer(table);
 		tableViewer.setContentProvider(new CommandKeybindingXREFContentProvider());
-		tableViewer.setLabelProvider(new CommandKeybindingXREFLabelProvider());
+		tableViewer.setLabelProvider(
+				new CommandKeybindingXREFLabelProvider(table.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND),
+						JFaceResources.getFontRegistry().getBold(table.getFont().getFontData()[0].getName())));
 		
 		TableColumn tc;
 		
@@ -606,7 +647,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		setInfoText(
 				sb +
-				"Current platform: " + SWT.getPlatform() +
+				"Current platform: " + SWT_PLATFORM +
 				" | Active Scheme: " + activeSchemName + " " +
 				"\n" +
 				"Search using Command Name (^, *, ? allowed) or Key Sequence. U: User override "
@@ -635,7 +676,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		commandSearchText.setLayoutData(commandSearchTextGridData);
 		commandSearchText.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
-				commandSearchText.setForeground(keySequenceSearchText.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
+				commandSearchText.setForeground(commandSearchText.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 			}
 			
 			public void focusGained(FocusEvent e) {
