@@ -624,13 +624,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				}
 				i++;
 			}
-			sb.append(" | ");
+			sb.append(" \n");
 		}
 		
 		setInfoText(
 				sb +
 				"Current platform: " + SWT_PLATFORM +
-				" | Active Scheme: " + activeSchemName + " " +
+				" | " +
+				"Active Scheme: " + activeSchemName + " " +
 				"\n" +
 				"Search using Command Name (^, *, ? allowed) or Key Sequence. U: User override "
 			    );
