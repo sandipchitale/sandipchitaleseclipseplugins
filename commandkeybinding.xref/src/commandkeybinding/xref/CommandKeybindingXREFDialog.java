@@ -105,13 +105,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private final String type;
 		private Command command;
 		private final Binding binding;
+		private boolean executable;
 
 		private CommandKeybinding(String commandName, Command command) {
-			this(commandName, null, null, null, "", "", null);
+			this(commandName, null, null, null, "", "", null, true);
 			this.command = command;			
 		}
 		
-		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type, Binding binding) {
+		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type, Binding binding, boolean executable) {
 			this.commandName = commandName;
 			this.binding = binding;
 			this.keySequence = "";
@@ -131,8 +132,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			this.schemeId = (schemeId == null ? "" : schemeId);
 			this.platform = (platform == null ? "all" : platform);
 			this.type = type;
+			this.executable = executable;
 		}
-
+		
 		private String getCommandName() {
 			return commandName;
 		}
@@ -167,6 +169,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		public Binding getBinding() {
 			return binding;
+		}
+		
+		public boolean isExecutable() {
+			return executable;
 		}
 	}
 	
@@ -276,6 +282,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 	private class CommandKeybindingXREFContentProvider implements IStructuredContentProvider {
 		private CommandKeybinding[] commandKeybindings;
+		private List<String> currentContextStrings;
 		
 		public CommandKeybindingXREFContentProvider() {
 		}
@@ -350,25 +357,27 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 							schemeName = schemeId;
 						}
 						String type = (binding.getType() == Binding.USER ? "U" : "");
+						String contextString = contextService.getContext(contextId).getName();
 						if (platform == null || SWT_PLATFORM.equals(platform)) {
 							commandKeybindingsForPlatform.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
-											contextService.getContext(contextId).getName(),
+											contextString,
 											schemeName,
 											platform,
 											type,
-											binding));
+											binding,
+											(currentContextStrings == null || currentContextStrings.contains(contextString))));
 						} else {
 							commandKeybindingsForOtherPlatforms.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
-											contextService.getContext(contextId).getName(),
+											contextString,
 											schemeName,
 											platform,
 											type,
-											binding));
-							
+											binding,
+											false));
 						}
 					} catch (NotDefinedException e) {
 					}
@@ -395,12 +404,15 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			this.commandKeybindings = new CommandKeybinding[commandKeybindings.size()];
 			this.commandKeybindings = commandKeybindings.toArray(this.commandKeybindings);
 		}
+		
+		public void setCurrentContextStrings(List<String> currentContextStrings) {
+			this.currentContextStrings = currentContextStrings;
+		}
 	}
 	
 	private static class CommandKeybindingXREFLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 		private final Color disabledForeground;
-		private List<String> currentContextStrings;
 
 		public CommandKeybindingXREFLabelProvider(Color disabledForeground) {
 			this.disabledForeground = disabledForeground;
@@ -444,19 +456,12 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		public Color getForeground(Object element, int columnIndex) {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
-			String platform = commandKeybinding.getPlatform();
-			if ("".equals(platform) ||  "all".equals(platform) || SWT_PLATFORM.equals(platform)) {
-				if (currentContextStrings != null && (!currentContextStrings.contains(commandKeybinding.getContext()))) {
-					return disabledForeground;
-				}
+			if (commandKeybinding.isExecutable()) {
 				return null;
 			}
 			return disabledForeground;
 		}
 
-		public void setCurrentContextStrings(List<String> currentContextStrings) {
-			this.currentContextStrings = currentContextStrings;
-		}
 	}
 	
 	private Table table;
@@ -504,7 +509,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		table.setLinesVisible(true);
 		
 		tableViewer = new TableViewer(table);
-		tableViewer.setContentProvider(new CommandKeybindingXREFContentProvider());
+		CommandKeybindingXREFContentProvider commandKeybindingXREFContentProvider = new CommandKeybindingXREFContentProvider();
+		tableViewer.setContentProvider(commandKeybindingXREFContentProvider);
 		CommandKeybindingXREFLabelProvider commandKeybindingXREFLabelProvider = new CommandKeybindingXREFLabelProvider(table.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 		tableViewer.setLabelProvider(
 				commandKeybindingXREFLabelProvider);
@@ -556,7 +562,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		});
 		
 		IWorkbench workbench = PlatformUI.getWorkbench();
-		tableViewer.setInput(workbench);
 		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
 		
 		Scheme[] definedSchemes = bindingService.getDefinedSchemes();
@@ -629,7 +634,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 					currentContextStrings.add(context.getId());
 				}
 			}
-			commandKeybindingXREFLabelProvider.setCurrentContextStrings(currentContextStrings);
+			commandKeybindingXREFContentProvider.setCurrentContextStrings(currentContextStrings);
 			sb.append("Current context: ");
 			int i = 0;
 			for (Iterator iterator = currentContext.iterator(); iterator
@@ -656,7 +661,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				"\n" +
 				"Search using Command Name (^, *, ? allowed) or Key Sequence. U: User override "
 			    );
-		
+
+		tableViewer.setInput(workbench);
+
 		selectNext();
 		return dialogArea;
 	}
