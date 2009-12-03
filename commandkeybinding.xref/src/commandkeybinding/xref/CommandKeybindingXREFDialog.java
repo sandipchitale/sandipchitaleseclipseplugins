@@ -344,16 +344,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 							schemeName = schemeId;
 						}
 						String type = (binding.getType() == Binding.USER ? "U" : "");
-						if (platform == null) {
-							commandKeybindingsForAllPlatforms.add(
-									new CommandKeybinding(parameterizedCommand.getName(),
-											binding.getTriggerSequence(),
-											contextService.getContext(contextId).getName(),
-											schemeName,
-											platform,
-											type,
-											binding));
-						} else if (SWT.getPlatform().equals(platform)) {
+						if (platform == null || SWT.getPlatform().equals(platform)) {
 							commandKeybindingsForPlatform.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
