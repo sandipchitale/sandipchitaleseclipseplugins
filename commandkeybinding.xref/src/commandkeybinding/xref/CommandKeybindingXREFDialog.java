@@ -277,6 +277,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private class CommandKeybindingXREFContentProvider implements IStructuredContentProvider {
 		private CommandKeybinding[] commandKeybindings;
 		
+		public CommandKeybindingXREFContentProvider() {
+		}
+
 		public Object[] getElements(Object inputElement) {
 			return commandKeybindings;
 		}
@@ -397,6 +400,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private static class CommandKeybindingXREFLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 		private final Color disabledForeground;
+		private List<String> currentContextStrings;
 
 		public CommandKeybindingXREFLabelProvider(Color disabledForeground) {
 			this.disabledForeground = disabledForeground;
@@ -442,9 +446,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
 			String platform = commandKeybinding.getPlatform();
 			if ("".equals(platform) ||  "all".equals(platform) || SWT_PLATFORM.equals(platform)) {
+				if (currentContextStrings != null && (!currentContextStrings.contains(commandKeybinding.getContext()))) {
+					return disabledForeground;
+				}
 				return null;
 			}
 			return disabledForeground;
+		}
+
+		public void setCurrentContextStrings(List<String> currentContextStrings) {
+			this.currentContextStrings = currentContextStrings;
 		}
 	}
 	
@@ -494,8 +505,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tableViewer = new TableViewer(table);
 		tableViewer.setContentProvider(new CommandKeybindingXREFContentProvider());
+		CommandKeybindingXREFLabelProvider commandKeybindingXREFLabelProvider = new CommandKeybindingXREFLabelProvider(table.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 		tableViewer.setLabelProvider(
-				new CommandKeybindingXREFLabelProvider(table.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND)));
+				commandKeybindingXREFLabelProvider);
 		
 		TableColumn tc;
 		
@@ -609,6 +621,15 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		StringBuilder sb = new StringBuilder();
 		if (currentContext != null) {
+			List<String> currentContextStrings = new LinkedList<String>();
+			for (Context context : currentContext) {
+				try {
+					currentContextStrings.add(context.getName());
+				} catch (NotDefinedException e1) {
+					currentContextStrings.add(context.getId());
+				}
+			}
+			commandKeybindingXREFLabelProvider.setCurrentContextStrings(currentContextStrings);
 			sb.append("Current context: ");
 			int i = 0;
 			for (Iterator iterator = currentContext.iterator(); iterator
