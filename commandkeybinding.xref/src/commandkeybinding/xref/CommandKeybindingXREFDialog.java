@@ -649,6 +649,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 			
 			public void focusGained(FocusEvent e) {
+				commandSearchText.setForeground(null);
 				commandKeybindingXREFCommandFilter.setCommandFilterText(commandSearchText.getText());
 				setFilters(commandKeybindingXREFCommandFilter);
 				tableViewer.refresh();
