@@ -32,9 +32,12 @@ import org.eclipse.jface.bindings.keys.KeySequenceText;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -50,6 +53,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -96,6 +100,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private static final String SWT_PLATFORM = SWT.getPlatform();
 
 	private static class CommandKeybinding {
+
 		private String commandName;
 		private String keySequence;
 		private String naturalKeySequence;
@@ -106,13 +111,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private Command command;
 		private final Binding binding;
 		private boolean executable;
-
+		
+		private enum REASON {PLATFORM, CONTEXT};
+		private REASON reason;
+		
 		private CommandKeybinding(String commandName, Command command) {
-			this(commandName, null, null, null, "", "", null, true);
+			this(commandName, null, null, null, "", "", null, true, null);
 			this.command = command;			
 		}
 		
-		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type, Binding binding, boolean executable) {
+		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type, Binding binding, boolean executable, REASON reason) {
 			this.commandName = commandName;
 			this.binding = binding;
 			this.keySequence = "";
@@ -136,6 +144,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			this.platform = (platform == null ? "all" : platform);
 			this.type = type;
 			this.executable = executable;
+			if (!executable) {
+				this.reason = reason;
+			}
 		}
 		
 		private String getCommandName() {
@@ -176,6 +187,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		public boolean isExecutable() {
 			return executable;
+		}
+		
+		public REASON getReason() {
+			return reason;
 		}
 	}
 	
@@ -370,7 +385,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 											platform,
 											type,
 											binding,
-											(currentContextStrings == null || currentContextStrings.contains(contextString))));
+											(currentContextStrings == null || currentContextStrings.contains(contextString)),
+											CommandKeybinding.REASON.CONTEXT));
 						} else {
 							commandKeybindingsForOtherPlatforms.add(
 									new CommandKeybinding(parameterizedCommand.getName(),
@@ -380,7 +396,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 											platform,
 											type,
 											binding,
-											false));
+											false,
+											CommandKeybinding.REASON.PLATFORM));
 						}
 					} catch (NotDefinedException e) {
 					}
@@ -413,12 +430,14 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		}
 	}
 	
-	private static class CommandKeybindingXREFLabelProvider implements ITableLabelProvider, ITableColorProvider {
+	private static class CommandKeybindingXREFLabelProvider implements ITableLabelProvider, ITableColorProvider, ITableFontProvider {
 
 		private final Color disabledForeground;
+		private final Font diabledFont;
 
-		public CommandKeybindingXREFLabelProvider(Color disabledForeground) {
+		public CommandKeybindingXREFLabelProvider(Color disabledForeground, Font diabledFont) {
 			this.disabledForeground = disabledForeground;
+			this.diabledFont = diabledFont;
 		}
 
 		public Image getColumnImage(Object element, int columnIndex) {
@@ -463,6 +482,28 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				return null;
 			}
 			return disabledForeground;
+		}
+
+		public Font getFont(Object element, int columnIndex) {
+			if (columnIndex == 2 || columnIndex == 3) {
+				CommandKeybinding commandKeybinding = (CommandKeybinding) element;
+				if (!commandKeybinding.isExecutable()) {
+					CommandKeybinding.REASON reason = commandKeybinding.getReason();
+					switch (reason) {
+					case PLATFORM:
+						if (columnIndex == 3) {
+							return diabledFont;
+						}
+						break;
+					case CONTEXT:
+						if (columnIndex == 2) {
+							return diabledFont;
+						}
+						break;
+					}
+				}
+			}
+			return null;
 		}
 
 	}
@@ -514,7 +555,11 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		tableViewer = new TableViewer(table);
 		CommandKeybindingXREFContentProvider commandKeybindingXREFContentProvider = new CommandKeybindingXREFContentProvider();
 		tableViewer.setContentProvider(commandKeybindingXREFContentProvider);
-		CommandKeybindingXREFLabelProvider commandKeybindingXREFLabelProvider = new CommandKeybindingXREFLabelProvider(table.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
+		
+		FontRegistry fontRegistry = JFaceResources.getFontRegistry();
+		CommandKeybindingXREFLabelProvider commandKeybindingXREFLabelProvider =
+			new CommandKeybindingXREFLabelProvider(table.getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND),
+					fontRegistry.getItalic(table.getFont().getFontData()[0].getName()));
 		tableViewer.setLabelProvider(
 				commandKeybindingXREFLabelProvider);
 		
