@@ -76,7 +76,9 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 							timer = null;
 							display.asyncExec(new Runnable() {
 								public void run() {
-									label.setText("");
+									if (!label.isDisposed()) {
+										label.setText("");
+									}
 								}						
 							});
 						}
