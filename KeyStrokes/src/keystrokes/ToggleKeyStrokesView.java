@@ -67,8 +67,13 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 						timer.cancel();
 						timer = null;
 					}
-					int accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
-					label.setText(SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format());
+					int accelerator;
+					if (event.stateMask == SWT.NONE && Character.isLetter(event.character)) {
+						label.setText(""+event.character);
+					} else {
+						accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
+						label.setText(SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format());
+					}
 					timer = new Timer(true);
 					timer.schedule(new TimerTask() {
 						@Override
