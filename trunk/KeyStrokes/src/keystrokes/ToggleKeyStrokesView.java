@@ -85,7 +85,7 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 										if (!label.isDisposed()) {
 											label.setText("");
 										}
-									}						
+									}			
 								});
 							}
 						}, 1000);
