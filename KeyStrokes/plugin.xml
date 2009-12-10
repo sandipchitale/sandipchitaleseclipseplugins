@@ -2,10 +2,22 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="keystrokes.startup.Startup">
-      </startup>
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="keystrokes.ToggleKeyStrokesView"
+            description="Show or hide KeyStrokes view"
+            id="KeyStrokes.toggle"
+            name="Toggle KeyStrokes View">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="KeyStrokes.toggle"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+M3+.">
+      </key>
    </extension>
 
 </plugin>
