@@ -67,27 +67,29 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 						timer.cancel();
 						timer = null;
 					}
-					int accelerator;
-					if (event.stateMask == SWT.NONE && Character.isLetter(event.character)) {
-						label.setText(""+event.character);
-					} else {
-						accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
-						label.setText(SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format());
-					}
-					timer = new Timer(true);
-					timer.schedule(new TimerTask() {
-						@Override
-						public void run() {
-							timer = null;
-							display.asyncExec(new Runnable() {
-								public void run() {
-									if (!label.isDisposed()) {
-										label.setText("");
-									}
-								}						
-							});
+					if (keyStrokeViewShell.isVisible()) {
+						int accelerator;
+						if (event.stateMask == SWT.NONE && Character.isLetter(event.character)) {
+							label.setText(""+event.character);
+						} else {
+							accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
+							label.setText(SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format());
 						}
-					}, 1000);
+						timer = new Timer(true);
+						timer.schedule(new TimerTask() {
+							@Override
+							public void run() {
+								timer = null;
+								display.asyncExec(new Runnable() {
+									public void run() {
+										if (!label.isDisposed()) {
+											label.setText("");
+										}
+									}						
+								});
+							}
+						}, 1000);
+					}
 				}
 			};
 			IBindingService iBindingService = (IBindingService) workbench.getService(IBindingService.class);
