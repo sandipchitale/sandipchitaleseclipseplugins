@@ -46,7 +46,7 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 					32, SWT.NORMAL);
 			Color BLACK = display.getSystemColor(SWT.COLOR_BLACK);
 			Color WHITE = display.getSystemColor(SWT.COLOR_WHITE);
-			keyStrokeViewShell = new Shell(display, SWT.TITLE | SWT.ON_TOP | SWT.NO_FOCUS);
+			keyStrokeViewShell = new Shell(display, SWT.TITLE | SWT.CLOSE | SWT.ON_TOP | SWT.NO_FOCUS);
 			keyStrokeViewShell.setBackground(BLACK);
 			GridLayout gridLayout = new GridLayout();
 			gridLayout.marginWidth = 10;
@@ -69,7 +69,20 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 					}
 					if (keyStrokeViewShell.isVisible()) {
 						int accelerator;
-						if (event.stateMask == SWT.NONE && Character.isLetter(event.character)) {
+						if ((event.stateMask == SWT.NONE | event.stateMask == SWT.SHIFT) &&
+								( 
+								Character.isLetterOrDigit(event.character) ||
+								event.character == '<' ||
+								event.character == '>' ||
+								event.character == '?' ||
+								event.character == ':' ||
+								event.character == '"' ||
+								event.character == '{' ||
+								event.character == '}' ||
+								event.character == '|' ||
+								event.character == '_' ||
+								event.character == '+'
+								)) {
 							label.setText(""+event.character);
 						} else {
 							accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
@@ -80,13 +93,15 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 							@Override
 							public void run() {
 								timer = null;
-								display.asyncExec(new Runnable() {
-									public void run() {
-										if (!label.isDisposed()) {
-											label.setText("");
-										}
-									}			
-								});
+								if (!display.isDisposed()) {
+									display.asyncExec(new Runnable() {
+										public void run() {
+											if (!label.isDisposed()) {
+												label.setText("");
+											}
+										}			
+									});
+								}
 							}
 						}, 1000);
 					}
