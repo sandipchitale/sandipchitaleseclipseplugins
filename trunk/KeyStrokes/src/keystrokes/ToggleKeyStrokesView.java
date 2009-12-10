@@ -82,8 +82,8 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			Rectangle displayBounds = display.getBounds();
 			
 			keyStrokeViewShell.setBounds(
-					displayBounds.x+displayBounds.width-200,
-					displayBounds.y+displayBounds.height-90,
+					displayBounds.x+displayBounds.width-200-2,
+					displayBounds.y+displayBounds.height-90-2,
 					200,
 					90);
 		}
