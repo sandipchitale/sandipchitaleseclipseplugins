@@ -1,5 +1,8 @@
 package keystrokes;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -33,11 +36,12 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 	}
 	
 	private static Shell keyStrokeViewShell;
+	private static Timer timer;
 
 	public static Shell getKeyStrokeViewShell() {
 		if (keyStrokeViewShell == null) {
 			IWorkbench workbench = PlatformUI.getWorkbench();
-			Display display = workbench.getDisplay();
+			final Display display = workbench.getDisplay();
 			Font LARGE_FONT = new Font(display, JFaceResources.TEXT_FONT,
 					32, SWT.NORMAL);
 			Color BLACK = display.getSystemColor(SWT.COLOR_BLACK);
@@ -59,8 +63,24 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			label.setText("        ");
 			Listener listener = new Listener() {
 				public void handleEvent(Event event) {
+					if (timer != null) {
+						timer.cancel();
+						timer = null;
+					}
 					int accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
 					label.setText(SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format());
+					timer = new Timer(true);
+					timer.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							timer = null;
+							display.asyncExec(new Runnable() {
+								public void run() {
+									label.setText("");
+								}						
+							});
+						}
+					}, 1000);
 				}
 			};
 			IBindingService iBindingService = (IBindingService) workbench.getService(IBindingService.class);
