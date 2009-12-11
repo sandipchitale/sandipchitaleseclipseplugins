@@ -43,6 +43,7 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 	private static int SHELL_STYLE;
 	
 	static {
+		SHELL_STYLE = SWT.TITLE | SWT.CLOSE | SWT.BORDER | SWT.ON_TOP | SWT.NO_FOCUS;
 		if (Platform.OS_MACOSX.equals(Platform.getOS())) {
 			WIDTH = 200;
 			HEIGHT = 90;
@@ -50,13 +51,13 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			WIDTH = 200;
 			HEIGHT = 90;
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
-			WIDTH = 200;
-			HEIGHT = 80;
+			WIDTH = 420;
+			HEIGHT = 75;
+			SHELL_STYLE = SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL;
 		} else if (Platform.OS_MACOSX.equals(Platform.getOS())) {
 			WIDTH = 420;
 			HEIGHT = 100;
 		}
-		SHELL_STYLE = SWT.TITLE | SWT.CLOSE | SWT.BORDER | SWT.ON_TOP;
 	}
 	
 	private static Shell keyStrokeViewShell;
