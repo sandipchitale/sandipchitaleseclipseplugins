@@ -21,7 +21,7 @@
          point="org.eclipse.ui.commandImages">
       <image
             commandId="commandkeybinding.xref.show"
-            icon="icons/keys.png">
+            icon="icons/commands.png">
       </image>
    </extension>
    <extension
@@ -80,6 +80,19 @@
                <parameter
                      name="commandkeybinding.xref.show.mode"
                      value="COMMAND">
+               </parameter>
+               <visibleWhen
+                     checkEnabled="true">
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="commandkeybinding.xref.show"
+                  icon="icons/keys.png"
+                  style="push"
+                  tooltip="Show Command Keybinding XREF">
+               <parameter
+                     name="commandkeybinding.xref.show.mode"
+                     value="KEYSEQUENCE">
                </parameter>
                <visibleWhen
                      checkEnabled="true">
