@@ -18,6 +18,13 @@
       </command>
    </extension>
    <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="commandkeybinding.xref.show"
+            icon="icons/keys.png">
+      </image>
+   </extension>
+   <extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="commandkeybinding.xref.show"
@@ -59,6 +66,27 @@
                value="KEYSEQUENCE">
          </parameter>
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.trim.status?after=additions">
+         <toolbar
+               id="commandkeybinding.xref.toolbar">
+            <command
+                  commandId="commandkeybinding.xref.show"
+                  style="push"
+                  tooltip="Show Command Keybinding XREF">
+               <parameter
+                     name="commandkeybinding.xref.show.mode"
+                     value="COMMAND">
+               </parameter>
+               <visibleWhen
+                     checkEnabled="true">
+               </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
    </extension>
 
 </plugin>
