@@ -67,7 +67,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -812,6 +811,18 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		
+		keySequenceSearchText.addKeyListener(new KeyListener() {
+			public void keyReleased(KeyEvent e) {}
+			
+			public void keyPressed(KeyEvent e) {
+				// Trap escape key and close
+				if (e.keyCode == SWT.ESC) {
+					e.doit = false;
+					close();
+				}
+			}
+		});
+		
 		// Button for adding trapped key strokes
 		final Button keySequenceSearchAddTrappedKeysButton = new Button(titleArea, SWT.LEFT | SWT.ARROW);
 		GridData buttonAddKeyGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -819,7 +830,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		// Construct the menu to attach to the above button.
 		final Menu menuButtonAddKey = new Menu(keySequenceSearchAddTrappedKeysButton);
-		final Iterator trappedKeyItr = KeySequenceText.TRAPPED_KEYS.iterator();
+		List trappedKeys = new LinkedList(KeySequenceText.TRAPPED_KEYS);
+		trappedKeys.add(KeyStroke.getInstance(SWT.ESC));
+		final Iterator trappedKeyItr = trappedKeys.iterator();
 		while (trappedKeyItr.hasNext()) {
 			final KeyStroke trappedKey = (KeyStroke) trappedKeyItr.next();
 			final MenuItem menuItem = new MenuItem(menuButtonAddKey, SWT.PUSH);
