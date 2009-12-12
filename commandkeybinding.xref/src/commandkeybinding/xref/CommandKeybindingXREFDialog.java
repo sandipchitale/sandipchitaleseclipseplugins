@@ -587,26 +587,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		tc.setWidth(50);
 		
 		tc = new TableColumn(table, SWT.LEFT, 4);
-		tc.setText(" ");
+		tc.setText("U");
 		tc.setWidth(20);
-		
-		Label schemeFilterLabel = new Label(dialogArea, SWT.RIGHT);
-		schemeFilterLabel.setText("Scheme:");
-		GridData schemeFilterLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		schemeFilterLabel.setLayoutData(schemeFilterLabelGridData);
-		
-		schemeFilterCombo = new Combo(dialogArea, SWT.DROP_DOWN|SWT.READ_ONLY);
-		GridData schemeFilterComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
-		schemeFilterCombo.addSelectionListener(new SelectionListener() {
-
-			public void widgetSelected(SelectionEvent e) {
-				commandKeybindingXREFSchemeIdFilter.setActiveScheme(schemeFilterCombo.getText());
-				tableViewer.refresh();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
 		
 		table.addListener(SWT.DefaultSelection, new Listener() {
 			public final void handleEvent(final Event event) {
@@ -615,26 +597,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		});
 		
 		IWorkbench workbench = PlatformUI.getWorkbench();
-		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
-		
-		Scheme[] definedSchemes = bindingService.getDefinedSchemes();
-		for (Scheme scheme : definedSchemes) {
-			try {
-				schemeFilterCombo.add(scheme.getName());
-			} catch (NotDefinedException e1) {
-			}
-		}
-		String activeSchemName = bindingService.getActiveScheme().getId();
-		try {
-			activeSchemName = bindingService.getActiveScheme().getName();
-			schemeFilterCombo.setText(activeSchemName);
-		} catch (NotDefinedException e1) {
-		}
-		
+		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);		
 		IContextService contextService = (IContextService) workbench.getService(IContextService.class);
 		
 		Collection activeContextIds = contextService.getActiveContextIds();
-		
 		Map<Context, List<Context>> contextToContextParents = new HashMap<Context, List<Context>>();
 		for (Iterator iterator = activeContextIds.iterator(); iterator
 				.hasNext();) {
@@ -706,6 +672,13 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			sb.append(" \n");
 		}
 		
+		String activeSchemName = bindingService.getActiveScheme().getId();
+		try {
+			activeSchemName = bindingService.getActiveScheme().getName();
+			schemeFilterCombo.setText(activeSchemName);
+		} catch (NotDefinedException e1) {
+		}
+		
 		setInfoText(
 				sb +
 				"Current platform: " + SWT_PLATFORM +
@@ -725,7 +698,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	@Override
 	protected Control createTitleControl(Composite parent) {
 		Composite titleArea = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(5, false);
+		GridLayout layout = new GridLayout(7, false);
 		titleArea.setLayout(layout);
 
 		titleArea.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -857,6 +830,41 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				menuButtonAddKey.setVisible(true);
 			}
 		});
+		
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);		
+
+		Label schemeFilterLabel = new Label(titleArea, SWT.RIGHT);
+		schemeFilterLabel.setText("Scheme:");
+		GridData schemeFilterLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		schemeFilterLabel.setLayoutData(schemeFilterLabelGridData);
+		
+		schemeFilterCombo = new Combo(titleArea, SWT.DROP_DOWN|SWT.READ_ONLY);
+		GridData schemeFilterComboGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		schemeFilterCombo.setLayoutData(schemeFilterComboGridData);
+		schemeFilterCombo.addSelectionListener(new SelectionListener() {
+
+			public void widgetSelected(SelectionEvent e) {
+				commandKeybindingXREFSchemeIdFilter.setActiveScheme(schemeFilterCombo.getText());
+				tableViewer.refresh();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		Scheme[] definedSchemes = bindingService.getDefinedSchemes();
+		for (Scheme scheme : definedSchemes) {
+			try {
+				schemeFilterCombo.add(scheme.getName());
+			} catch (NotDefinedException e1) {
+			}
+		}
+		String activeSchemName = bindingService.getActiveScheme().getId();
+		try {
+			activeSchemName = bindingService.getActiveScheme().getName();
+			schemeFilterCombo.setText(activeSchemName);
+		} catch (NotDefinedException e1) {
+		}
 		return titleArea;
 	}
 	
