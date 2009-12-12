@@ -67,6 +67,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -531,7 +532,12 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PopupDialog.INFOPOPUP_SHELLSTYLE, true, true, true, true, true, "", "");
 		this.mode = mode;
 	}
-	
+
+	protected Color getBackground() {
+		 return getShell().getDisplay()
+			.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Control createDialogArea(Composite parent) {
