@@ -70,6 +70,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -796,13 +798,19 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		
+		final ToolBar toolBar = new ToolBar(titleArea, SWT.RIGHT);
+		GridData tolBarGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		toolBar.setLayoutData(tolBarGridData);
+		
 		// Button for adding trapped key strokes
-		final Button keySequenceSearchAddTrappedKeysButton = new Button(titleArea, SWT.LEFT | SWT.ARROW);
-		GridData buttonAddKeyGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		keySequenceSearchAddTrappedKeysButton.setLayoutData(buttonAddKeyGridData);
+		ToolItem keySequenceSearchAddTrappedKeysButton = new ToolItem(toolBar, SWT.PUSH);
+		keySequenceSearchAddTrappedKeysButton.setText("<");
+		keySequenceSearchAddTrappedKeysButton.setToolTipText("Insert special keystrokes");
+		
+		new ToolItem(toolBar, SWT.SEPARATOR);
 
 		// Construct the menu to attach to the above button.
-		final Menu menuButtonAddKey = new Menu(keySequenceSearchAddTrappedKeysButton);
+		final Menu menuButtonAddKey = new Menu(toolBar);
 		List trappedKeys = new LinkedList(KeySequenceText.TRAPPED_KEYS);
 		trappedKeys.add(KeyStroke.getInstance(SWT.ESC));
 		final Iterator trappedKeyItr = trappedKeys.iterator();
@@ -822,9 +830,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		keySequenceSearchAddTrappedKeysButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent selectionEvent) {
-				Point buttonLocation = keySequenceSearchAddTrappedKeysButton.getLocation();
-				buttonLocation = keySequenceSearchAddTrappedKeysButton.getParent().toDisplay(buttonLocation.x, buttonLocation.y);
-				Point buttonSize = keySequenceSearchAddTrappedKeysButton.getSize();
+				Point buttonLocation = toolBar.getLocation();
+				buttonLocation = toolBar.getParent().toDisplay(buttonLocation.x, buttonLocation.y);
+				Point buttonSize = toolBar.getSize();
 				menuButtonAddKey.setLocation(buttonLocation.x, buttonLocation.y
 						+ buttonSize.y);
 				menuButtonAddKey.setVisible(true);
