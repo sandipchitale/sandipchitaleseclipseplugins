@@ -816,7 +816,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			
 			public void keyPressed(KeyEvent e) {
 				// Trap escape key and close
-				if (e.keyCode == SWT.ESC) {
+				if (e.keyCode == SWT.ESC && e.stateMask == SWT.NONE) {
 					e.doit = false;
 					close();
 				}
