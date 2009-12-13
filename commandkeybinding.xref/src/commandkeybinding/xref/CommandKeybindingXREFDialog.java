@@ -286,7 +286,6 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			} else {
 				this.keySequenceTextParts = keySequenceText.split(" ");
 			}
-
 		}
 
 		@Override
@@ -314,7 +313,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 					}
 					int i = 0;
 					for (; i < keySequenceTextParts.length -1; i++) {
-						if (!keySequenceParts[i].equals(keySequenceTextParts)) {
+						if (!keySequenceParts[i].equals(keySequenceTextParts[i])) {
 							return false;
 						}
 					}
@@ -798,7 +797,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			public void focusGained(FocusEvent e) {
 				keySequenceSearchText.setForeground(null);
 				KeySequence keySequence = keySequenceSearchKeySequenceText.getKeySequence();
-				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence), isComplete(keySequence));
+				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence), isCompleteKeySequence(keySequence));
 				setFilters(commandKeybindingXREFKeySequenceFilter);
 				tableViewer.refresh();
 			}
@@ -806,7 +805,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		keySequenceSearchText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				KeySequence keySequence = keySequenceSearchKeySequenceText.getKeySequence();
-				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence), isComplete(keySequence));
+				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence), isCompleteKeySequence(keySequence));
 				tableViewer.refresh();
 			}
 		});
@@ -1023,7 +1022,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		return true;
 	}
 	
-	private static boolean isComplete(KeySequence keySequence) {
+	private static boolean isCompleteKeySequence(KeySequence keySequence) {
 		KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
 		for (KeyStroke keyStroke : keyStrokes) {
 			if (!keyStroke.isComplete()) {
