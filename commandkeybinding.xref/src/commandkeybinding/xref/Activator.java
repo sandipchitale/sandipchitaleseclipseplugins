@@ -1,5 +1,7 @@
 package commandkeybinding.xref;
 
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -45,6 +47,16 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+	public static final String ADD_KEYSTROKE = "/icons/addkeystroke.png"; //$NON-NLS-1$
+	
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		reg.put(ADD_KEYSTROKE, imageDescriptorFromPlugin(PLUGIN_ID, ADD_KEYSTROKE));
+	}
+	
+	public Image getImage(String imageID) {
+		return getImageRegistry().get(imageID);
 	}
 
 }
