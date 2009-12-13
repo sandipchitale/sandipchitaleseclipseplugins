@@ -73,7 +73,7 @@ public class ShowContextsHandler extends AbstractHandler {
 		}
 		MessageConsole console = findConsole("Contexts");
 		MessageConsoleStream out = console.newMessageStream();
-
+		out.println("--");
 		Set<Context> keySet = contextToContextParents.keySet();
 		for (Context context : keySet) {
 			List<Context> contexts = contextToContextParents.get(context);
@@ -91,6 +91,7 @@ public class ShowContextsHandler extends AbstractHandler {
 			}
 			out.println();
 		}
+		out.println("--");
 		IWorkbenchPage acrtivePage = activeWorkbenchWindow.getActivePage();
 		String id = IConsoleConstants.ID_CONSOLE_VIEW;
 		IConsoleView view;
