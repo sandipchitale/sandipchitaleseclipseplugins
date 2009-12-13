@@ -269,13 +269,24 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private static class CommandKeybindingXREFKeySequenceFilter extends ViewerFilter {
 		private String keySequenceText;
 		private boolean naturalKeySequence;
+		private boolean completeKeySequence;
+		private String[] keySequenceTextParts;
 		
 		CommandKeybindingXREFKeySequenceFilter() {
 		}
+		// 012345
+		// abc de
 		
-		public void setKeySequenceText(String keySequenceText, boolean naturalKeySequence) {
+		public void setKeySequenceText(String keySequenceText, boolean naturalKeySequence, boolean completeKeySequence) {
 			this.keySequenceText = keySequenceText;
 			this.naturalKeySequence = naturalKeySequence;
+			this.completeKeySequence = completeKeySequence;
+			if (completeKeySequence) {
+				this.keySequenceTextParts = null;
+			} else {
+				this.keySequenceTextParts = keySequenceText.split(" ");
+			}
+
 		}
 
 		@Override
@@ -291,8 +302,23 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 					return true;
 				}
 			} else {
-				if (commandKeybinding.getKeySequence().startsWith(keySequenceText)) {
-					return true;
+				String keySequence = commandKeybinding.getKeySequence();
+				if (completeKeySequence) {
+					if (keySequence.startsWith(keySequenceText)) {
+						return true;
+					}
+				} else {
+					String[] keySequenceParts = keySequence.split(" ");
+					if (keySequenceParts.length < keySequenceTextParts.length) {
+						return false;
+					}
+					int i = 0;
+					for (; i < keySequenceTextParts.length -1; i++) {
+						if (!keySequenceParts[i].equals(keySequenceTextParts)) {
+							return false;
+						}
+					}
+					return keySequenceParts[i].indexOf(keySequenceTextParts[i]) != -1;
 				}
 			}
 			return false;
@@ -772,7 +798,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			public void focusGained(FocusEvent e) {
 				keySequenceSearchText.setForeground(null);
 				KeySequence keySequence = keySequenceSearchKeySequenceText.getKeySequence();
-				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence));
+				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence), isComplete(keySequence));
 				setFilters(commandKeybindingXREFKeySequenceFilter);
 				tableViewer.refresh();
 			}
@@ -780,7 +806,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		keySequenceSearchText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				KeySequence keySequence = keySequenceSearchKeySequenceText.getKeySequence();
-				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence));
+				commandKeybindingXREFKeySequenceFilter.setKeySequenceText(keySequence.format(), isNaturalKeySequence(keySequence), isComplete(keySequence));
 				tableViewer.refresh();
 			}
 		});
@@ -991,6 +1017,16 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
 		for (KeyStroke keyStroke : keyStrokes) {
 			if (keyStroke.getModifierKeys() != KeyStroke.NO_KEY) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static boolean isComplete(KeySequence keySequence) {
+		KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
+		for (KeyStroke keyStroke : keyStrokes) {
+			if (!keyStroke.isComplete()) {
 				return false;
 			}
 		}
