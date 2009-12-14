@@ -21,6 +21,7 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.commands.contexts.Context;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.bindings.Binding;
@@ -272,11 +273,20 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private boolean completeKeySequence;
 		private String[] keySequenceTextParts;
 		
+		private static String splitRegexp;
+		
+		static {
+			if (Platform.OS_WIN32.equals(Platform.getOS())) {
+				splitRegexp = ", ";
+			} else {
+				splitRegexp = " ";
+			}
+			splitRegexp = Pattern.quote(splitRegexp);
+		}
+		
 		CommandKeybindingXREFKeySequenceFilter() {
 		}
-		// 012345
-		// abc de
-		
+
 		public void setKeySequenceText(String keySequenceText, boolean naturalKeySequence, boolean completeKeySequence) {
 			this.keySequenceText = keySequenceText;
 			this.naturalKeySequence = naturalKeySequence;
@@ -284,7 +294,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			if (completeKeySequence) {
 				this.keySequenceTextParts = null;
 			} else {
-				this.keySequenceTextParts = keySequenceText.split(" ");
+				this.keySequenceTextParts = keySequenceText.split(splitRegexp);
 			}
 		}
 
@@ -307,7 +317,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 						return true;
 					}
 				} else {
-					String[] keySequenceParts = keySequence.split(" ");
+					String[] keySequenceParts = keySequence.split(splitRegexp);
 					if (keySequenceParts.length < keySequenceTextParts.length) {
 						return false;
 					}
