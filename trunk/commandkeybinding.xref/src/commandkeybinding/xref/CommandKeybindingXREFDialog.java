@@ -628,7 +628,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		table.addListener(SWT.DefaultSelection, new Listener() {
 			public final void handleEvent(final Event event) {
-				executeKeyBinding();
+				executeCommand();
 			}
 		});
 		
@@ -773,7 +773,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == 0x0D) {
 					// Return key was pressed
-					executeKeyBinding();
+					executeCommand();
 				} else if (e.keyCode == SWT.ARROW_DOWN) {
 					// Down key was pressed
 					selectNext();
@@ -832,7 +832,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		});
 		
-		final ToolBar toolBar = new ToolBar(titleArea, SWT.RIGHT);
+		final ToolBar toolBar = new ToolBar(titleArea, SWT.FLAT);
 		GridData tolBarGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		toolBar.setLayoutData(tolBarGridData);
 		
@@ -960,7 +960,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	 * Handles the default selection event on the table of possible completions.
 	 * This attempts to execute the given command.
 	 */
-	private final void executeKeyBinding() {
+	private final void executeCommand() {
 		final IWorkbench workbench = PlatformUI.getWorkbench();
 		
 		// Try to execute the corresponding command.
