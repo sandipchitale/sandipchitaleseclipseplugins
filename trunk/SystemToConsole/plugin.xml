@@ -7,7 +7,7 @@
             id="SystemToConsole.out.command"
             name="Redirect System.out to Console">
          <state
-         	class="org.eclipse.ui.handlers.RegistryToggleState:false"
+         	class="org.eclipse.jface.commands.ToggleState:false"
          	id="org.eclipse.ui.commands.toggleState">
    		 </state>
       </command>
@@ -15,7 +15,7 @@
             id="SystemToConsole.err.command"
             name="Redirect System.err to Console">
          <state
-         	class="org.eclipse.ui.handlers.RegistryToggleState:false"
+         	class="org.eclipse.jface.commands.ToggleState:false"
          	id="org.eclipse.ui.commands.toggleState">
    		 </state>
       </command>
