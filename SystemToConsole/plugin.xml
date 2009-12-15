@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="SystemToConsole.out.command"
+            name="Redirect System.out to Console">
+         <state
+         	class="org.eclipse.ui.handlers.RegistryToggleState:false"
+         	id="org.eclipse.ui.commands.toggleState">
+   		 </state>
+      </command>
+      <command
+            id="SystemToConsole.err.command"
+            name="Redirect System.err to Console">
+         <state
+         	class="org.eclipse.ui.handlers.RegistryToggleState:false"
+         	id="org.eclipse.ui.commands.toggleState">
+   		 </state>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="systemtoconsole.SystemOutHandler"
+            commandId="SystemToConsole.out.command">
+      </handler>
+      <handler
+            class="systemtoconsole.SystemErrHandler"
+            commandId="SystemToConsole.err.command">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:window?after=additions">
+         <command
+               commandId="SystemToConsole.out.command"
+               style="toggle">
+         </command>
+         <command
+               commandId="SystemToConsole.err.command"
+               style="toggle">
+         </command>
+      </menuContribution>
+   </extension>
+
+
+</plugin>
