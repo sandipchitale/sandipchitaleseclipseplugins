@@ -44,30 +44,6 @@ public class SystemToConsolePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
-		UIJob job = new UIJob("") {
-		    public IStatus runInUIThread(IProgressMonitor monitor) {
-		        ICommandService commandService = (ICommandService) PlatformUI
-		            .getWorkbench().getActiveWorkbenchWindow().getService(
-		                ICommandService.class);
-		        Command command = commandService.getCommand("SystemToConsole.out.command");
-		        State state = command.getState(RegistryToggleState.STATE_ID);
-				if(state != null) {
-					state.setValue(Boolean.FALSE);
-				}
-				commandService.refreshElements(command.getId(), null);
-		        command = commandService.getCommand("SystemToConsole.err.command");
-		        state = command.getState(RegistryToggleState.STATE_ID);
-				if(state != null) {
-					state.setValue(Boolean.FALSE);
-				}
-				commandService.refreshElements(command.getId(), null);
-		        return Status.OK_STATUS;
-		    }
-		 
-		};
-		job.setPriority(Job.INTERACTIVE);
-		job.schedule();
 	}
 
 	/*
