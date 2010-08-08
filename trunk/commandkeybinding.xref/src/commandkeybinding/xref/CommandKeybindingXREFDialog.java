@@ -477,6 +477,13 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		}
 
 		public Image getColumnImage(Object element, int columnIndex) {
+			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
+			switch (columnIndex) {
+			case 3:
+				return Activator.getDefault().getImage(commandKeybinding.getPlatform());
+			case 4:
+				return Activator.getDefault().getImage(commandKeybinding.getType());
+			}
 			return null;
 		}
 
@@ -490,7 +497,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			case 2:
 				return commandKeybinding.getContext();
 			case 3:
-				return commandKeybinding.getPlatform();
+				return "";
 			case 4:
 				return commandKeybinding.getType();
 			}
@@ -608,7 +615,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		
 		tc = new TableColumn(table, SWT.LEFT, 0);
 		tc.setText("Command");
-		tc.setWidth(250);
+		tc.setWidth(280);
 		
 		tc = new TableColumn(table, SWT.LEFT, 1);
 		tc.setText("Keysequence");
@@ -619,8 +626,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		tc.setWidth(200);
 		
 		tc = new TableColumn(table, SWT.LEFT, 3);
-		tc.setText("Platform");
-		tc.setWidth(50);
+		tc.setText("P");
+		tc.setWidth(20);
 		
 		tc = new TableColumn(table, SWT.LEFT, 4);
 		tc.setText("U");
