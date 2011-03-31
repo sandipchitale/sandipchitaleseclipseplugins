@@ -2,19 +2,19 @@
 <feature
       id="SplitEditorFeature"
       label="Split Editor Feature"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Sandip Chitale">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="https://code.google.com/p/sandipchitaleseclipseplugins/">
+      This feature adds actions to split active editor horizontally and vertically.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      Copyright (c), 2011. Sandip Chitale
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="http://www.opensource.org/licenses/bsd-license.php">
+      BSD
    </license>
 
    <plugin
