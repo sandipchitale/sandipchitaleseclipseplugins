@@ -30,7 +30,6 @@ import org.eclipse.ui.internal.ILayoutContainer;
 import org.eclipse.ui.internal.LayoutPart;
 import org.eclipse.ui.internal.PageLayout;
 import org.eclipse.ui.internal.PartPane;
-import org.eclipse.ui.internal.PartSashContainer;
 import org.eclipse.ui.internal.PartSite;
 import org.eclipse.ui.internal.PartStack;
 import org.eclipse.ui.internal.WorkbenchPage;
@@ -76,36 +75,30 @@ public class Handler extends AbstractHandler {
 								// http://eclipse.dzone.com/tips/programmatically-split-editor-
 								// By: Dimitri Missoh
 								// Modified to suite our purpose
-								PartPane partPane = ((PartSite) part.getSite()).getPane();
-								LayoutPart layoutPart = partPane.getPart();
 								// Get PartPane that correspond to the active editor
 								PartPane currentEditorPartPane = ((PartSite) editorPart.getSite()).getPane();
+								LayoutPart layoutPart = currentEditorPartPane.getPart();
 								EditorSashContainer editorSashContainer = null;
-								ILayoutContainer rootLayoutContainer = layoutPart.getContainer();
-								if (rootLayoutContainer instanceof LayoutPart) {
-									ILayoutContainer editorSashLayoutContainer = ((LayoutPart) rootLayoutContainer).getContainer();
+								ILayoutContainer layoutPartContainer = layoutPart.getContainer();
+								if (layoutPartContainer instanceof LayoutPart) {
+									ILayoutContainer editorSashLayoutContainer = ((LayoutPart) layoutPartContainer).getContainer();
 									if (editorSashLayoutContainer instanceof EditorSashContainer) {
-										editorSashContainer = ((EditorSashContainer) editorSashLayoutContainer);
-									}
-								}
-								/*
-								 * Create a new part stack (i.e. a workbook) to home the
-								 * currentEditorPartPane which hold the active editor
-								 */
-								PartStack newPart = createStack(activePage, editorSashContainer);
-								editorSashContainer.stack(currentEditorPartPane, newPart);
-								if (rootLayoutContainer instanceof LayoutPart) {
-									ILayoutContainer cont = ((LayoutPart) rootLayoutContainer).getContainer();
-									if (cont instanceof PartSashContainer) {
+										editorSashContainer = (EditorSashContainer) editorSashLayoutContainer;
+										/*
+										 * Create a new part stack (i.e. a workbook) to home the
+										 * currentEditorPartPane which hold the active editor
+										 */
+										PartStack newPart = createStack(activePage, editorSashContainer);
+										editorSashContainer.stack(currentEditorPartPane, newPart);
 										// "Split" the editor area by adding the new part
-										String orientation = event.getParameter(Messages.Handler_orientation);
-										if (Messages.Handler_horizontally.equals(orientation)) {
-											((PartSashContainer) cont).add(newPart, PageLayout.BOTTOM, 0.5f, (LayoutPart) rootLayoutContainer);
-										} else if (Messages.Handler_vertically.equals(orientation)) {
-											((PartSashContainer) cont).add(newPart, PageLayout.LEFT, 0.5f, (LayoutPart) rootLayoutContainer);
+										String orientation = event.getParameter("orientation");
+										if ("horizontally".equals(orientation)) {
+											editorSashContainer.add(newPart, PageLayout.BOTTOM, 0.5f, (LayoutPart) layoutPartContainer);
+										} else if ("vertically".equals(orientation)) {
+											editorSashContainer.add(newPart, PageLayout.LEFT, 0.5f, (LayoutPart) layoutPartContainer);
 										}
 									}
-								}								
+								}
 							}
 							
 						}
@@ -115,7 +108,9 @@ public class Handler extends AbstractHandler {
 
 				IHandlerService handlerService = (IHandlerService) activeEditor.getEditorSite().getService(IHandlerService.class);
 				try {
+					// Duplicate the editor
 					handlerService.executeCommand(IWorkbenchCommandConstants.WINDOW_NEW_EDITOR, null);
+					// Then handle the splitting in the PartListener above
 				} catch (NotDefinedException e) {
 				} catch (NotEnabledException e) {
 				} catch (NotHandledException e) {
