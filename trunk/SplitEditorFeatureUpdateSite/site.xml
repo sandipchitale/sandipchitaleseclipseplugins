@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/SplitEditorFeature_1.0.3.jar" id="SplitEditorFeature" version="1.0.3">
+   <feature url="features/SplitEditorFeature_1.0.4.jar" id="SplitEditorFeature" version="1.0.4">
       <category name="SplitEditor"/>
    </feature>
    <category-def name="SplitEditor" label="Split Editor"/>
