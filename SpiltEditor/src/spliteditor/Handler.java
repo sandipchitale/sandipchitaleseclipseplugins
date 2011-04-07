@@ -91,11 +91,11 @@ public class Handler extends AbstractHandler {
 										PartStack newPart = createStack(activePage, editorSashContainer);
 										editorSashContainer.stack(currentEditorPartPane, newPart);
 										// "Split" the editor area by adding the new part
-										String orientation = event.getParameter("orientation");
-										if ("horizontally".equals(orientation)) {
+										String orientation = event.getParameter(OrientationParameterValues.ORIENTATION);
+										if (OrientationParameterValues.HORIZONTALLY.equals(orientation)) {
 											editorSashContainer.add(newPart, PageLayout.BOTTOM, 0.5f, (LayoutPart) layoutPartContainer);
-										} else if ("vertically".equals(orientation)) {
-											editorSashContainer.add(newPart, PageLayout.LEFT, 0.5f, (LayoutPart) layoutPartContainer);
+										} else if (OrientationParameterValues.VERTICALLY.equals(orientation)) {
+											editorSashContainer.add(newPart, PageLayout.RIGHT, 0.5f, (LayoutPart) layoutPartContainer);
 										}
 									}
 								}

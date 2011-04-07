@@ -2,7 +2,7 @@
 <feature
       id="SplitEditorFeature"
       label="Split Editor Feature"
-      version="1.0.2"
+      version="1.0.3"
       provider-name="Sandip Chitale">
 
    <description url="https://code.google.com/p/sandipchitaleseclipseplugins/">
