@@ -26,7 +26,7 @@
          <commandParameter
                id="orientation"
                name="%commandParameter.name"
-               optional="true"
+               optional="false"
                values="spliteditor.OrientationParameterValues">
          </commandParameter>
       </command>
