@@ -73,11 +73,11 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	    
 		ToolBar optionsToolbar = new ToolBar(composite, SWT.FLAT);
 		ToolItem caseSensitive = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
-		caseSensitive.setText("a\u2260A");
+		caseSensitive.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CASE_SENSITIVE));
 		ToolItem regularExpression = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
-		regularExpression.setText(".?+*");
+		regularExpression.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_REGULAR_EXRESSION));
 		ToolItem wholeWord = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
-		wholeWord.setText("\\<\\>");
+		wholeWord.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_WHOLE_WORD));
 
 		Label separator2 = new Label(composite, SWT.NONE);
 		separator2.setText("|");

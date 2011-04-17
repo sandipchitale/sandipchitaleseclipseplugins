@@ -13,13 +13,11 @@ public class Activator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "FindReplaceBar"; //$NON-NLS-1$
 	
 	static final String ICON_COUNT_OF_TOTAL = "icons/countOfTotal.png"; 
-	static final String ICON_FIND_NEXT = "icons/findNext.png";
-	static final String ICON_FIND_PREVIOUS = "icons/findPrevious.png";
 	static final String ICON_FIND_SCOPE_ALL = "icons/findScopeAll.png";
 	static final String ICON_FIND_SCOPE_SELECTED_LINES = "icons/findScopeSelectedLines.png";
-	static final String ICON_REPLACE_FIND = "icons/replaceFind.png";
-	static final String ICON_REPLACE = "icons/replace.png";
-	static final String ICON_REPLACE_ALL = "icons/replaceAll.png";
+	static final String ICON_CASE_SENSITIVE = "icons/casesensitive.png";
+	static final String ICON_REGULAR_EXRESSION = "icons/regularexpression.png";
+	static final String ICON_WHOLE_WORD = "icons/wholeword.png";
 
 	// The shared instance
 	private static Activator plugin;
@@ -60,13 +58,11 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		super.initializeImageRegistry(reg);
-		reg.put(ICON_FIND_PREVIOUS, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_PREVIOUS));
-		reg.put(ICON_FIND_NEXT, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_NEXT));
 		reg.put(ICON_FIND_SCOPE_ALL, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_ALL));
 		reg.put(ICON_FIND_SCOPE_SELECTED_LINES, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_SELECTED_LINES));
-		reg.put(ICON_REPLACE_FIND, imageDescriptorFromPlugin(PLUGIN_ID, ICON_REPLACE_FIND));
-		reg.put(ICON_REPLACE, imageDescriptorFromPlugin(PLUGIN_ID, ICON_REPLACE));
-		reg.put(ICON_REPLACE_ALL, imageDescriptorFromPlugin(PLUGIN_ID, ICON_REPLACE_ALL));
+		reg.put(ICON_CASE_SENSITIVE, imageDescriptorFromPlugin(PLUGIN_ID, ICON_CASE_SENSITIVE));
+		reg.put(ICON_REGULAR_EXRESSION, imageDescriptorFromPlugin(PLUGIN_ID, ICON_REGULAR_EXRESSION));
+		reg.put(ICON_WHOLE_WORD, imageDescriptorFromPlugin(PLUGIN_ID, ICON_WHOLE_WORD));
 	}
 
 }
