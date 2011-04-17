@@ -46,7 +46,6 @@ import org.eclipse.ui.ISizeProvider;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.PartSite;
@@ -73,7 +72,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	private ToolItem next;
 
 	private ToolItem countOfTotal;
-	private Text count;
+//	private Text count;
 	private Text total;
 
 	private ToolItem caseSensitive;
@@ -87,8 +86,6 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 	private ToolItem close;
 
-	private IContextActivation findBarContextActivation;
-
 	private int incrementalOffset = -1;
 
 	private IStatusLineManager statusLineManager;
@@ -101,6 +98,9 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		super.setSite(site);
 		statusLineManager = ((PartSite)site).getActionBars().getStatusLineManager();
 		
+		IContextService contextService = (IContextService) site.getService(IContextService.class);
+		contextService.activateContext("findreplacebar.context"); //$NON-NLS-1$
+			
 		IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
 		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.hide", new HideFindReplaceBarHandler()); //$NON-NLS-1$
 		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
@@ -152,12 +152,10 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	    
 	    findCombo.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
-				findBarContext(false);
 			}
 
 			public void focusGained(FocusEvent e) {
 				findCombo.setForeground(null);
-				findBarContext(true);
 			}
 		});
 
@@ -194,6 +192,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 		ToolBar countOfTotalToolbar = new ToolBar(composite, SWT.FLAT);
 		countOfTotal = new ToolItem(countOfTotalToolbar, SWT.CHECK);
+		countOfTotal.setSelection(true);
 		countOfTotal.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_COUNT_OF_TOTAL));
 		countOfTotal.setToolTipText("Show count of total");
 		countOfTotal.addSelectionListener(new SelectionListener() {
@@ -204,12 +203,12 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
-		count = new Text(composite, SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
-		count.setText("      0");
-		count.setEditable(false);
-
-		Label of = new Label(composite, SWT.CENTER);
-		of.setText(" of ");
+//		count = new Text(composite, SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
+//		count.setText("      0");
+//		count.setEditable(false);
+//
+//		Label of = new Label(composite, SWT.CENTER);
+//		of.setText(" of ");
 
 		total = new Text(composite,  SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
 		total.setText("      0");
@@ -297,15 +296,15 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		
 		findCombo.addModifyListener(modifyListener);
 	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
 
 	@Override
 	public void setFocus() {
 		findCombo.setFocus();
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 	
 	public void startFind() {
@@ -404,7 +403,8 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		String text = findCombo.getText();
 		previous.setEnabled(!EMPTY.equals(text));
 		next.setEnabled(!EMPTY.equals(text));
-		count.setText(EMPTY);
+		//count.setText(EMPTY);
+		total.setText(EMPTY);
 		wholeWord.setEnabled((!EMPTY.equals(text)) && (isWord(text)));
 	}
 
@@ -425,12 +425,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	}
 
 	private void hideFindBar() {
-		incrementalOffset = -1;
-		findCombo.removeModifyListener(modifyListener);
-		findBarContext(false);
 		getViewSite().getWorkbenchWindow().getActivePage().hideView(FindReplaceBarViewPart.this);
-
-		// textEditor.setFocus();
 	}
 
 	private void findPrevious() {
@@ -548,7 +543,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 	private void showCountTotal() {
 		if (!countOfTotal.getSelection()) {
-			count.setText(EMPTY);
+//			count.setText(EMPTY);
 			total.setText(EMPTY);
 			return;
 		}
@@ -592,19 +587,6 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				} catch (NotEnabledException e1) {
 				} catch (NotHandledException e1) {
 				}
-			}
-		}
-	}
-
-	private void findBarContext(boolean activate) {
-		IWorkbenchPartSite site = getSite();
-		IContextService contextService = (IContextService) site.getService(IContextService.class);
-		if (activate) {
-			findBarContextActivation = contextService.activateContext("org.eclipse.ui.textEditorScope.findbar"); //$NON-NLS-1$
-		} else {
-			if (findBarContextActivation != null); {
-				contextService.deactivateContext(findBarContextActivation);
-				findBarContextActivation = null;
 			}
 		}
 	}

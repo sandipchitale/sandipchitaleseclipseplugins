@@ -2,6 +2,15 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="Find Replace Bar Context."
+            id="findreplacebar.context"
+            name="%FindBar.context.name"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+   </extension>
+   <extension
          point="org.eclipse.ui.commands">
       <command
             categoryId="org.eclipse.ui.category.edit"
@@ -48,31 +57,31 @@
       </key>
       <key
             commandId="org.eclipse.ui.edit.find.bar.hide"
-            contextId="org.eclipse.ui.textEditorScope.findbar"
+            contextId="findreplacebar.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="ESCAPE">
       </key>
       <key
             commandId="org.eclipse.ui.edit.find.bar.findNext"
-            contextId="org.eclipse.ui.textEditorScope.findbar"
+            contextId="findreplacebar.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+K">
       </key>
       <key
             commandId="org.eclipse.ui.edit.find.bar.findNext"
-            contextId="org.eclipse.ui.textEditorScope.findbar"
+            contextId="findreplacebar.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="ENTER">
       </key>
       <key
             commandId="org.eclipse.ui.edit.find.bar.findPrevious"
-            contextId="org.eclipse.ui.textEditorScope.findbar"
+            contextId="findreplacebar.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+K">
       </key>
       <key
             commandId="org.eclipse.ui.edit.findReplace"
-            contextId="org.eclipse.ui.textEditorScope.findbar"
+            contextId="findreplacebar.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+F">
       </key>
@@ -106,14 +115,5 @@
                visible="true">
          </view>
       </perspectiveExtension>
-   </extension>
-   <extension
-         point="org.eclipse.ui.contexts">
-      <context
-            description="Find Replace Bar Context."
-            id="org.eclipse.ui.textEditorScope.findbar"
-            name="%FindBar.context.name"
-            parentId="org.eclipse.ui.textEditorScope">
-      </context>
    </extension>
 </plugin>
