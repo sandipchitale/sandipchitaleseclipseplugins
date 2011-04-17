@@ -17,9 +17,10 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.text.IFindReplaceTarget;
 import org.eclipse.jface.text.IFindReplaceTargetExtension;
 import org.eclipse.jface.text.IFindReplaceTargetExtension3;
+import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
@@ -30,8 +31,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
@@ -41,6 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.ISizeProvider;
 import org.eclipse.ui.IWorkbenchCommandConstants;
@@ -63,6 +63,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 @SuppressWarnings("restriction")
 public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
+	boolean wasHidden = true;
 	private Combo findCombo;
 
 	private ToolItem allScope;
@@ -145,13 +146,9 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		selectedLinesScope.setToolTipText("Find in Selected Lines");
 
 		findCombo = new Combo(composite, SWT.DROP_DOWN);
-
-		GC gc = new GC(findCombo);
-	    FontMetrics fm = gc.getFontMetrics();
-	    int width = 10 * fm.getAverageCharWidth();
-	    int height = fm.getHeight();
-	    gc.dispose();
-	    findCombo.setLayoutData(new RowData(findCombo.computeSize(width, height)));
+		findCombo.setText("            ");
+	    findCombo.setLayoutData(new RowData(findCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
+	    findCombo.setText("");
 	    
 	    findCombo.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
@@ -204,8 +201,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				showCountTotal();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
 		count = new Text(composite, SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
@@ -233,8 +229,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				showCountTotal();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
 
@@ -247,8 +242,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				showCountTotal();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
 		regularExpression = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
@@ -261,8 +255,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				adjustRegularExpressionState();
 			}
 
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
 		Label separator3 = new Label(composite, SWT.NONE);
@@ -273,14 +266,10 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		replaceLabel.setText("Replace with:");
 
 		replaceCombo = new Combo(composite, SWT.DROP_DOWN);
-
-		gc = new GC(replaceCombo);
-	    fm = gc.getFontMetrics();
-	    width = 10 * fm.getAverageCharWidth();
-	    height = fm.getHeight();
-	    gc.dispose();
-	    replaceCombo.setLayoutData(new RowData(replaceCombo.computeSize(width, height)));
-
+		replaceCombo.setText("            ");
+		replaceCombo.setLayoutData(new RowData(replaceCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
+		replaceCombo.setText("");
+	    
 	    ToolBar replaceToolbar = new ToolBar(composite, SWT.FLAT);
 		replaceFind = new ToolItem(replaceToolbar, SWT.PUSH | SWT.FLAT);
 		replaceFind.setText("Replace/Find");
@@ -289,12 +278,12 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		replaceAll = new ToolItem(replaceToolbar, SWT.PUSH);
 		replaceAll.setText("Replace All");
 
-		ToolBar findToolbar = new ToolBar(composite, SWT.FLAT);
-		find = new ToolItem(findToolbar, SWT.PUSH);
-		find.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND));
-		find.setToolTipText("Show Find/Replace dialog");
+		ToolBar showFindReplaceDialogToolbar = new ToolBar(composite, SWT.FLAT);
+		showFindReplaceDialog = new ToolItem(showFindReplaceDialogToolbar, SWT.PUSH);
+		showFindReplaceDialog.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND));
+		showFindReplaceDialog.setToolTipText("Show Find/Replace dialog");
 
-		find.addSelectionListener(new SelectionListener() {
+		showFindReplaceDialog.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				showFindReplaceDialog();
@@ -305,12 +294,40 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				widgetSelected(e);
 			}
 		});
-
+		
+		findCombo.addModifyListener(modifyListener);
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 
 	@Override
 	public void setFocus() {
 		findCombo.setFocus();
+	}
+	
+	public void startFind() {
+		ISourceViewer sourceViewer = getSourceViewer();
+		if (sourceViewer != null) {
+			ISelection selection = sourceViewer.getSelectionProvider()
+			.getSelection();
+			if (selection instanceof ITextSelection) {
+				ITextSelection textSelection = (ITextSelection) selection;
+				String text = textSelection.getText();
+				if (text.indexOf("\n") == -1 && text.indexOf("\r") == -1) { //$NON-NLS-1$ //$NON-NLS-2$
+					setFindText(text);
+				}
+			}
+		}
+
+		adjustEnablement();
+		boolean comboHasFocus = findCombo.isFocusControl();
+		if (!comboHasFocus) {
+			findCombo.setFocus();
+			incrementalOffset = -1;
+		}
 	}
 
 	@Override
@@ -329,7 +346,6 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		}
 		return 0;
 	}
-
 
 	private static final String EMPTY = ""; //$NON-NLS-1$
 
@@ -361,7 +377,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		}
 	};
 
-	private ToolItem find;
+	private ToolItem showFindReplaceDialog;
 
 	private class HideFindReplaceBarHandler extends AbstractHandler {
 		public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -441,6 +457,10 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 	private void find(boolean forward, boolean incremental, boolean wrap,
 			boolean wrapping) {
+		ITextEditor textEditor = getTextEditor();
+		if (textEditor == null) {
+			return;
+		}
 		IFindReplaceTarget findReplaceTarget = (IFindReplaceTarget) getTextEditor().getAdapter(IFindReplaceTarget.class);
 		if (findReplaceTarget != null) {
 			try {
@@ -518,35 +538,23 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	}
 
 	private void setFindText(String findText) {
-		setFindText(findText, true);
-	}
-
-	private void setFindText(String findText, boolean removeAddListener) {
 		String[] items = findCombo.getItems();
 		Set<String> itemSet = new LinkedHashSet<String>();
 		itemSet.add(findText);
 		itemSet.addAll(Arrays.asList(items));
-		try {
-			if (removeAddListener) {
-				findCombo.removeModifyListener(modifyListener);
-			}
-			findCombo.setItems(itemSet.toArray(new String[0]));
-			findCombo.select(0);
-		} finally {
-			if (removeAddListener) {
-				findCombo.addModifyListener(modifyListener);
-			}
-		}
+		findCombo.setItems(itemSet.toArray(new String[0]));
+		findCombo.select(0);
 	}
 
 	private void showCountTotal() {
 		if (!countOfTotal.getSelection()) {
 			count.setText(EMPTY);
+			total.setText(EMPTY);
 			return;
 		}
 		String patternString = findCombo.getText();
 		boolean patternStringIsAWord = isWord(patternString);
-		int total = 0;
+		int totalMatches = 0;
 		if (!EMPTY.equals(patternString)) {
 			String text = getSourceViewer().getDocument().get();
 			int flags = 0;
@@ -562,25 +570,28 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			Pattern pattern = Pattern.compile(patternString, flags);
 			Matcher matcher = pattern.matcher(text);
 			if (matcher.find(0)) {
-				total = 1;
+				totalMatches = 1;
 				while (matcher.find()) {
-					++total;
+					++totalMatches;
 				}
 			}
 		}
-		count.setText(String.valueOf(total));
+		total.setText(String.valueOf(totalMatches));
 	}
 
 	private void showFindReplaceDialog() {
-		IWorkbenchPartSite site = getSite();
-		IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
-		if (handlerService != null) {
-			try {
-				handlerService.executeCommand(IWorkbenchCommandConstants.EDIT_FIND_AND_REPLACE, null);
-			} catch (ExecutionException e1) {
-			} catch (NotDefinedException e1) {
-			} catch (NotEnabledException e1) {
-			} catch (NotHandledException e1) {
+		ITextEditor textEditor = getTextEditor();
+		if (textEditor != null) {
+			IWorkbenchPartSite site = textEditor.getSite();
+			IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
+			if (handlerService != null) {
+				try {
+					handlerService.executeCommand(IWorkbenchCommandConstants.EDIT_FIND_AND_REPLACE, null);
+				} catch (ExecutionException e1) {
+				} catch (NotDefinedException e1) {
+				} catch (NotEnabledException e1) {
+				} catch (NotHandledException e1) {
+				}
 			}
 		}
 	}
@@ -620,13 +631,21 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	 * @return the active textEditor
 	 */
 	private ITextEditor getTextEditor() {
+		IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+		if (activeEditor instanceof ITextEditor) {
+			return (ITextEditor) activeEditor;
+		}
 		return null;
 	}
 	
 	/**
 	 * @return the sourceView of the active textEditor
 	 */
-	private SourceViewer getSourceViewer() {
+	private ISourceViewer getSourceViewer() {
+		ITextEditor textEditor = getTextEditor();
+		if (textEditor != null) {
+			return (ISourceViewer) textEditor.getAdapter(ITextOperationTarget.class);
+		}
 		return null;
 	}
 }
