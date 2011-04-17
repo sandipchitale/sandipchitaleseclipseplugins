@@ -12,6 +12,7 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "FindReplaceBar"; //$NON-NLS-1$
 	
+	static final String ICON_CLOSE = "icons/close.png"; 
 	static final String ICON_COUNT_OF_TOTAL = "icons/countOfTotal.png"; 
 	static final String ICON_FIND_SCOPE_ALL = "icons/findScopeAll.png";
 	static final String ICON_FIND_SCOPE_SELECTED_LINES = "icons/findScopeSelectedLines.png";
@@ -58,6 +59,7 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		super.initializeImageRegistry(reg);
+		reg.put(ICON_CLOSE, imageDescriptorFromPlugin(PLUGIN_ID, ICON_CLOSE));
 		reg.put(ICON_FIND_SCOPE_ALL, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_ALL));
 		reg.put(ICON_FIND_SCOPE_SELECTED_LINES, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_SELECTED_LINES));
 		

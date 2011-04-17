@@ -53,7 +53,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		
 		ToolBar closeToolBar = new ToolBar(composite, SWT.FLAT);
 		close = new ToolItem(closeToolBar, SWT.PUSH);
-		close.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ELCL_REMOVE));
+		close.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CLOSE));
 		close.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
