@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <stickyView
+            closeable="false"
+            id="FindReplaceBar.view"
+            location="BOTTOM"
+            moveable="false">
+      </stickyView>
+      <view
+            allowMultiple="false"
+            class="findreplacebar.FindReplaceBarViewPart"
+            id="FindReplaceBar.view"
+            name="Find Replace Bar"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="*">
+         <view
+               closeable="false"
+               id="FindReplaceBar.view"
+               minimized="false"
+               moveable="false"
+               ratio="0.0"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               showTitle="false"
+               standalone="true"
+               visible="true">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>
