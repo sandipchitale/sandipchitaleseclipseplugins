@@ -60,6 +60,9 @@ public class Activator extends AbstractUIPlugin {
 		super.initializeImageRegistry(reg);
 		reg.put(ICON_FIND_SCOPE_ALL, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_ALL));
 		reg.put(ICON_FIND_SCOPE_SELECTED_LINES, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_SELECTED_LINES));
+		
+		reg.put(ICON_COUNT_OF_TOTAL, imageDescriptorFromPlugin(PLUGIN_ID, ICON_COUNT_OF_TOTAL));
+		
 		reg.put(ICON_CASE_SENSITIVE, imageDescriptorFromPlugin(PLUGIN_ID, ICON_CASE_SENSITIVE));
 		reg.put(ICON_REGULAR_EXRESSION, imageDescriptorFromPlugin(PLUGIN_ID, ICON_REGULAR_EXRESSION));
 		reg.put(ICON_WHOLE_WORD, imageDescriptorFromPlugin(PLUGIN_ID, ICON_WHOLE_WORD));
