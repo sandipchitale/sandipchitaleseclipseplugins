@@ -72,7 +72,6 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	private ToolItem next;
 
 	private ToolItem countOfTotal;
-//	private Text count;
 	private Text total;
 
 	private ToolItem caseSensitive;
@@ -194,7 +193,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		countOfTotal = new ToolItem(countOfTotalToolbar, SWT.CHECK);
 		countOfTotal.setSelection(true);
 		countOfTotal.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_COUNT_OF_TOTAL));
-		countOfTotal.setToolTipText("Show count of total");
+		countOfTotal.setToolTipText("Show total matches");
 		countOfTotal.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				showCountTotal();
@@ -202,17 +201,13 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
-		
-//		count = new Text(composite, SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
-//		count.setText("      0");
-//		count.setEditable(false);
-//
-//		Label of = new Label(composite, SWT.CENTER);
-//		of.setText(" of ");
 
 		total = new Text(composite,  SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
-		total.setText("      0");
 		total.setEditable(false);
+		
+		total.setText("      ");
+		total.setLayoutData(new RowData(total.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
+		total.setText("");
 
 		Label separator2 = new Label(composite, SWT.NONE);
 		separator2.setText("|");
@@ -231,7 +226,6 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
-
 		wholeWord = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
 		wholeWord.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_WHOLE_WORD));
 		wholeWord.setToolTipText("Whole Word");
@@ -277,6 +271,10 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		replaceAll = new ToolItem(replaceToolbar, SWT.PUSH);
 		replaceAll.setText("Replace All");
 
+		Label separator4 = new Label(composite, SWT.NONE);
+		separator4.setText("|");
+		separator4.setForeground(separator2.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		
 		ToolBar showFindReplaceDialogToolbar = new ToolBar(composite, SWT.FLAT);
 		showFindReplaceDialog = new ToolItem(showFindReplaceDialogToolbar, SWT.PUSH);
 		showFindReplaceDialog.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND));
@@ -543,7 +541,6 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 	private void showCountTotal() {
 		if (!countOfTotal.getSelection()) {
-//			count.setText(EMPTY);
 			total.setText(EMPTY);
 			return;
 		}
