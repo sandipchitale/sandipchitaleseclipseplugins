@@ -447,13 +447,12 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		find(forward, incremental, wrap, false);
 	}
 
-	private void find(boolean forward, boolean incremental, boolean wrap,
-			boolean wrapping) {
+	private void find(boolean forward, boolean incremental, boolean wrap, boolean wrapping) {
 		ITextEditor textEditor = getTextEditor();
 		if (textEditor == null) {
 			return;
 		}
-		IFindReplaceTarget findReplaceTarget = (IFindReplaceTarget) getTextEditor().getAdapter(IFindReplaceTarget.class);
+		IFindReplaceTarget findReplaceTarget = (IFindReplaceTarget) textEditor.getAdapter(IFindReplaceTarget.class);
 		if (findReplaceTarget != null) {
 			try {
 				if (findReplaceTarget instanceof IFindReplaceTargetExtension) {
@@ -461,14 +460,15 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 					findReplaceTargetExtension.beginSession();
 				}
 				String findText = findCombo.getText();
-				StyledText textWidget = getSourceViewer().getTextWidget();
+				ISourceViewer sourceViewer = getSourceViewer();
+				StyledText textWidget = sourceViewer.getTextWidget();
 				int offset = textWidget.getCaretOffset();
 				Point selection = textWidget.getSelection();
 				if (wrapping) {
 					if (forward) {
 						offset = 0;
 					} else {
-						offset = getSourceViewer().getDocument().getLength() - 1;
+						offset = sourceViewer.getDocument().getLength() - 1;
 					}
 				} else {
 					if (forward) {
@@ -534,8 +534,13 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		Set<String> itemSet = new LinkedHashSet<String>();
 		itemSet.add(findText);
 		itemSet.addAll(Arrays.asList(items));
-		findCombo.setItems(itemSet.toArray(new String[0]));
-		findCombo.select(0);
+		try {
+			findCombo.removeModifyListener(modifyListener);
+			findCombo.setItems(itemSet.toArray(new String[0]));
+			findCombo.select(0);
+		} finally {
+			findCombo.addModifyListener(modifyListener);
+		}
 	}
 
 	private void showCountTotal() {
