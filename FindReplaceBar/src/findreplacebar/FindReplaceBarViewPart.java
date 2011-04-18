@@ -359,12 +359,15 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			adjustEnablement();
 			adjustRegularExpressionState();
 			if (EMPTY.equals(text)) {
-				ISelectionProvider selectionProvider = getTextEditor().getSelectionProvider();
-				ISelection selection = selectionProvider.getSelection();
-				if (selection instanceof TextSelection) {
-					ITextSelection textSelection = (ITextSelection) selection;
-					selectionProvider.setSelection(
-							new TextSelection(textSelection.getOffset(), 0));
+				ITextEditor textEditor = getTextEditor();
+				if (textEditor != null) {
+					ISelectionProvider selectionProvider = textEditor.getSelectionProvider();
+					ISelection selection = selectionProvider.getSelection();
+					if (selection instanceof TextSelection) {
+						ITextSelection textSelection = (ITextSelection) selection;
+						selectionProvider.setSelection(
+								new TextSelection(textSelection.getOffset(), 0));
+					}
 				}
 			} else {
 				find(true, true, wrap);
