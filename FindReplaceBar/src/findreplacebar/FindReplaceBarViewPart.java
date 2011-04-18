@@ -52,7 +52,6 @@ import org.eclipse.ui.internal.PartSite;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-
 /**
  * This view implements the Find Replace bar.
  *
@@ -278,7 +277,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		ToolBar showFindReplaceDialogToolbar = new ToolBar(composite, SWT.FLAT);
 		showFindReplaceDialog = new ToolItem(showFindReplaceDialogToolbar, SWT.PUSH);
 		showFindReplaceDialog.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND));
-		showFindReplaceDialog.setToolTipText("Show Find/Replace dialog");
+		showFindReplaceDialog.setToolTipText("Find/Replace...");
 
 		showFindReplaceDialog.addSelectionListener(new SelectionListener() {
 			@Override
