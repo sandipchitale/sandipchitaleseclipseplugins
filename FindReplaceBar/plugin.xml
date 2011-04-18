@@ -141,6 +141,25 @@
             class="findreplacebar.FindReplaceBarPreferencePage"
             id="FindReplaceBar.preferences.page"
             name="Find Replace Bar">
+         <keywordReference
+               id="FindReplaceBar.find">
+         </keywordReference>
+         <keywordReference
+               id="FindReplaceBar.replace">
+         </keywordReference>
       </page>
+   </extension>
+   <extension
+         id="FindReplaceBar.keywords"
+         name="Find Replace Bar keywords"
+         point="org.eclipse.ui.keywords">
+      <keyword
+            id="FindReplaceBar.find"
+            label="find">
+      </keyword>
+      <keyword
+            id="FindReplaceBar.replace"
+            label="replace">
+      </keyword>
    </extension>
 </plugin>
