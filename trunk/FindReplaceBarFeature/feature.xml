@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="FindReplaceBarFeature"
+      label="Find Replace Bar Feature"
+      version="1.0.0.qualifier"
+      provider-name="Sandip Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      This feature implements the Find/Replace bar similar to the ones found in popular browser.
+   </description>
+
+   <copyright>
+      Copyright 2011, Sandip Chitale
+   </copyright>
+
+   <license>
+      BSD
+   </license>
+
+   <plugin
+         id="FindReplaceBar"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
