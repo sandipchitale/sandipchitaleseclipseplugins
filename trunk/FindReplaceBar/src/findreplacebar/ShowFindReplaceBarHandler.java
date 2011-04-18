@@ -16,11 +16,9 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
- * This takes care of the case when the active textEdior is an instance of
- * <code>IFindBarDecorated</code> or does adapt to
- * <code>IFindBarDecorated</code>.
+ * This shows the Find Replace Bar view.
  * 
- * @author schitale
+ * @author Sandip Chitale
  * 
  */
 public class ShowFindReplaceBarHandler extends AbstractHandler {
@@ -28,9 +26,8 @@ public class ShowFindReplaceBarHandler extends AbstractHandler {
 		Object variable = HandlerUtil.getActivePart(event);
 		if (variable instanceof ITextEditor) {
 			ITextEditor textEditor = (ITextEditor) variable;
-			if (textEditor instanceof AbstractTextEditor) {
-				IWorkbenchPage activePage = textEditor.getSite()
-						.getWorkbenchWindow().getActivePage();
+			if (Activator.getDefault().getOverrideFindReplaceDialog() && textEditor instanceof AbstractTextEditor) {
+				IWorkbenchPage activePage = textEditor.getSite().getWorkbenchWindow().getActivePage();
 				IViewPart viewPart;
 				try {
 					viewPart = activePage.showView("FindReplaceBar.view");
