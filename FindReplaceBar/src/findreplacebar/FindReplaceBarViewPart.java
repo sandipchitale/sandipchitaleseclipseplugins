@@ -100,9 +100,9 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		contextService.activateContext("findreplacebar.context"); //$NON-NLS-1$
 			
 		IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
-		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.hide", new HideFindReplaceBarHandler()); //$NON-NLS-1$
-		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
-		handlerService.activateHandler("org.eclipse.ui.edit.find.bar.findNext", new FindNextHandler()); //$NON-NLS-1$
+		handlerService.activateHandler("findreplacebar.hide", new HideFindReplaceBarHandler()); //$NON-NLS-1$
+		handlerService.activateHandler("findreplacebar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
+		handlerService.activateHandler("findreplacebar.findNext", new FindNextHandler()); //$NON-NLS-1$
 	}
 
 	@Override

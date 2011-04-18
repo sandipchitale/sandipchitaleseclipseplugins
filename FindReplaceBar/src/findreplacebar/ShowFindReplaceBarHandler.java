@@ -23,7 +23,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * @author schitale
  * 
  */
-public class ShowFindBarHandler extends AbstractHandler {
+public class ShowFindReplaceBarHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Object variable = HandlerUtil.getActivePart(event);
 		if (variable instanceof ITextEditor) {
