@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/FindReplaceBarFeature_1.0.0.201104171925.jar" id="FindReplaceBarFeature" version="1.0.0.201104171925">
+      <category name="Find/Replace"/>
+   </feature>
+   <category-def name="Find/Replace" label="Find/Replace"/>
+</site>
