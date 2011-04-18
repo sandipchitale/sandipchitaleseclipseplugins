@@ -103,6 +103,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		handlerService.activateHandler("findreplacebar.hide", new HideFindReplaceBarHandler()); //$NON-NLS-1$
 		handlerService.activateHandler("findreplacebar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
 		handlerService.activateHandler("findreplacebar.findNext", new FindNextHandler()); //$NON-NLS-1$
+		handlerService.activateHandler("findreplacebar.showFindReplaceDialog", new ShowFindReplaceDialogHandler()); //$NON-NLS-1$
 	}
 
 	@Override
@@ -398,6 +399,13 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			return null;
 		}
 	}
+	
+	private class ShowFindReplaceDialogHandler extends AbstractHandler {
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			showFindReplaceDialog();
+			return null;
+		}
+	}
 
 	private void adjustEnablement() {
 		String text = findCombo.getText();
@@ -585,6 +593,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		ITextEditor textEditor = getTextEditor();
 		if (textEditor != null) {
 			IWorkbenchPartSite site = textEditor.getSite();
+			site.getWorkbenchWindow().getActivePage().activate(textEditor);
 			IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
 			if (handlerService != null) {
 				try {

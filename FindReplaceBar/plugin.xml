@@ -32,6 +32,11 @@
             id="findreplacebar.findPrevious"
             name="%FindPrevious.command.name">
       </command>
+      <command
+            categoryId="org.eclipse.ui.category.edit"
+            id="findreplacebar.showFindReplaceDialog"
+            name="%ShowFindReplaceDialog.command.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -81,7 +86,7 @@
             sequence="M1+M2+K">
       </key>
       <key
-            commandId="org.eclipse.ui.edit.findReplace"
+            commandId="findreplacebar.showFindReplaceDialog"
             contextId="findreplacebar.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+F">
