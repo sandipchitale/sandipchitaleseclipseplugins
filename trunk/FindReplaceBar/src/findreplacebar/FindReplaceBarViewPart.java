@@ -52,6 +52,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.PartSite;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.swt.IFocusService;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
@@ -310,6 +311,10 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		});
 
 		findCombo.addModifyListener(modifyListener);
+		
+		// Register as focus control
+		IFocusService focusService = (IFocusService) getSite().getService(IFocusService.class);
+		focusService.addFocusTracker(findCombo, "findreplacebar.findCombo");
 	}
 
 	@Override
