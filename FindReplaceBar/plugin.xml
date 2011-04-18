@@ -119,7 +119,7 @@
                id="FindReplaceBar.view"
                minimized="false"
                moveable="false"
-               ratio="0.0"
+               ratio="0.05"
                relationship="bottom"
                relative="org.eclipse.ui.editorss"
                showTitle="false"

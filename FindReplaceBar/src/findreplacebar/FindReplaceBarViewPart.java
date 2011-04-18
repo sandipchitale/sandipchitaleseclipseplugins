@@ -361,7 +361,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	public int computePreferredSize(boolean width, int availableParallel,
 			int availablePerpendicular, int preferredResult) {
 		if (!width) {
-			return 22;
+			return 28;
 		}
 		return 0;
 	}
