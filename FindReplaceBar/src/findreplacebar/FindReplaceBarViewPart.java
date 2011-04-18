@@ -555,23 +555,26 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		boolean patternStringIsAWord = isWord(patternString);
 		int totalMatches = 0;
 		if (!EMPTY.equals(patternString)) {
-			String text = getSourceViewer().getDocument().get();
-			int flags = 0;
-			if (!caseSensitive.getSelection()) {
-				flags |= Pattern.CASE_INSENSITIVE;
-			}
-			if (!regularExpression.getSelection()) {
-				patternString = Pattern.quote(patternString);
-			}
-			if (patternStringIsAWord && wholeWord.getSelection()) {
-				patternString = "\\b" + patternString + "\\b"; //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			Pattern pattern = Pattern.compile(patternString, flags);
-			Matcher matcher = pattern.matcher(text);
-			if (matcher.find(0)) {
-				totalMatches = 1;
-				while (matcher.find()) {
-					++totalMatches;
+			ISourceViewer sourceViewer = getSourceViewer();
+			if (sourceViewer != null) {
+				String text = sourceViewer.getDocument().get();
+				int flags = 0;
+				if (!caseSensitive.getSelection()) {
+					flags |= Pattern.CASE_INSENSITIVE;
+				}
+				if (!regularExpression.getSelection()) {
+					patternString = Pattern.quote(patternString);
+				}
+				if (patternStringIsAWord && wholeWord.getSelection()) {
+					patternString = "\\b" + patternString + "\\b"; //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				Pattern pattern = Pattern.compile(patternString, flags);
+				Matcher matcher = pattern.matcher(text);
+				if (matcher.find(0)) {
+					totalMatches = 1;
+					while (matcher.find()) {
+						++totalMatches;
+					}
 				}
 			}
 		}
