@@ -128,4 +128,19 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="findreplacebar.FindReplaceBarPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.preferencePages.GeneralTextEditor"
+            class="findreplacebar.FindReplaceBarPreferencePage"
+            id="FindReplaceBar.preferences.page"
+            name="Find Replace Bar">
+      </page>
+   </extension>
 </plugin>

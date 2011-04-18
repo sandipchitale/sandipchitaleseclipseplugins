@@ -14,6 +14,7 @@ import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.text.IFindReplaceTarget;
 import org.eclipse.jface.text.IFindReplaceTargetExtension;
 import org.eclipse.jface.text.IFindReplaceTargetExtension3;
@@ -47,6 +48,7 @@ import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.PartSite;
 import org.eclipse.ui.part.ViewPart;
@@ -76,11 +78,11 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	private ToolItem caseSensitive;
 	private ToolItem regularExpression;
 	private ToolItem wholeWord;
-	private Combo replaceCombo;
 
-	private ToolItem replaceFind;
-	private ToolItem replace;
-	private ToolItem replaceAll;
+//	private Combo replaceCombo;
+//	private ToolItem replaceFind;
+//	private ToolItem replace;
+//	private ToolItem replaceAll;
 
 	private ToolItem close;
 
@@ -95,10 +97,10 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	protected void setSite(IWorkbenchPartSite site) {
 		super.setSite(site);
 		statusLineManager = ((PartSite)site).getActionBars().getStatusLineManager();
-		
+
 		IContextService contextService = (IContextService) site.getService(IContextService.class);
 		contextService.activateContext("findreplacebar.context"); //$NON-NLS-1$
-			
+
 		IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
 		handlerService.activateHandler("findreplacebar.hide", new HideFindReplaceBarHandler()); //$NON-NLS-1$
 		handlerService.activateHandler("findreplacebar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
@@ -148,7 +150,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		findCombo.setText("            ");
 	    findCombo.setLayoutData(new RowData(findCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
 	    findCombo.setText("");
-	    
+
 	    findCombo.addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
 			}
@@ -162,7 +164,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		previous = new ToolItem(previousNextToolbar, SWT.PUSH);
 		previous.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_BACK));
 		previous.setToolTipText("Find Previous");
-		
+
 		previous.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				findPrevious();
@@ -171,7 +173,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
+
 		next = new ToolItem(previousNextToolbar, SWT.PUSH);
 		next.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
 		next.setToolTipText("Find Next");
@@ -204,7 +206,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 		total = new Text(composite,  SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
 		total.setEditable(false);
-		
+
 		total.setText("      ");
 		total.setLayoutData(new RowData(total.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
 		total.setText("");
@@ -225,7 +227,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
-		
+
 		wholeWord = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
 		wholeWord.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_WHOLE_WORD));
 		wholeWord.setToolTipText("Whole Word");
@@ -237,7 +239,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
-		
+
 		regularExpression = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
 		regularExpression.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_REGULAR_EXRESSION));
 		regularExpression.setToolTipText("Regular Expression");
@@ -250,31 +252,31 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
-		
+
 		Label separator3 = new Label(composite, SWT.NONE);
 		separator3.setText("|");
 		separator3.setForeground(separator3.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
-		Label replaceLabel = new Label(composite, SWT.RIGHT);
-		replaceLabel.setText("Replace with:");
+//		Label replaceLabel = new Label(composite, SWT.RIGHT);
+//		replaceLabel.setText("Replace with:");
+//
+//		replaceCombo = new Combo(composite, SWT.DROP_DOWN);
+//		replaceCombo.setText("            ");
+//		replaceCombo.setLayoutData(new RowData(replaceCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
+//		replaceCombo.setText("");
+//
+//	    ToolBar replaceToolbar = new ToolBar(composite, SWT.FLAT);
+//		replaceFind = new ToolItem(replaceToolbar, SWT.PUSH | SWT.FLAT);
+//		replaceFind.setText("Replace/Find");
+//		replace = new ToolItem(replaceToolbar, SWT.PUSH);
+//		replace.setText("Replace");
+//		replaceAll = new ToolItem(replaceToolbar, SWT.PUSH);
+//		replaceAll.setText("Replace All");
+//
+//		Label separator4 = new Label(composite, SWT.NONE);
+//		separator4.setText("|");
+//		separator4.setForeground(separator2.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
-		replaceCombo = new Combo(composite, SWT.DROP_DOWN);
-		replaceCombo.setText("            ");
-		replaceCombo.setLayoutData(new RowData(replaceCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
-		replaceCombo.setText("");
-	    
-	    ToolBar replaceToolbar = new ToolBar(composite, SWT.FLAT);
-		replaceFind = new ToolItem(replaceToolbar, SWT.PUSH | SWT.FLAT);
-		replaceFind.setText("Replace/Find");
-		replace = new ToolItem(replaceToolbar, SWT.PUSH);
-		replace.setText("Replace");
-		replaceAll = new ToolItem(replaceToolbar, SWT.PUSH);
-		replaceAll.setText("Replace All");
-
-		Label separator4 = new Label(composite, SWT.NONE);
-		separator4.setText("|");
-		separator4.setForeground(separator2.getDisplay().getSystemColor(SWT.COLOR_GRAY));
-		
 		ToolBar showFindReplaceDialogToolbar = new ToolBar(composite, SWT.FLAT);
 		showFindReplaceDialog = new ToolItem(showFindReplaceDialogToolbar, SWT.PUSH);
 		showFindReplaceDialog.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND));
@@ -291,7 +293,22 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				widgetSelected(e);
 			}
 		});
-		
+		showPreferences = new ToolItem(showFindReplaceDialogToolbar, SWT.PUSH);
+		showPreferences.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_PREFERENCES));
+		showPreferences.setToolTipText("Preferences...");
+
+		showPreferences.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				showFindReplaceBarPreferences();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+
 		findCombo.addModifyListener(modifyListener);
 	}
 
@@ -299,12 +316,12 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	public void setFocus() {
 		findCombo.setFocus();
 	}
-	
+
 	@Override
 	public void dispose() {
 		super.dispose();
 	}
-	
+
 	public void startFind() {
 		ISourceViewer sourceViewer = getSourceViewer();
 		if (sourceViewer != null) {
@@ -378,6 +395,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 	};
 
 	private ToolItem showFindReplaceDialog;
+	private ToolItem showPreferences;
 
 	private class HideFindReplaceBarHandler extends AbstractHandler {
 		public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -399,7 +417,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			return null;
 		}
 	}
-	
+
 	private class ShowFindReplaceDialogHandler extends AbstractHandler {
 		public Object execute(ExecutionEvent event) throws ExecutionException {
 			showFindReplaceDialog();
@@ -625,6 +643,16 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		return true;
 	}
 
+	private void showFindReplaceBarPreferences() {
+		String[] displayedIds = new String[] {"FindReplaceBar.preferences.page"};
+		PreferenceDialog preferenceDialog = PreferencesUtil.createPreferenceDialogOn(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				displayedIds[0],
+				displayedIds,
+				null);
+		preferenceDialog.open();
+	}
+
 	/**
 	 * @return the active textEditor
 	 */
@@ -635,7 +663,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @return the sourceView of the active textEditor
 	 */

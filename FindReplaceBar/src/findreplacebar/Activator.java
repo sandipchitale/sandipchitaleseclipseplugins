@@ -12,7 +12,6 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "FindReplaceBar"; //$NON-NLS-1$
 	
-	static final String ICON_FIND = "icons/find.png"; 
 	static final String ICON_CLOSE = "icons/close.png"; 
 	static final String ICON_COUNT_OF_TOTAL = "icons/countOfTotal.png"; 
 	static final String ICON_FIND_SCOPE_ALL = "icons/findScopeAll.png";
@@ -20,6 +19,10 @@ public class Activator extends AbstractUIPlugin {
 	static final String ICON_CASE_SENSITIVE = "icons/casesensitive.png";
 	static final String ICON_REGULAR_EXRESSION = "icons/regularexpression.png";
 	static final String ICON_WHOLE_WORD = "icons/wholeword.png";
+	
+	static final String ICON_FIND = "icons/find.png"; 
+	static final String ICON_PREFERENCES = "icons/preferences.png"; 
+
 
 	// The shared instance
 	private static Activator plugin;
@@ -60,7 +63,6 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		super.initializeImageRegistry(reg);
-		reg.put(ICON_FIND, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND));
 		reg.put(ICON_CLOSE, imageDescriptorFromPlugin(PLUGIN_ID, ICON_CLOSE));
 		reg.put(ICON_FIND_SCOPE_ALL, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_ALL));
 		reg.put(ICON_FIND_SCOPE_SELECTED_LINES, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND_SCOPE_SELECTED_LINES));
@@ -70,6 +72,12 @@ public class Activator extends AbstractUIPlugin {
 		reg.put(ICON_CASE_SENSITIVE, imageDescriptorFromPlugin(PLUGIN_ID, ICON_CASE_SENSITIVE));
 		reg.put(ICON_REGULAR_EXRESSION, imageDescriptorFromPlugin(PLUGIN_ID, ICON_REGULAR_EXRESSION));
 		reg.put(ICON_WHOLE_WORD, imageDescriptorFromPlugin(PLUGIN_ID, ICON_WHOLE_WORD));
+		
+		reg.put(ICON_FIND, imageDescriptorFromPlugin(PLUGIN_ID, ICON_FIND));
+		reg.put(ICON_PREFERENCES, imageDescriptorFromPlugin(PLUGIN_ID, ICON_PREFERENCES));
 	}
-
+	
+	public boolean getOverrideFindReplaceDialog() {
+		return getPreferenceStore().getBoolean(FindReplaceBarPreferenceInitializer.OVERRIDE_FIND_REPLACE_DIALOG);
+	}
 }
