@@ -109,6 +109,12 @@
             name="Find Replace Bar"
             restorable="true">
       </view>
+      <stickyView
+            closeable="false"
+            id="FindReplaceBar.view"
+            location="BOTTOM"
+            moveable="false">
+      </stickyView>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
