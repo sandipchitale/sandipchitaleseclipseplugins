@@ -44,7 +44,8 @@
                <instanceof
                      value="org.eclipse.ui.texteditor.ITextEditor">
                </instanceof>
-            </with></enabledWhen>
+            </with>
+         </enabledWhen>
       </handler>
    </extension>
    <extension
