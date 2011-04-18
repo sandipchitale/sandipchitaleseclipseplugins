@@ -86,6 +86,12 @@
             sequence="M1+M2+K">
       </key>
       <key
+            commandId="findreplacebar.findPrevious"
+            contextId="findreplacebar.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+ENTER">
+      </key>
+      <key
             commandId="findreplacebar.showFindReplaceDialog"
             contextId="findreplacebar.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
