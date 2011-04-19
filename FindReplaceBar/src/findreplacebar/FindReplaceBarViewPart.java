@@ -234,6 +234,9 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		wholeWord.setToolTipText("Whole Word");
 		wholeWord.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
+				if (wholeWord.getSelection()) {
+					regularExpression.setSelection(false);
+				}
 				find(true, true);
 				showCountTotal();
 			}
@@ -246,6 +249,9 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		regularExpression.setToolTipText("Regular Expression");
 		regularExpression.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
+				if (regularExpression.getSelection()) {
+					wholeWord.setSelection(false);
+				}
 				find(true, true);
 				showCountTotal();
 				adjustRegularExpressionState();
@@ -448,6 +454,7 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			return;
 		}
 		if (regularExpression.getSelection()) {
+			wholeWord.setSelection(false);
 			try {
 				Pattern.compile(findText);
 			} catch (PatternSyntaxException pse) {
