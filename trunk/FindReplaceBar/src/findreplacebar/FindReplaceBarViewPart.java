@@ -493,14 +493,29 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 		if (textEditor == null) {
 			return;
 		}
+
 		IFindReplaceTarget findReplaceTarget = (IFindReplaceTarget) textEditor.getAdapter(IFindReplaceTarget.class);
 		if (findReplaceTarget != null) {
 			try {
+				String findText = findCombo.getText();
+				
+				if (regularExpression.getSelection()) {
+					// Make sure it is a valid regexp
+					try {
+						Pattern.compile(findText);
+					} catch (PatternSyntaxException e) {
+						getViewSite().getShell().getDisplay().beep();
+						findCombo.setForeground(findCombo.getDisplay().getSystemColor(SWT.COLOR_RED));
+						statusLineManager.setMessage("Illegal regular expression");
+						return;
+					}
+				}
+				
 				if (findReplaceTarget instanceof IFindReplaceTargetExtension) {
 					IFindReplaceTargetExtension findReplaceTargetExtension = (IFindReplaceTargetExtension) findReplaceTarget;
 					findReplaceTargetExtension.beginSession();
 				}
-				String findText = findCombo.getText();
+
 				ISourceViewer sourceViewer = getSourceViewer();
 				StyledText textWidget = sourceViewer.getTextWidget();
 				int offset = textWidget.getCaretOffset();
@@ -606,13 +621,21 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 				if (patternStringIsAWord && wholeWord.getSelection()) {
 					patternString = "\\b" + patternString + "\\b"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
-				Pattern pattern = Pattern.compile(patternString, flags);
-				Matcher matcher = pattern.matcher(text);
-				if (matcher.find(0)) {
-					totalMatches = 1;
-					while (matcher.find()) {
-						++totalMatches;
+				// Make sure it is a valid regexp
+				try {
+					Pattern pattern = Pattern.compile(patternString, flags);
+					Matcher matcher = pattern.matcher(text);
+					if (matcher.find(0)) {
+						totalMatches = 1;
+						while (matcher.find()) {
+							++totalMatches;
+						}
 					}
+				} catch (PatternSyntaxException e) {
+					getViewSite().getShell().getDisplay().beep();
+					findCombo.setForeground(findCombo.getDisplay().getSystemColor(SWT.COLOR_RED));
+					statusLineManager.setMessage("Illegal regular expression");
+					return;
 				}
 			}
 		}
