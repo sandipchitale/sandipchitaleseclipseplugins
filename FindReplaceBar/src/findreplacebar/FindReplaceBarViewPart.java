@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.ISizeProvider;
+import org.eclipse.ui.IViewLayout;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
@@ -62,7 +63,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  *
  */
 @SuppressWarnings("restriction")
-public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
+public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISizeProvider{
 
 	boolean wasHidden = true;
 	private Combo findCombo;
@@ -708,5 +709,31 @@ public class FindReplaceBarViewPart extends ViewPart implements ISizeProvider{
 			return (ISourceViewer) textEditor.getAdapter(ITextOperationTarget.class);
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isCloseable() {
+		return false;
+	}
+
+	@Override
+	public void setCloseable(boolean closeable) {}
+
+	@Override
+	public boolean isMoveable() {
+		return false;
+	}
+
+	@Override
+	public void setMoveable(boolean moveable) {}
+
+	@Override
+	public boolean isStandalone() {
+		return true;
+	}
+
+	@Override
+	public boolean getShowTitle() {
+		return false;
 	}
 }
