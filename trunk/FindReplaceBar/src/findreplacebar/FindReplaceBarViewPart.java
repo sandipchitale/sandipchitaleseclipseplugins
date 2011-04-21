@@ -493,6 +493,8 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	private void find(boolean forward, boolean incremental, boolean wrap, boolean wrapping) {
 		ITextEditor textEditor = getTextEditor();
 		if (textEditor == null) {
+			getViewSite().getShell().getDisplay().beep();
+			statusLineManager.setMessage("No find target!");
 			return;
 		}
 
