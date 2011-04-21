@@ -52,6 +52,7 @@ import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.PartSite;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.swt.IFocusService;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -696,6 +697,12 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
 		if (activeEditor instanceof ITextEditor) {
 			return (ITextEditor) activeEditor;
+		} else if (activeEditor instanceof MultiPageEditorPart) {
+			MultiPageEditorPart multiPageEditorPart = (MultiPageEditorPart) activeEditor;
+			Object activePage = multiPageEditorPart.getSelectedPage();
+			if (activePage instanceof ITextEditor) {
+				return (ITextEditor) activePage;
+			}
 		}
 		return null;
 	}

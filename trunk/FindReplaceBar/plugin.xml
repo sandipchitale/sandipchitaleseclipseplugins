@@ -47,7 +47,7 @@
             <with
                   variable="activePart">
                <instanceof
-                     value="org.eclipse.ui.texteditor.ITextEditor">
+                     value="org.eclipse.ui.IEditorPart">
                </instanceof>
             </with>
          </enabledWhen>
