@@ -2,7 +2,7 @@
 <feature
       id="FindReplaceBarFeature"
       label="Find Replace Bar Feature"
-      version="1.0.9.qualifier"
+      version="1.0.10.qualifier"
       provider-name="Sandip Chitale">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">

@@ -33,8 +33,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -69,8 +69,8 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	boolean wasHidden = true;
 	private Combo findCombo;
 
-	private ToolItem allScope;
-	private ToolItem selectedLinesScope;
+//	private ToolItem allScope;
+//	private ToolItem selectedLinesScope;
 
 	private ToolItem previous;
 	private ToolItem next;
@@ -114,44 +114,37 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		RowLayout rowLayout = new RowLayout();
-		rowLayout.center = true;
-		rowLayout.spacing = 5;
-		rowLayout.marginTop = 0;
-		rowLayout.marginBottom = 0;
-		rowLayout.wrap = false;
-		composite.setLayout(rowLayout);
-
-		ToolBar closeToolBar = new ToolBar(composite, SWT.FLAT);
-		close = new ToolItem(closeToolBar, SWT.PUSH);
-		close.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CLOSE));
-		close.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				getViewSite().getWorkbenchWindow().getActivePage().hideView(FindReplaceBarViewPart.this);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 12;
+		gridLayout.makeColumnsEqualWidth = false;
+		gridLayout.horizontalSpacing = 5;
+		gridLayout.marginTop = 2;
+		gridLayout.marginBottom = 2;
+		gridLayout.marginHeight = 0;
+		gridLayout.verticalSpacing = 0;
+		composite.setLayout(gridLayout);
 
 		Label findLabel = new Label(composite, SWT.RIGHT);
+		findLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		findLabel.setText("Find:");
 
-		ToolBar scopeToolbar = new ToolBar(composite, SWT.FLAT);
-		allScope = new ToolItem(scopeToolbar, SWT.RADIO | SWT.FLAT);
-		allScope.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND_SCOPE_ALL));
-		allScope.setSelection(true);
-		allScope.setToolTipText("Find in All Lines");
-		selectedLinesScope = new ToolItem(scopeToolbar, SWT.RADIO | SWT.FLAT);
-		selectedLinesScope.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND_SCOPE_SELECTED_LINES));
-		selectedLinesScope.setToolTipText("Find in Selected Lines");
+//		ToolBar scopeToolbar = new ToolBar(composite, SWT.FLAT);
+//		scopeToolbar.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+//		allScope = new ToolItem(scopeToolbar, SWT.RADIO | SWT.FLAT);
+//		allScope.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND_SCOPE_ALL));
+//		allScope.setSelection(true);
+//		allScope.setToolTipText("Find in All Lines");
+//
+//		selectedLinesScope = new ToolItem(scopeToolbar, SWT.RADIO | SWT.FLAT);
+//		selectedLinesScope.setEnabled(false);
+//		selectedLinesScope.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND_SCOPE_SELECTED_LINES));
+//		selectedLinesScope.setToolTipText("Find in Selected Lines");
 
 		findCombo = new Combo(composite, SWT.DROP_DOWN);
 		findCombo.setText("            ");
-	    findCombo.setLayoutData(new RowData(findCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
+		GridData findComboGridData =  new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+		findComboGridData.widthHint = findCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	    findCombo.setLayoutData(findComboGridData);
 	    findCombo.setText("");
 
 	    findCombo.addFocusListener(new FocusListener() {
@@ -164,6 +157,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		});
 
 	    ToolBar previousNextToolbar = new ToolBar(composite, SWT.FLAT);
+	    previousNextToolbar.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		previous = new ToolItem(previousNextToolbar, SWT.PUSH);
 		previous.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_BACK));
 		previous.setToolTipText("Find Previous");
@@ -191,10 +185,12 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		});
 
 		Label separator1 = new Label(composite, SWT.NONE);
+		separator1.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		separator1.setText("|");
 		separator1.setForeground(separator1.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
 		ToolBar countOfTotalToolbar = new ToolBar(composite, SWT.FLAT);
+		countOfTotalToolbar.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		countOfTotal = new ToolItem(countOfTotalToolbar, SWT.CHECK);
 		countOfTotal.setSelection(true);
 		countOfTotal.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_COUNT_OF_TOTAL));
@@ -208,17 +204,20 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		});
 
 		total = new Text(composite,  SWT.SINGLE | SWT.RIGHT | SWT.BORDER);
+		total.setText("      ");
+		GridData totalGridData =  new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+		totalGridData.widthHint = total.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		total.setLayoutData(totalGridData);
+		total.setText("");
 		total.setEditable(false);
 
-		total.setText("      ");
-		total.setLayoutData(new RowData(total.computeSize(SWT.DEFAULT, SWT.DEFAULT)));
-		total.setText("");
-
 		Label separator2 = new Label(composite, SWT.NONE);
+		separator2.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		separator2.setText("|");
 		separator2.setForeground(separator2.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
 		ToolBar optionsToolbar = new ToolBar(composite, SWT.FLAT);
+		optionsToolbar.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		caseSensitive = new ToolItem(optionsToolbar, SWT.CHECK | SWT.FLAT);
 		caseSensitive.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CASE_SENSITIVE));
 		caseSensitive.setToolTipText("Case Sensitive");
@@ -262,9 +261,10 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 
-		Label separator3 = new Label(composite, SWT.NONE);
-		separator3.setText("|");
-		separator3.setForeground(separator3.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+//		Label separator3 = new Label(composite, SWT.NONE);
+//		separator3.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+//		separator3.setText("|");
+//		separator3.setForeground(separator3.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
 //		Label replaceLabel = new Label(composite, SWT.RIGHT);
 //		replaceLabel.setText("Replace with:");
@@ -282,12 +282,12 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 //		replaceAll = new ToolItem(replaceToolbar, SWT.PUSH);
 //		replaceAll.setText("Replace All");
 //
-//		Label separator4 = new Label(composite, SWT.NONE);
-//		separator4.setText("|");
-//		separator4.setForeground(separator2.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		Label separator4 = new Label(composite, SWT.NONE);
+		separator4.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 
-		ToolBar showFindReplaceDialogToolbar = new ToolBar(composite, SWT.FLAT);
-		showFindReplaceDialog = new ToolItem(showFindReplaceDialogToolbar, SWT.PUSH);
+		ToolBar toolsToolbar = new ToolBar(composite, SWT.FLAT);
+		toolsToolbar.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		showFindReplaceDialog = new ToolItem(toolsToolbar, SWT.PUSH);
 		showFindReplaceDialog.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_FIND));
 		showFindReplaceDialog.setToolTipText("Find/Replace...");
 
@@ -302,7 +302,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 				widgetSelected(e);
 			}
 		});
-		showPreferences = new ToolItem(showFindReplaceDialogToolbar, SWT.PUSH);
+		showPreferences = new ToolItem(toolsToolbar, SWT.PUSH);
 		showPreferences.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_PREFERENCES));
 		showPreferences.setToolTipText("Preferences...");
 
@@ -318,8 +318,29 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 			}
 		});
 
+		Label separator5 = new Label(composite, SWT.NONE);
+		separator5.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		separator5.setText("|");
+		separator5.setForeground(separator5.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+
+		ToolBar closeToolBar = new ToolBar(composite, SWT.FLAT | SWT.RIGHT);
+		closeToolBar.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+		close = new ToolItem(closeToolBar, SWT.PUSH);
+		close.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CLOSE));
+		close.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				getViewSite().getWorkbenchWindow().getActivePage().hideView(FindReplaceBarViewPart.this);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+
 		findCombo.addModifyListener(modifyListener);
-		
+
 		// Register as focus control
 		IFocusService focusService = (IFocusService) getSite().getService(IFocusService.class);
 		focusService.addFocusTracker(findCombo, "findreplacebar.findCombo");
@@ -369,7 +390,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	public int computePreferredSize(boolean width, int availableParallel,
 			int availablePerpendicular, int preferredResult) {
 		if (!width) {
-			return 28;
+			return 26;
 		}
 		return 0;
 	}
@@ -502,7 +523,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		if (findReplaceTarget != null) {
 			try {
 				String findText = findCombo.getText();
-				
+
 				if (regularExpression.getSelection()) {
 					// Make sure it is a valid regexp
 					try {
@@ -514,7 +535,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 						return;
 					}
 				}
-				
+
 				if (findReplaceTarget instanceof IFindReplaceTargetExtension) {
 					IFindReplaceTargetExtension findReplaceTargetExtension = (IFindReplaceTargetExtension) findReplaceTarget;
 					findReplaceTargetExtension.beginSession();
