@@ -153,6 +153,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 
 			public void focusGained(FocusEvent e) {
 				findCombo.setForeground(null);
+				incrementalOffset = -1;
 			}
 		});
 
@@ -599,7 +600,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 					}
 					findCombo.setForeground(findCombo.getDisplay().getSystemColor(SWT.COLOR_RED));
 					textWidget.getDisplay().beep();
-					statusLineManager.setMessage("String not found.");
+					statusLineManager.setMessage("String not found");
 				}
 			} finally {
 				if (findReplaceTarget instanceof IFindReplaceTargetExtension) {
