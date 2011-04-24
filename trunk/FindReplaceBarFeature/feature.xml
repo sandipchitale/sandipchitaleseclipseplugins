@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="FindReplaceBarFeature"
-      label="Find Replace Bar Feature"
+      label="%Feature-Name"
       version="1.0.11.qualifier"
-      provider-name="Sandip Chitale">
+      provider-name="%Feature-Vendor">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
-      This feature implements the Find/Replace bar similar to the ones found in popular browser.
+      This feature implements the Find/Replace bar similar to the ones found in popular browsers.
    </description>
 
    <copyright>
@@ -16,6 +16,10 @@
    <license>
       BSD
    </license>
+
+   <url>
+      <update label="Find/Replace Bar Update Site" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/FindReplaceBarUpdateSite/"/>
+   </url>
 
    <plugin
          id="FindReplaceBar"
