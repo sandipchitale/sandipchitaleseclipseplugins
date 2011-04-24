@@ -4,9 +4,9 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="Find Replace Bar Context."
+            description="%FindReplaceBar.context.description"
             id="findreplacebar.context"
-            name="%FindBar.context.name"
+            name="%FindReplaceBar.context.name"
             parentId="org.eclipse.ui.textEditorScope">
       </context>
    </extension>
@@ -106,7 +106,7 @@
             class="findreplacebar.FindReplaceBarViewPart"
             icon="icons/find.png"
             id="FindReplaceBar.view"
-            name="Find Replace Bar"
+            name="%findreplacebar.name"
             restorable="true">
       </view>
       <stickyView
@@ -146,7 +146,7 @@
             category="org.eclipse.ui.preferencePages.GeneralTextEditor"
             class="findreplacebar.FindReplaceBarPreferencePage"
             id="FindReplaceBar.preferences.page"
-            name="Find Replace Bar">
+            name="%findreplacebar.name">
          <keywordReference
                id="FindReplaceBar.find">
          </keywordReference>
@@ -157,15 +157,15 @@
    </extension>
    <extension
          id="FindReplaceBar.keywords"
-         name="Find Replace Bar keywords"
+         name="%findreplacebar.keywords.name"
          point="org.eclipse.ui.keywords">
       <keyword
             id="FindReplaceBar.find"
-            label="find">
+            label="%findreplacebar.keyword.find">
       </keyword>
       <keyword
             id="FindReplaceBar.replace"
-            label="replace">
+            label="%findreplacebar.keyword.replace">
       </keyword>
    </extension>
 </plugin>

@@ -12,16 +12,16 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "FindReplaceBar"; //$NON-NLS-1$
 	
-	static final String ICON_CLOSE = "icons/close.png"; 
-	static final String ICON_COUNT_OF_TOTAL = "icons/countOfTotal.png"; 
-	static final String ICON_FIND_SCOPE_ALL = "icons/findScopeAll.png";
-	static final String ICON_FIND_SCOPE_SELECTED_LINES = "icons/findScopeSelectedLines.png";
-	static final String ICON_CASE_SENSITIVE = "icons/casesensitive.png";
-	static final String ICON_REGULAR_EXRESSION = "icons/regularexpression.png";
-	static final String ICON_WHOLE_WORD = "icons/wholeword.png";
+	static final String ICON_CLOSE = "icons/close.png";  //$NON-NLS-1$
+	static final String ICON_COUNT_OF_TOTAL = "icons/countOfTotal.png";  //$NON-NLS-1$
+	static final String ICON_FIND_SCOPE_ALL = "icons/findScopeAll.png"; //$NON-NLS-1$
+	static final String ICON_FIND_SCOPE_SELECTED_LINES = "icons/findScopeSelectedLines.png"; //$NON-NLS-1$
+	static final String ICON_CASE_SENSITIVE = "icons/casesensitive.png"; //$NON-NLS-1$
+	static final String ICON_REGULAR_EXRESSION = "icons/regularexpression.png"; //$NON-NLS-1$
+	static final String ICON_WHOLE_WORD = "icons/wholeword.png"; //$NON-NLS-1$
 	
-	static final String ICON_FIND = "icons/find.png"; 
-	static final String ICON_PREFERENCES = "icons/preferences.png"; 
+	static final String ICON_FIND = "icons/find.png";  //$NON-NLS-1$
+	static final String ICON_PREFERENCES = "icons/preferences.png";  //$NON-NLS-1$
 
 
 	// The shared instance

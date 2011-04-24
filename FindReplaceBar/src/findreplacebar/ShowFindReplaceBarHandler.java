@@ -45,7 +45,7 @@ public class ShowFindReplaceBarHandler extends AbstractHandler {
 		IWorkbenchPage activePage = workbenchWindow.getActivePage();
 		IViewPart viewPart;
 		try {
-			viewPart = activePage.showView("FindReplaceBar.view");
+			viewPart = activePage.showView("FindReplaceBar.view"); //$NON-NLS-1$
 			activePage.activate(viewPart);
 			((FindReplaceBarViewPart)viewPart).startFind();
 		} catch (PartInitException e) {

@@ -7,6 +7,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class FindReplaceBarPreferencePage extends FieldEditorPreferencePage
 		implements IWorkbenchPreferencePage {
+	
+	static final String ID_FIND_REPLACE_BAR_PREFERENCE_PAGE = "FindReplaceBar.preferences.page"; //$NON-NLS-1$
 
 	public FindReplaceBarPreferencePage() {
 		super(FieldEditorPreferencePage.GRID);
@@ -21,7 +23,7 @@ public class FindReplaceBarPreferencePage extends FieldEditorPreferencePage
 	protected void createFieldEditors() {
 		BooleanFieldEditor overrideFindReplaceDialogField = new BooleanFieldEditor(
 				FindReplaceBarPreferenceInitializer.OVERRIDE_FIND_REPLACE_DIALOG,
-				"Override Find/Replace Dialog", getFieldEditorParent());
+				Messages.FindReplaceBarPreferencePage_OverrideFindReplaceFieldDescription, getFieldEditorParent());
 		addField(overrideFindReplaceDialogField);
 	}
 }
