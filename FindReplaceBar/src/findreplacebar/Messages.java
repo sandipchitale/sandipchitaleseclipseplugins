@@ -14,7 +14,10 @@ public class Messages extends NLS {
 	public static String FindReplaceBarViewPart_Regular_Expression_Tooltip;
 	public static String FindReplaceBarViewPart_Show_Find_Replace_Dialog_Tooltip;
 	public static String FindReplaceBarViewPart_Show_Preferences_Tooltip;
-	public static String FindReplaceBarViewPart_Show_Total_Matches_Tooltip;
+	public static String FindReplaceBarViewPart_Show_Matche_Counts_Tooltip;
+	public static String FindReplaceBarViewPart_Preceding_Matches_Tooltip;
+	public static String FindReplaceBarViewPart_Succeeding_Matches_Tooltip;
+	public static String FindReplaceBarViewPart_Total_Matches_Tooltip;
 	public static String FindReplaceBarViewPart_String_Not_Found_Message;
 	public static String FindReplaceBarViewPart_Whole_Word_Tooltip;
 	static {

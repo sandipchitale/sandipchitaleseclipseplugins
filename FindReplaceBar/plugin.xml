@@ -168,4 +168,28 @@
             label="%findreplacebar.keyword.replace">
       </keyword>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            markerSeverity="0"
+            name="FindReplaceBar.annotationType">
+      </type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="FindReplaceBar.annotationType"
+            colorPreferenceKey="FIND_MATCH"
+            colorPreferenceValue="255,255,102"
+            highlightPreferenceKey="HIGHTLIGHT_FIND_MATCH"
+            highlightPreferenceValue="true"
+            includeOnPreferencePage="true"
+            label="Find Matches"
+            overviewRulerPreferenceKey="OVERVIEW_RULER_FIND_MATCH"
+            overviewRulerPreferenceValue="true"
+            textPreferenceKey="TEXT_FIND_MATCH"
+            textPreferenceValue="false"
+            verticalRulerPreferenceValue="false">
+      </specification>
+   </extension>
 </plugin>
