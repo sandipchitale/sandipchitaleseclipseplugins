@@ -12,6 +12,7 @@ public class Messages extends NLS {
 	public static String FindReplaceBarViewPart_Illegal_Regular_Expression_Message;
 	public static String FindReplaceBarViewPart_No_Find_Target_Message;
 	public static String FindReplaceBarViewPart_Regular_Expression_Tooltip;
+	public static String FindReplaceBarViewPart_Show_Matched_Groups_Tooltip;
 	public static String FindReplaceBarViewPart_Show_Find_Replace_Dialog_Tooltip;
 	public static String FindReplaceBarViewPart_Show_Preferences_Tooltip;
 	public static String FindReplaceBarViewPart_Show_Matche_Counts_Tooltip;

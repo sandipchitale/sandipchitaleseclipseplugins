@@ -2,11 +2,15 @@
 <feature
       id="FindReplaceBarFeature"
       label="%Feature-Name"
-      version="1.0.13.qualifier"
+      version="1.0.14.qualifier"
       provider-name="%Feature-Vendor">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
-      This feature implements the Find/Replace bar similar to the ones found in popular browsers.
+      This feature implements the Find/Replace bar similar to the ones
+found in popular browsers.
+
+* Added the combo to show the text matched
+  with regular expression groups (New!)
    </description>
 
    <copyright>

@@ -2,6 +2,8 @@ package findreplacebar;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,8 +98,10 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	private GridData allMatchesGridData;
 
 	private ToolItem caseSensitive;
-	private ToolItem regularExpression;
 	private ToolItem wholeWord;
+	private ToolItem regularExpression;
+	private Combo groupsCombo;
+	private GridData groupsComboGridData;
 
 //	private Combo replaceCombo;
 //	private ToolItem replaceFind;
@@ -136,7 +140,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	public void createPartControl(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
 		compositeGridLayout = new GridLayout();
-		compositeGridLayout.numColumns = 17;
+		compositeGridLayout.numColumns = 18;
 		compositeGridLayout.makeColumnsEqualWidth = false;
 		compositeGridLayout.horizontalSpacing = 5;
 		compositeGridLayout.marginTop = 2;
@@ -162,7 +166,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 //		selectedLinesScope.setToolTipText("Find in Selected Lines");
 
 		findCombo = new Combo(composite, SWT.DROP_DOWN);
-		findCombo.setText("            "); //$NON-NLS-1$
+		findCombo.setText("                        "); //$NON-NLS-1$
 		GridData findComboGridData =  new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
 		findComboGridData.widthHint = findCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 	    findCombo.setLayoutData(findComboGridData);
@@ -310,13 +314,25 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 				if (regularExpression.getSelection()) {
 					wholeWord.setSelection(false);
 				}
+				adjustGroupsComboVisibility();
 				find(true, true);
 				adjustRegularExpressionState();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
-
+		
+		groupsCombo = new Combo(composite, SWT.READ_ONLY | SWT.DROP_DOWN | SWT.FLAT | SWT.NO_FOCUS);
+		groupsCombo.setText("                        "); //$NON-NLS-1$
+		groupsComboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		groupsComboGridData.widthHint = groupsCombo.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		groupsComboGridData.exclude = true;
+		groupsCombo.setLayoutData(groupsComboGridData);
+		groupsCombo.setText(EMPTY);
+		groupsCombo.setItems(new String[0]);
+		groupsCombo.setVisible(false);
+		groupsCombo.setToolTipText(Messages.FindReplaceBarViewPart_Show_Matched_Groups_Tooltip);
+		
 //		Label separator3 = new Label(composite, SWT.NONE);
 //		separator3.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 //		separator3.setText("|"); //$NON-NLS-1$
@@ -338,8 +354,11 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 //		replaceAll = new ToolItem(replaceToolbar, SWT.PUSH);
 //		replaceAll.setText("Replace All");
 //
-		Label separator4 = new Label(composite, SWT.NONE);
-		separator4.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		Label separator4 = new Label(composite, SWT.RIGHT);
+		separator4GridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		separator4.setLayoutData(separator4GridData);
+		separator4.setText("|"); //$NON-NLS-1$
+		separator4.setForeground(separator2.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
 		ToolBar toolsToolbar = new ToolBar(composite, SWT.FLAT);
 		toolsToolbar.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
@@ -397,11 +416,20 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 
 		findCombo.addModifyListener(modifyListener);
 		
+		adjustGroupsComboVisibility();
 		adjustMatchCountVisibility();
 
 		// Register as focus control
 		IFocusService focusService = (IFocusService) getSite().getService(IFocusService.class);
 		focusService.addFocusTracker(findCombo, "findreplacebar.findCombo"); //$NON-NLS-1$
+	}
+	
+	private void adjustGroupsComboVisibility() {
+		groupsComboGridData.exclude = !regularExpression.getSelection();
+		groupsCombo.setVisible(regularExpression.getSelection());
+		separator4GridData.grabExcessHorizontalSpace = !regularExpression.getSelection();
+		
+		composite.layout();
 	}
 	
 	private void adjustMatchCountVisibility() {
@@ -498,6 +526,9 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		}
 	};
 
+	private GridData separator4GridData;
+
+
 	private class HideFindReplaceBarHandler extends AbstractHandler {
 		public Object execute(ExecutionEvent event) throws ExecutionException {
 			hideFindBar();
@@ -531,6 +562,8 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		previous.setEnabled(!EMPTY.equals(text));
 		next.setEnabled(!EMPTY.equals(text));
 		//count.setText(EMPTY);
+		precedingMatches.setText(EMPTY);
+		succeedingMatches.setText(EMPTY);
 		allMatches.setText(EMPTY);
 		wholeWord.setEnabled((!EMPTY.equals(text)) && (isWord(text)));
 	}
@@ -591,10 +624,21 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 			try {
 				String findText = findCombo.getText();
 				
+				Pattern pattern = null;
+				
+				if (!wrapping) {
+					groupsCombo.setText(EMPTY);
+					groupsCombo.setItems(new String[0]);
+				}
+				
 				if (regularExpression.getSelection()) {
 					// Make sure it is a valid regexp
+					int flags = 0;
+					if (!caseSensitive.getSelection()) {
+						flags |= Pattern.CASE_INSENSITIVE;
+					}
 					try {
-						Pattern.compile(findText);
+						pattern = Pattern.compile(findText, flags);
 					} catch (PatternSyntaxException e) {
 						error(Messages.FindReplaceBarViewPart_Illegal_Regular_Expression_Message, true);
 						return;
@@ -651,9 +695,23 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 				if (newOffset != -1) {
 					foundOne = true;
 					findCombo.setBackground(null);
+					selection = textWidget.getSelection();
 					if (!forward) {
-						selection = textWidget.getSelection();
 						incrementalOffset = selection.x;
+					}
+					if (pattern != null && regularExpression.getSelection()) {
+						String selectionText = textWidget.getSelectionText();
+						Matcher matcher = pattern.matcher(selectionText);
+						if (matcher.matches()) {
+							List<String> groupTexts = new LinkedList<String>();
+							int groupCount = matcher.groupCount() + 1;
+							for (int m = 1; m < groupCount; m++) {
+								groupTexts.add(m + " " + matcher.group(m)); //$NON-NLS-1$
+							}
+							groupTexts.add(0 + " " + matcher.group(0)); //$NON-NLS-1$
+							groupsCombo.setItems(groupTexts.toArray(new String[groupTexts.size()]));
+							groupsCombo.select(0);
+						}
 					}
 					statusLineManager.setErrorMessage(EMPTY);
 				} else {
