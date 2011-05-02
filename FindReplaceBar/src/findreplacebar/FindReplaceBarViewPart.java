@@ -133,6 +133,8 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		handlerService.activateHandler("findreplacebar.hide", new HideFindReplaceBarHandler()); //$NON-NLS-1$
 		handlerService.activateHandler("findreplacebar.findPrevious", new FindPreviousHandler()); //$NON-NLS-1$
 		handlerService.activateHandler("findreplacebar.findNext", new FindNextHandler()); //$NON-NLS-1$
+		handlerService.activateHandler("findreplacebar.toggleWholeWordMode", new ToggleWholeWordModeHandler()); //$NON-NLS-1$
+		handlerService.activateHandler("findreplacebar.toggleRegularExpressionMode", new ToggleRegularExpressionModeHandler()); //$NON-NLS-1$
 		handlerService.activateHandler("findreplacebar.showFindReplaceDialog", new ShowFindReplaceDialogHandler()); //$NON-NLS-1$
 	}
 
@@ -297,10 +299,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		wholeWord.setToolTipText(Messages.FindReplaceBarViewPart_Whole_Word_Tooltip);
 		wholeWord.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				if (wholeWord.getSelection()) {
-					regularExpression.setSelection(false);
-				}
-				find(true, true);
+				toggleWholeWordMode();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -311,12 +310,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		regularExpression.setToolTipText(Messages.FindReplaceBarViewPart_Regular_Expression_Tooltip);
 		regularExpression.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				if (regularExpression.getSelection()) {
-					wholeWord.setSelection(false);
-				}
-				adjustGroupsComboVisibility();
-				find(true, true);
-				adjustRegularExpressionState();
+				toggleRegularExpressionMode();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -446,7 +440,23 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 		
 		composite.layout();
 	}
+	
+	private void toggleWholeWordMode() {
+		if (wholeWord.getSelection()) {
+			regularExpression.setSelection(false);
+		}
+		find(true, true);
+	}
 
+	private void toggleRegularExpressionMode() {
+		if (regularExpression.getSelection()) {
+			wholeWord.setSelection(false);
+		}
+		adjustGroupsComboVisibility();
+		find(true, true);
+		adjustRegularExpressionState();
+	}
+	
 	@Override
 	public void setFocus() {
 		findCombo.setFocus();
@@ -546,6 +556,22 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	private class FindNextHandler extends AbstractHandler {
 		public Object execute(ExecutionEvent event) throws ExecutionException {
 			findNext();
+			return null;
+		}
+	}
+	
+	private class ToggleWholeWordModeHandler extends AbstractHandler {
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			wholeWord.setSelection(!wholeWord.getSelection());
+			toggleWholeWordMode();
+			return null;
+		}
+	}
+	
+	private class ToggleRegularExpressionModeHandler extends AbstractHandler {
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			regularExpression.setSelection(!regularExpression.getSelection());
+			toggleRegularExpressionMode();
 			return null;
 		}
 	}
