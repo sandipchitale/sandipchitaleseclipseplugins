@@ -442,10 +442,16 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	}
 	
 	private void toggleWholeWordMode() {
-		if (wholeWord.getSelection()) {
-			regularExpression.setSelection(false);
+		if (wholeWord.isEnabled()) {
+			if (wholeWord.getSelection()) {
+				regularExpression.setSelection(false);
+			}
+			adjustGroupsComboVisibility();
+			find(true, true);
+			adjustRegularExpressionState();
+		} else {
+			beep();
 		}
-		find(true, true);
 	}
 
 	private void toggleRegularExpressionMode() {
@@ -562,8 +568,12 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	
 	private class ToggleWholeWordModeHandler extends AbstractHandler {
 		public Object execute(ExecutionEvent event) throws ExecutionException {
-			wholeWord.setSelection(!wholeWord.getSelection());
-			toggleWholeWordMode();
+			if (wholeWord.isEnabled()) {
+				wholeWord.setSelection(!wholeWord.getSelection());
+				toggleWholeWordMode();
+			} else {
+				beep();
+			}
 			return null;
 		}
 	}
