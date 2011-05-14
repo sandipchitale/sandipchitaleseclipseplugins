@@ -419,6 +419,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 	}
 	
 	private void adjustGroupsComboVisibility() {
+		groupsCombo.setListVisible(regularExpression.getSelection());
 		groupsComboGridData.exclude = !regularExpression.getSelection();
 		groupsCombo.setVisible(regularExpression.getSelection());
 		separator4GridData.grabExcessHorizontalSpace = !regularExpression.getSelection();
@@ -676,6 +677,7 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 					try {
 						pattern = Pattern.compile(findText, flags);
 					} catch (PatternSyntaxException e) {
+						groupsCombo.setListVisible(false);
 						error(Messages.FindReplaceBarViewPart_Illegal_Regular_Expression_Message, true);
 						return;
 					}
@@ -741,12 +743,14 @@ public class FindReplaceBarViewPart extends ViewPart implements IViewLayout, ISi
 						if (matcher.matches()) {
 							List<String> groupTexts = new LinkedList<String>();
 							int groupCount = matcher.groupCount() + 1;
+							groupTexts.add(0 + " " + matcher.group(0)); //$NON-NLS-1$
 							for (int m = 1; m < groupCount; m++) {
 								groupTexts.add(m + " " + matcher.group(m)); //$NON-NLS-1$
 							}
-							groupTexts.add(0 + " " + matcher.group(0)); //$NON-NLS-1$
 							groupsCombo.setItems(groupTexts.toArray(new String[groupTexts.size()]));
 							groupsCombo.select(0);
+							groupsCombo.setVisibleItemCount(groupCount);
+							groupsCombo.setListVisible(groupCount > 1);
 						}
 					}
 					statusLineManager.setErrorMessage(EMPTY);
