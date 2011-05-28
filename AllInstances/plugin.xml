@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.debug.ui.category.run"
+            id="AllInstances.command"
+            name="All Instances Of Java Type">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="AllInstances.command"
+            icon="icons/all_instances.gif">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="allinstances.AllInstancesOfJavaTypeHandler"
+            commandId="AllInstances.command">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.debug.ui.VariableView?after=additions">
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.debug.ui.ExpressionView?after=additions">
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.run?after=additions">
+         <separator
+               name="AllInstances.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>
