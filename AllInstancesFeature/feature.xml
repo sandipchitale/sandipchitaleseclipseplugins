@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="AllInstancesFeature"
+      label="All Instances of Java Type Feature"
+      version="1.0.0.qualifier"
+      provider-name="Sandip Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      This feature allows you to see instances of a Java Class selected using the Open Java Type dialog.
+   </description>
+
+   <copyright>
+      Copyright 2011, Sandip Chitale
+   </copyright>
+
+   <license>
+      BSD
+   </license>
+
+   <plugin
+         id="AllInstances"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
