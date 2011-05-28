@@ -13,7 +13,7 @@
          point="org.eclipse.ui.commandImages">
       <image
             commandId="AllInstances.command"
-            icon="icons/all_instances.gif">
+            icon="platform:/plugin/org.eclipse.jdt.debug.ui/icons/full/elcl16/all_instances.gif">
       </image>
    </extension>
    <extension
