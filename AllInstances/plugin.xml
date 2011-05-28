@@ -28,24 +28,6 @@
       <menuContribution
             allPopups="false"
             locationURI="toolbar:org.eclipse.debug.ui.VariableView?after=additions">
-         <command
-               commandId="AllInstances.command"
-               label="All Instances of Java Type..."
-               style="push">
-         </command>
-      </menuContribution>
-      <menuContribution
-            allPopups="false"
-            locationURI="toolbar:org.eclipse.debug.ui.ExpressionView?after=additions">
-         <command
-               commandId="AllInstances.command"
-               label="All Instances of Java Type..."
-               style="push">
-         </command>
-      </menuContribution>
-      <menuContribution
-            allPopups="false"
-            locationURI="menu:org.eclipse.ui.run?after=additions">
          <separator
                name="AllInstances.separator1"
                visible="true">
@@ -56,6 +38,85 @@
                style="push">
          </command>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.debug.ui.VariableView?after=additions">
+         <separator
+               name="AllInstances.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.debug.ui.VariableView?after=additions">
+         <separator
+               name="AllInstances.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.debug.ui.ExpressionView?after=additions">
+         <separator
+               name="AllInstances.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.debug.ui.ExpressionView?after=additions">
+         <separator
+               name="AllInstances.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.debug.ui.ExpressionView?after=additions">
+         <separator
+               name="AllInstances.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.run?after=emptyBreakpointGroup">
+         <separator
+               name="AllInstances.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="AllInstances.command"
+               label="All Instances of Java Type..."
+               style="push">
+         </command>
+      </menuContribution>
+
    </extension>
 
 </plugin>
