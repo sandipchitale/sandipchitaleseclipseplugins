@@ -37,7 +37,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
 @SuppressWarnings("restriction")
 public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 
-	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Shell shell = HandlerUtil.getActiveShell(event);
 		if (shell != null) {
