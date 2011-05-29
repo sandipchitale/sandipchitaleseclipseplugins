@@ -52,6 +52,12 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 				MessageDialog.openError(shell, "No Java Debug Session", "No running Java debug session is selected in Debug view!");
 				return null;
 			}
+			
+			if (!target.supportsInstanceRetrieval()) {
+				MessageDialog.openError(shell, "Unsupported Java Debug Session", "JVM running Java debug session does not support instances.");
+				return null;
+			}
+			
 			// Prompt the user for a Java Class
 			SelectionDialog dialog = new OpenTypeSelectionDialog(shell, true, PlatformUI.getWorkbench()
 					.getProgressService(), null, IJavaSearchConstants.CLASS);
@@ -62,33 +68,36 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 				Object[] typesArray = dialog.getResult();
 				if (typesArray != null && typesArray.length > 0 && typesArray[0] instanceof IType) {
 					IType iType = (IType) typesArray[0];
-					IJavaType type = null;
 					IJavaType[] types;
 					try {
 						types = target.getJavaTypes(iType.getFullyQualifiedName());
-						if (types != null && types.length > 0) {
-							type = types[0];
-						} else {
-							// If the type is not known the the VM, open
+						if (types == null || types.length == 0) {
+							// If the type is not known the VM, open
 							// a pop-up dialog with 0 instances
 							MessageDialog.openError(shell, "No Instances", iType.getFullyQualifiedName());
 							return null;
 						}
-					} catch (DebugException e) {
-						MessageDialog.openError(shell, "Exception",
-								"Exception while trying to get all instances of :" + iType.getElementName());
-					}
-					if (type instanceof JDIReferenceType) {
-						JDIReferenceType rtype = (JDIReferenceType) type;
-						try {
-							JDIAllInstancesValue aiv = new JDIAllInstancesValue(
-									(JDIDebugTarget) rtype.getDebugTarget(), rtype);
-							DebugPlugin
-							.getDefault()
-							.getExpressionManager()
-							.addExpression(
-									new JavaInspectExpression("Instances Of " + rtype.getName(), aiv));
+						boolean activateExpressionsView = false;
+						for (IJavaType type : types) {
+							if (type instanceof JDIReferenceType) {
+								JDIReferenceType rtype = (JDIReferenceType) type;
+								try {
+									JDIAllInstancesValue aiv = new JDIAllInstancesValue(
+											(JDIDebugTarget) rtype.getDebugTarget(), rtype);
+									DebugPlugin
+									.getDefault()
+									.getExpressionManager()
+									.addExpression(
+											new JavaInspectExpression("Instances Of " + rtype.getName(), aiv));
 
+									activateExpressionsView = true;
+								} catch (DebugException e) {
+									MessageDialog.openError(shell, "Exception",
+											"Exception while showing all instances of :" + iType.getElementName());
+								}
+							}
+						}
+						if (activateExpressionsView) {
 							IWorkbenchPage page = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
 							IViewPart part = page.findView(IDebugUIConstants.ID_EXPRESSION_VIEW);
 							if (part == null) {
@@ -99,11 +108,10 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 							} else {
 								page.bringToTop(part);
 							}
-						} catch (DebugException e) {
-							MessageDialog.openError(shell, "Exception",
-									"Exception while showing all instances of :" + iType.getElementName());
 						}
-						return null;
+					} catch (DebugException e) {
+						MessageDialog.openError(shell, "Exception",
+								"Exception while trying to get all instances of :" + iType.getElementName());
 					}
 				}
 			}
