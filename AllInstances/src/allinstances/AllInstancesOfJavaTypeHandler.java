@@ -6,18 +6,20 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.model.IWatchExpression;
+import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.debug.core.IJavaClassObject;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
+import org.eclipse.jdt.debug.core.IJavaObject;
+import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaType;
+import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.internal.debug.core.logicalstructures.JDIAllInstancesValue;
 import org.eclipse.jdt.internal.debug.core.model.JDIClassType;
 import org.eclipse.jdt.internal.debug.core.model.JDIDebugTarget;
-import org.eclipse.jdt.internal.debug.core.model.JDIReferenceType;
 import org.eclipse.jdt.internal.debug.ui.display.JavaInspectExpression;
 import org.eclipse.jdt.internal.ui.JavaUIMessages;
 import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
@@ -86,7 +88,37 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						for (IJavaType type : types) {
 							if (type instanceof JDIClassType) {
 								JDIClassType classType = (JDIClassType) type;
+								IJavaClassObject classObject = classType.getClassObject();
 								try {
+									try {
+										IThread suspendedThread = null;
+										IThread[] threads = target.getThreads();
+										for (IThread thread : threads) {
+											if (thread.isSuspended()) {
+												suspendedThread = thread;
+												break;
+											}
+										}
+
+										if (suspendedThread != null) {
+											IJavaValue javaValue = classObject.sendMessage("getProtectionDomain", "()Ljava/security/ProtectionDomain;", null, (IJavaThread) suspendedThread, null);
+											if (javaValue instanceof IJavaObject) {
+												javaValue = ((IJavaObject) javaValue).sendMessage("getCodeSource", "()Ljava/security/CodeSource;", null, (IJavaThread) suspendedThread, null);
+												if (javaValue instanceof IJavaObject) {
+													IJavaObject classLoaderObject = classType.getClassLoaderObject();
+													DebugPlugin
+													.getDefault()
+													.getExpressionManager()
+													.addExpression(
+															new JavaInspectExpression(
+																	"CodeSource of " + classType.getName() + (classLoaderObject == null ? "" : " of " + classLoaderObject),
+																	javaValue));
+												}
+											}
+										}
+									} catch (Exception e) {
+									}
+									
 //									// Add expression to show code source
 //									final IWatchExpression codeSourceExpression = ;
 //									DebugPlugin.getDefault().getExpressionManager().addExpression(codeSourceExpression);
@@ -97,18 +129,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 											.getDefault()
 											.getExpressionManager()
 											.addExpression(
-													new JavaInspectExpression(
-															"Instances Of " + classType.getName(), aiv) {
-														@Override
-														public void dispose() {
-//															try {
-//																DebugPlugin.getDefault().getExpressionManager()
-//																.removeExpression(codeSourceExpression);
-//															} catch (RuntimeException re) {
-//															}
-															super.dispose();
-														}
-													});
+													new JavaInspectExpression("Instances Of " + classType.getName(), aiv));
 
 									activateExpressionsView = true;
 								} catch (DebugException e) {
