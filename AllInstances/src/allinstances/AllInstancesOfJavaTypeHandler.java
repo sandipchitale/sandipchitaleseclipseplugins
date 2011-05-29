@@ -6,6 +6,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.model.IValue;
+import org.eclipse.debug.core.model.IWatchExpression;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.core.IType;
@@ -14,6 +16,7 @@ import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaType;
 import org.eclipse.jdt.internal.debug.core.logicalstructures.JDIAllInstancesValue;
 import org.eclipse.jdt.internal.debug.core.model.JDIDebugTarget;
+import org.eclipse.jdt.internal.debug.core.model.JDINullValue;
 import org.eclipse.jdt.internal.debug.core.model.JDIReferenceType;
 import org.eclipse.jdt.internal.debug.ui.display.JavaInspectExpression;
 import org.eclipse.jdt.internal.ui.JavaUIMessages;
@@ -32,7 +35,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * This shows all instances of selected Java Type in the Expressions view.
  * 
  * @author Sandip Chitale
- *
+ * 
  */
 @SuppressWarnings("restriction")
 public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
@@ -49,15 +52,17 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 			// Is there a active Java debug context?
 			IJavaDebugTarget target = (IJavaDebugTarget) debugContext.getAdapter(IJavaDebugTarget.class);
 			if (target == null || target.isTerminated()) {
-				MessageDialog.openError(shell, "No Java Debug Session", "No running Java debug session is selected in Debug view!");
+				MessageDialog.openError(shell, "No Java Debug Session",
+						"No running Java debug session is selected in Debug view!");
 				return null;
 			}
-			
+
 			if (!target.supportsInstanceRetrieval()) {
-				MessageDialog.openError(shell, "Unsupported Java Debug Session", "JVM running Java debug session does not support instances.");
+				MessageDialog.openError(shell, "Unsupported Java Debug Session",
+						"JVM running Java debug session does not support instances.");
 				return null;
 			}
-			
+
 			// Prompt the user for a Java Class
 			SelectionDialog dialog = new OpenTypeSelectionDialog(shell, true, PlatformUI.getWorkbench()
 					.getProgressService(), null, IJavaSearchConstants.CLASS);
@@ -80,15 +85,35 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						boolean activateExpressionsView = false;
 						for (IJavaType type : types) {
 							if (type instanceof JDIReferenceType) {
-								JDIReferenceType rtype = (JDIReferenceType) type;
+								JDIReferenceType referenceType = (JDIReferenceType) type;
 								try {
+									// Add expression to show code source
+									final IWatchExpression codeSourceExpression = DebugPlugin
+											.getDefault()
+											.getExpressionManager()
+											.newWatchExpression(
+													referenceType.getName()
+															+ ".class.getProtectionDomain().getCodeSource()");
+									DebugPlugin.getDefault().getExpressionManager().addExpression(codeSourceExpression);
+
 									JDIAllInstancesValue aiv = new JDIAllInstancesValue(
-											(JDIDebugTarget) rtype.getDebugTarget(), rtype);
+											(JDIDebugTarget) referenceType.getDebugTarget(), referenceType);
 									DebugPlugin
-									.getDefault()
-									.getExpressionManager()
-									.addExpression(
-											new JavaInspectExpression("Instances Of " + rtype.getName(), aiv));
+											.getDefault()
+											.getExpressionManager()
+											.addExpression(
+													new JavaInspectExpression(
+															"Instances Of " + referenceType.getName(), aiv) {
+														@Override
+														public void dispose() {
+															try {
+																DebugPlugin.getDefault().getExpressionManager()
+																.removeExpression(codeSourceExpression);
+															} catch (RuntimeException re) {
+															}
+															super.dispose();
+														}
+													});
 
 									activateExpressionsView = true;
 								} catch (DebugException e) {
@@ -110,8 +135,8 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 							}
 						}
 					} catch (DebugException e) {
-						MessageDialog.openError(shell, "Exception",
-								"Exception while trying to get all instances of :" + iType.getElementName());
+						MessageDialog.openError(shell, "Exception", "Exception while trying to get all instances of :"
+								+ iType.getElementName());
 					}
 				}
 			}
