@@ -6,17 +6,17 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IWatchExpression;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.debug.core.IJavaClassObject;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaType;
 import org.eclipse.jdt.internal.debug.core.logicalstructures.JDIAllInstancesValue;
+import org.eclipse.jdt.internal.debug.core.model.JDIClassType;
 import org.eclipse.jdt.internal.debug.core.model.JDIDebugTarget;
-import org.eclipse.jdt.internal.debug.core.model.JDINullValue;
 import org.eclipse.jdt.internal.debug.core.model.JDIReferenceType;
 import org.eclipse.jdt.internal.debug.ui.display.JavaInspectExpression;
 import org.eclipse.jdt.internal.ui.JavaUIMessages;
@@ -84,33 +84,28 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						}
 						boolean activateExpressionsView = false;
 						for (IJavaType type : types) {
-							if (type instanceof JDIReferenceType) {
-								JDIReferenceType referenceType = (JDIReferenceType) type;
+							if (type instanceof JDIClassType) {
+								JDIClassType classType = (JDIClassType) type;
 								try {
-									// Add expression to show code source
-									final IWatchExpression codeSourceExpression = DebugPlugin
-											.getDefault()
-											.getExpressionManager()
-											.newWatchExpression(
-													referenceType.getName()
-															+ ".class.getProtectionDomain().getCodeSource()");
-									DebugPlugin.getDefault().getExpressionManager().addExpression(codeSourceExpression);
+//									// Add expression to show code source
+//									final IWatchExpression codeSourceExpression = ;
+//									DebugPlugin.getDefault().getExpressionManager().addExpression(codeSourceExpression);
 
 									JDIAllInstancesValue aiv = new JDIAllInstancesValue(
-											(JDIDebugTarget) referenceType.getDebugTarget(), referenceType);
+											(JDIDebugTarget) classType.getDebugTarget(), classType);
 									DebugPlugin
 											.getDefault()
 											.getExpressionManager()
 											.addExpression(
 													new JavaInspectExpression(
-															"Instances Of " + referenceType.getName(), aiv) {
+															"Instances Of " + classType.getName(), aiv) {
 														@Override
 														public void dispose() {
-															try {
-																DebugPlugin.getDefault().getExpressionManager()
-																.removeExpression(codeSourceExpression);
-															} catch (RuntimeException re) {
-															}
+//															try {
+//																DebugPlugin.getDefault().getExpressionManager()
+//																.removeExpression(codeSourceExpression);
+//															} catch (RuntimeException re) {
+//															}
 															super.dispose();
 														}
 													});
