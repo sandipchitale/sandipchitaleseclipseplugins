@@ -39,9 +39,9 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * This shows all instances of selected Java Type in the Expressions view.
- * 
+ *
  * @author Sandip Chitale
- * 
+ *
  */
 @SuppressWarnings("restriction")
 public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
@@ -94,6 +94,15 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 								JDIClassType classType = (JDIClassType) type;
 								IJavaClassObject classObject = classType.getClassObject();
 								try {
+
+									JDIAllInstancesValue aiv = new JDIAllInstancesValue(
+											(JDIDebugTarget) classType.getDebugTarget(), classType);
+									DebugPlugin
+											.getDefault()
+											.getExpressionManager()
+											.addExpression(
+													new JavaInspectExpression(classType.getName() + " Instances (" + classType.getInstanceCount() + ")", aiv));
+
 									try {
 										IThread suspendedThread = null;
 										IThread[] threads = target.getThreads();
@@ -115,7 +124,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 													.getExpressionManager()
 													.addExpression(
 															new JavaInspectExpression(
-																	"CodeSource of " + classType.getName() + (classLoaderObject == null ? "" : " of " + classLoaderObject),
+																	classType.getName() + " CodeSource" + (classLoaderObject == null ? "" : "(ClassLoader " + classLoaderObject + ")"),
 																	javaValue));
 												}
 											}
@@ -123,20 +132,13 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 									} catch (Exception e) {
 									}
 
-									JDIAllInstancesValue aiv = new JDIAllInstancesValue(
-											(JDIDebugTarget) classType.getDebugTarget(), classType);
-									DebugPlugin
-											.getDefault()
-											.getExpressionManager()
-											.addExpression(
-													new JavaInspectExpression("Instances Of " + classType.getName(), aiv));
 									// If no instances available - at least show the static fields
 									if (aiv.getValues().length == 0) {
 										IPreferenceStore preferenceStore = JDIDebugUIPlugin.getDefault().getPreferenceStore();
 										if (preferenceStore.getBoolean(IDebugUIConstants.ID_EXPRESSION_VIEW + "." + IJDIPreferencesConstants.PREF_SHOW_STATIC_VARIABLES)) {
 											// Static fields
-											String[] allFieldNames = classType.getAllFieldNames();
-											for (String fieldName : allFieldNames) {
+											String[] declaredFieldNames = classType.getDeclaredFieldNames();
+											for (String fieldName : declaredFieldNames) {
 												IJavaFieldVariable field = classType.getField(fieldName);
 												if (field != null && field.isStatic()) {
 													DebugPlugin
@@ -144,13 +146,13 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 													.getExpressionManager()
 													.addExpression(
 															new JavaInspectExpression(
-																	"Static field " + classType.getName() + "." + field.getName(),
+																	classType.getName() + "." + field.getName(),
 																	(IJavaValue) field.getValue()));
 												}
 											}
 										}
 									}
-									
+
 									activateExpressionsView = true;
 								} catch (DebugException e) {
 									MessageDialog.openError(shell, "Exception",
