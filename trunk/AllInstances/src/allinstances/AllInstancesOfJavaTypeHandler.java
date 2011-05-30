@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.debug.core.IJavaClassObject;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
+import org.eclipse.jdt.debug.core.IJavaFieldVariable;
 import org.eclipse.jdt.debug.core.IJavaObject;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaType;
@@ -20,11 +21,14 @@ import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.internal.debug.core.logicalstructures.JDIAllInstancesValue;
 import org.eclipse.jdt.internal.debug.core.model.JDIClassType;
 import org.eclipse.jdt.internal.debug.core.model.JDIDebugTarget;
+import org.eclipse.jdt.internal.debug.ui.IJDIPreferencesConstants;
+import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jdt.internal.debug.ui.display.JavaInspectExpression;
 import org.eclipse.jdt.internal.ui.JavaUIMessages;
 import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -118,10 +122,6 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 										}
 									} catch (Exception e) {
 									}
-									
-//									// Add expression to show code source
-//									final IWatchExpression codeSourceExpression = ;
-//									DebugPlugin.getDefault().getExpressionManager().addExpression(codeSourceExpression);
 
 									JDIAllInstancesValue aiv = new JDIAllInstancesValue(
 											(JDIDebugTarget) classType.getDebugTarget(), classType);
@@ -130,7 +130,27 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 											.getExpressionManager()
 											.addExpression(
 													new JavaInspectExpression("Instances Of " + classType.getName(), aiv));
-
+									// If no instances available - at least show the static fields
+									if (aiv.getValues().length == 0) {
+										IPreferenceStore preferenceStore = JDIDebugUIPlugin.getDefault().getPreferenceStore();
+										if (preferenceStore.getBoolean(IDebugUIConstants.ID_EXPRESSION_VIEW + "." + IJDIPreferencesConstants.PREF_SHOW_STATIC_VARIABLES)) {
+											// Static fields
+											String[] allFieldNames = classType.getAllFieldNames();
+											for (String fieldName : allFieldNames) {
+												IJavaFieldVariable field = classType.getField(fieldName);
+												if (field != null && field.isStatic()) {
+													DebugPlugin
+													.getDefault()
+													.getExpressionManager()
+													.addExpression(
+															new JavaInspectExpression(
+																	"Static field " + classType.getName() + "." + field.getName(),
+																	(IJavaValue) field.getValue()));
+												}
+											}
+										}
+									}
+									
 									activateExpressionsView = true;
 								} catch (DebugException e) {
 									MessageDialog.openError(shell, "Exception",
