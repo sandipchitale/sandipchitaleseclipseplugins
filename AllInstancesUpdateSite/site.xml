@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/AllInstancesFeature_1.0.5.jar" id="AllInstancesFeature" version="1.0.5">
+   <feature url="features/AllInstancesFeature_1.0.6.jar" id="AllInstancesFeature" version="1.0.6">
       <category name="Java Debugger Enhancements"/>
    </feature>
    <category-def name="Java Debugger Enhancements" label="Java Debugger Enhancements"/>
