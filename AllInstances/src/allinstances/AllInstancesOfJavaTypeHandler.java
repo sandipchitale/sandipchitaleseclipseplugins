@@ -104,7 +104,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						return null;
 					}
 					final IType iType = (IType) typesArray[0];
-					Job job = new Job("Computing Instances of " + iType.getFullyQualifiedName()) {
+					Job job = new Job("Getting Instances of " + iType.getFullyQualifiedName()) {
 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
