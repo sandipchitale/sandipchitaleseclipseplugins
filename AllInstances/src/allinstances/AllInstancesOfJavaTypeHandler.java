@@ -104,7 +104,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						return null;
 					}
 					final IType iType = (IType) typesArray[0];
-					Job job = new Job("Computing Instances of " + iType.getElementName()) {
+					Job job = new Job("Computing Instances of " + iType.getFullyQualifiedName()) {
 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
@@ -135,7 +135,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 										}
 									});
 									
-									return null;
+									return Status.CANCEL_STATUS;
 								}
 								
 								for (IJavaType type : types) {
@@ -238,7 +238,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 												PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 													public void run() {
 														MessageDialog.openError(shell, "Exception",
-																"Exception while showing all instances of :" + iType.getElementName());
+																"Exception while showing all instances of :" +  iType.getFullyQualifiedName());
 													}
 												});
 											}									
@@ -249,7 +249,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 								PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 									public void run() {
 										MessageDialog.openError(shell, "Exception", "Exception while trying to get all instances of :"
-												+ iType.getElementName());
+												+  iType.getFullyQualifiedName());
 									}
 								});
 							}
