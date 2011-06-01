@@ -38,6 +38,13 @@ import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -55,6 +62,7 @@ import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
  */
 @SuppressWarnings("restriction")
 public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
+	private static boolean showInstancesOfSubclasses = true;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final Shell shell = HandlerUtil.getActiveShell(event);
@@ -81,7 +89,25 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 
 			// Prompt the user for a Java Class
 			SelectionDialog dialog = new OpenTypeSelectionDialog(shell, true, PlatformUI.getWorkbench()
-					.getProgressService(), null, IJavaSearchConstants.CLASS);
+					.getProgressService(), null, IJavaSearchConstants.CLASS) {
+				protected Control createDialogArea(Composite parent) {
+					Composite dialogArea = (Composite) super.createDialogArea(parent);
+					final Button showInstancesOfSubclassesButton = new Button(dialogArea, SWT.CHECK);
+					showInstancesOfSubclassesButton.setText("Show instances of subclasses");
+					GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+					showInstancesOfSubclassesButton.setLayoutData(gd);
+					showInstancesOfSubclassesButton.setSelection(showInstancesOfSubclasses);
+					showInstancesOfSubclassesButton.addSelectionListener(new SelectionListener() {
+						public void widgetSelected(SelectionEvent e) {
+							showInstancesOfSubclasses = showInstancesOfSubclassesButton.getSelection();
+						}
+
+						public void widgetDefaultSelected(SelectionEvent e) {
+						}
+					});
+					return dialogArea;
+				}
+			};
 			dialog.setTitle(JavaUIMessages.OpenTypeAction_dialogTitle);
 			dialog.setMessage("Select Java Class to show instances of:");
 			if (dialog.open() == IDialogConstants.OK_ID) {
@@ -99,7 +125,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 					} else {
 						page.bringToTop(part);
 					}
-					
+
 					if (part == null) {
 						return null;
 					}
@@ -110,21 +136,6 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						protected IStatus run(IProgressMonitor monitor) {
 							IJavaType[] types;
 							try {
-								List<IJavaClassObject> allClassObjects = new LinkedList<IJavaClassObject>();
-								IJavaType[] javaLangClasses = target.getJavaTypes(Class.class.getName());
-								for (IJavaType javaLangClassType : javaLangClasses) {
-									if (javaLangClassType instanceof JDIClassType) {
-										JDIClassType javaLangClass = (JDIClassType) javaLangClassType;
-										IJavaObject[] javaLangClassInstances = javaLangClass.getInstances(Long.MAX_VALUE);
-										for (IJavaObject javaLangClassInstance : javaLangClassInstances) {
-											if (javaLangClassInstance instanceof IJavaClassObject) {
-												IJavaClassObject javaLangClassInstanceClassObject = (IJavaClassObject) javaLangClassInstance;
-												allClassObjects.add(javaLangClassInstanceClassObject);
-											}
-										}
-									}
-								}
-								
 								types = target.getJavaTypes(iType.getFullyQualifiedName());
 								if (types == null || types.length == 0) {
 									// If the type is not known the VM, open
@@ -134,10 +145,27 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 											MessageDialog.openError(shell, "No Class", "No Class with name: " + iType.getFullyQualifiedName());
 										}
 									});
-									
+
 									return Status.CANCEL_STATUS;
 								}
-								
+
+								List<IJavaClassObject> allClassObjects = new LinkedList<IJavaClassObject>();
+								if (showInstancesOfSubclasses) {
+									IJavaType[] javaLangClasses = target.getJavaTypes(Class.class.getName());
+									for (IJavaType javaLangClassType : javaLangClasses) {
+										if (javaLangClassType instanceof JDIClassType) {
+											JDIClassType javaLangClass = (JDIClassType) javaLangClassType;
+											IJavaObject[] javaLangClassInstances = javaLangClass.getInstances(Long.MAX_VALUE);
+											for (IJavaObject javaLangClassInstance : javaLangClassInstances) {
+												if (javaLangClassInstance instanceof IJavaClassObject) {
+													IJavaClassObject javaLangClassInstanceClassObject = (IJavaClassObject) javaLangClassInstance;
+													allClassObjects.add(javaLangClassInstanceClassObject);
+												}
+											}
+										}
+									}
+								}
+
 								for (IJavaType type : types) {
 									if (monitor.isCanceled()) {
 										return Status.CANCEL_STATUS;
@@ -146,29 +174,30 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 										JDIClassType classType = (JDIClassType) type;
 										Set<JDIClassType> typeAndSubTypes = new LinkedHashSet<JDIClassType>();
 										typeAndSubTypes.add(classType);
-										if (!Object.class.getName().equals(classType.getName())) {
-											for (IJavaClassObject allClassObject : allClassObjects) {
-												IJavaType instanceType = allClassObject.getInstanceType();
-												if (instanceType instanceof JDIClassType) {
-													JDIClassType jdiClassTypeSaved = (JDIClassType) instanceType;
-													JDIClassType jdiClassType = jdiClassTypeSaved;
-													boolean isSubClass = false;
-													do {
-														if (typeAndSubTypes.contains(jdiClassType)) {
-															isSubClass = true;
-															break;
+										if (showInstancesOfSubclasses) {
+											if (!Object.class.getName().equals(classType.getName())) {
+												for (IJavaClassObject allClassObject : allClassObjects) {
+													IJavaType instanceType = allClassObject.getInstanceType();
+													if (instanceType instanceof JDIClassType) {
+														JDIClassType jdiClassTypeSaved = (JDIClassType) instanceType;
+														JDIClassType jdiClassType = jdiClassTypeSaved;
+														boolean isSubClass = false;
+														do {
+															if (typeAndSubTypes.contains(jdiClassType)) {
+																isSubClass = true;
+																break;
+															}
+															jdiClassType = (JDIClassType)jdiClassType.getSuperclass();
+														} while (jdiClassType != null);
+														if (isSubClass) {
+															typeAndSubTypes.add(jdiClassTypeSaved);
 														}
-														jdiClassType = (JDIClassType)jdiClassType.getSuperclass();
-													} while (jdiClassType != null);
-													if (isSubClass) {
-														typeAndSubTypes.add(jdiClassTypeSaved);
 													}
-												}										
+												}
 											}
 										}
-										
+
 										// TODO Topological sort - superclasses before subclasses
-										
 										for (JDIClassType typeOrSubType : typeAndSubTypes) {
 											if (monitor.isCanceled()) {
 												return Status.CANCEL_STATUS;
@@ -234,22 +263,24 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 													}
 												}
 
-											} catch (DebugException e) {
+											} catch (final DebugException e) {
 												PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 													public void run() {
 														MessageDialog.openError(shell, "Exception",
-																"Exception while showing all instances of :" +  iType.getFullyQualifiedName());
+																"Exception while showing all instances of :" + iType.getFullyQualifiedName()
+																+ ". " + e.getMessage());
 													}
 												});
-											}									
+											}
 										}
 									}
 								}
-							} catch (DebugException e) {
+							} catch (final DebugException e) {
 								PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 									public void run() {
-										MessageDialog.openError(shell, "Exception", "Exception while trying to get all instances of :"
-												+  iType.getFullyQualifiedName());
+										MessageDialog.openError(shell, "Exception",
+												"Exception while trying to get all instances of :" + iType.getFullyQualifiedName()
+												+ ". " + e.getMessage());
 									}
 								});
 							}
