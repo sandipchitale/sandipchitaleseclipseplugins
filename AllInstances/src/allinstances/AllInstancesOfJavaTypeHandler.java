@@ -4,6 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -63,6 +65,10 @@ import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 @SuppressWarnings("restriction")
 public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 	private static boolean showInstancesOfSubclasses = true;
+	private static boolean showInnerClasses = false;
+	private static boolean showAnonymousInnerClasses = false;
+	
+	private static Pattern dollarNumber = Pattern.compile(Pattern.quote("$") + "\\d");
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final Shell shell = HandlerUtil.getActiveShell(event);
@@ -97,9 +103,47 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 					GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 					showInstancesOfSubclassesButton.setLayoutData(gd);
 					showInstancesOfSubclassesButton.setSelection(showInstancesOfSubclasses);
+					
+					final Button showInnerClassesButton = new Button(dialogArea, SWT.CHECK);
+					showInnerClassesButton.setText("Include inner classes");
+					gd = new GridData(GridData.FILL_HORIZONTAL);
+					gd.horizontalIndent = 20;
+					showInnerClassesButton.setLayoutData(gd);
+					showInnerClassesButton.setSelection(showInnerClasses);
+					showInnerClassesButton.setEnabled(showInstancesOfSubclasses);
+
+					
+					final Button showAnonymousInnerClassesButton = new Button(dialogArea, SWT.CHECK);
+					showAnonymousInnerClassesButton.setText("Include anonymous inner classes");
+					gd = new GridData(GridData.FILL_HORIZONTAL);
+					gd.horizontalIndent = 40;
+					showAnonymousInnerClassesButton.setLayoutData(gd);
+					showAnonymousInnerClassesButton.setSelection(showAnonymousInnerClasses);
+					showAnonymousInnerClassesButton.setEnabled(showInnerClasses);
+					showAnonymousInnerClassesButton.addSelectionListener(new SelectionListener() {
+						public void widgetSelected(SelectionEvent e) {
+							showAnonymousInnerClasses = showAnonymousInnerClassesButton.getSelection();
+						}
+
+						public void widgetDefaultSelected(SelectionEvent e) {
+						}
+					});
+					
+					showInnerClassesButton.addSelectionListener(new SelectionListener() {
+						public void widgetSelected(SelectionEvent e) {
+							showInnerClasses = showInnerClassesButton.getSelection();
+							showAnonymousInnerClassesButton.setEnabled(showInnerClasses);
+							
+						}
+
+						public void widgetDefaultSelected(SelectionEvent e) {
+						}
+					});
+					
 					showInstancesOfSubclassesButton.addSelectionListener(new SelectionListener() {
 						public void widgetSelected(SelectionEvent e) {
 							showInstancesOfSubclasses = showInstancesOfSubclassesButton.getSelection();
+							showInnerClassesButton.setEnabled(showInstancesOfSubclasses);
 						}
 
 						public void widgetDefaultSelected(SelectionEvent e) {
@@ -175,6 +219,8 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 										Set<JDIClassType> typeAndSubTypes = new LinkedHashSet<JDIClassType>();
 										typeAndSubTypes.add(classType);
 										if (showInstancesOfSubclasses) {
+											// Skip over java.lang.Object to prevent loading all instances
+											// in the VM
 											if (!Object.class.getName().equals(classType.getName())) {
 												for (IJavaClassObject allClassObject : allClassObjects) {
 													IJavaType instanceType = allClassObject.getInstanceType();
@@ -196,15 +242,25 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 												}
 											}
 										}
-
+										
 										// TODO Topological sort - superclasses before subclasses
 										for (JDIClassType typeOrSubType : typeAndSubTypes) {
 											if (monitor.isCanceled()) {
 												return Status.CANCEL_STATUS;
 											}
-											IJavaClassObject classObject = typeOrSubType.getClassObject();
 											try {
-
+												if (!showInnerClasses) { 
+													if (typeOrSubType.getName().indexOf('$') != -1) {
+														continue;
+													}
+												} else if (!showAnonymousInnerClasses) {
+													Matcher matcher = dollarNumber.matcher(typeOrSubType.getName());
+													if (matcher.find()) {
+														continue;
+													}
+												}
+												
+												IJavaClassObject classObject = typeOrSubType.getClassObject();
 												JDIAllInstancesValue aiv = new JDIAllInstancesValue(
 														(JDIDebugTarget) typeOrSubType.getDebugTarget(), typeOrSubType);
 												DebugPlugin
