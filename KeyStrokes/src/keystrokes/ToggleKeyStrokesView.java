@@ -101,9 +101,21 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 					}
 					if (keyStrokeViewShell.isVisible()) {
 						int accelerator;
-						if ((event.stateMask == SWT.NONE | event.stateMask == SWT.SHIFT) &&
+						if ((event.stateMask == SWT.NONE || event.stateMask == SWT.SHIFT) &&
 								( 
-								Character.isLetterOrDigit(event.character) ||
+								event.character == '~' ||
+								event.character == '!' ||
+								event.character == '@' ||
+								event.character == '#' ||
+								event.character == '$' ||
+								event.character == '%' ||
+								event.character == '^' ||
+								event.character == '&' ||
+								event.character == '*' ||
+								event.character == '(' ||
+								event.character == ')' ||
+								event.character == '_' ||
+								event.character == '+' ||
 								event.character == '<' ||
 								event.character == '>' ||
 								event.character == '?' ||
@@ -111,9 +123,7 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 								event.character == '"' ||
 								event.character == '{' ||
 								event.character == '}' ||
-								event.character == '|' ||
-								event.character == '_' ||
-								event.character == '+'
+								event.character == '|'
 								)) {
 							label.setText(""+event.character);
 							label.setText(""+event.character);
