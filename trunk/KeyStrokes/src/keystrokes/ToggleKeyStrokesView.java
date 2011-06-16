@@ -51,12 +51,9 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			WIDTH = 200;
 			HEIGHT = 100;
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
-			WIDTH = 420;
+			WIDTH = 360;
 			HEIGHT = 75;
-			SHELL_STYLE = SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL;
-		} else if (Platform.OS_MACOSX.equals(Platform.getOS())) {
-			WIDTH = 420;
-			HEIGHT = 100;
+			SHELL_STYLE = SWT.ON_TOP | SWT.NO_FOCUS | SWT.SHELL_TRIM;
 		}
 	}
 	
@@ -131,7 +128,8 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 							accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
 							String format = SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format();
 							label.setText(format);
-							if (Platform.OS_WIN32.equals(Platform.getOS())) {
+							if (Platform.OS_WIN32.equals(Platform.getOS())
+									|| Platform.OS_LINUX.equals(Platform.getOS())) {
 								format = format.replaceFirst("Ctrl\\+", "\u2303 ");
 								format = format.replaceFirst("Alt\\+", "\u2325 ");
 								format = format.replaceFirst("Shift\\+", "\u21E7 ");
