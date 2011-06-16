@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/KeyStrokesFeature_1.0.0.jar" id="KeyStrokesFeature" version="1.0.0">
+   <feature url="features/KeyStrokesFeature_1.0.1.jar" id="KeyStrokesFeature" version="1.0.1">
       <category name="Screencast Assistance"/>
    </feature>
    <category-def name="Screencast Assistance" label="Screencast Assistance"/>
