@@ -2,7 +2,7 @@
 <feature
       id="KeyStrokesFeature"
       label="Key Strokes Feature"
-      version="1.0.1"
+      version="1.0.2"
       provider-name="Sandip Chitale">
 
    <description url="http://www.example.com/description">
