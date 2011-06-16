@@ -49,7 +49,7 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			HEIGHT = 90;
 		} else if (Platform.OS_WIN32.equals(Platform.getOS())) {
 			WIDTH = 200;
-			HEIGHT = 90;
+			HEIGHT = 100;
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
 			WIDTH = 420;
 			HEIGHT = 75;
@@ -67,8 +67,14 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 		if (keyStrokeViewShell == null || keyStrokeViewShell.isDisposed()) {
 			IWorkbench workbench = PlatformUI.getWorkbench();
 			final Display display = workbench.getDisplay();
-			Font LARGE_FONT = new Font(display, JFaceResources.TEXT_FONT,
-					32, SWT.NORMAL);
+			Font LARGE_FONT;
+			if (Platform.OS_WIN32.equals(Platform.getOS())) {
+				LARGE_FONT = new Font(display, "Segoe UI Symbol",
+						28, SWT.NORMAL);
+			} else {
+				LARGE_FONT = new Font(display, JFaceResources.TEXT_FONT,
+						32, SWT.NORMAL);
+			}
 			Color BLACK = display.getSystemColor(SWT.COLOR_BLACK);
 			Color WHITE = display.getSystemColor(SWT.COLOR_WHITE);
 			keyStrokeViewShell = new Shell(display, SHELL_STYLE);
@@ -110,9 +116,33 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 								event.character == '+'
 								)) {
 							label.setText(""+event.character);
+							label.setText(""+event.character);
 						} else {
 							accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(event);
-							label.setText(SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format());
+							String format = SWTKeySupport.convertAcceleratorToKeyStroke(accelerator).format();
+							label.setText(format);
+							if (Platform.OS_WIN32.equals(Platform.getOS())) {
+								format = format.replaceFirst("Ctrl\\+", "\u2303 ");
+								format = format.replaceFirst("Alt\\+", "\u2325 ");
+								format = format.replaceFirst("Shift\\+", "\u21E7 ");
+								format = format.replaceFirst("Numpad_Add", "NP +");
+								format = format.replaceFirst("Numpad_Subtract", "NP -");
+								format = format.replaceFirst("Numpad_Multiply", "NP *");
+								format = format.replaceFirst("Numpad_Divide", "NP /");
+								format = format.replaceFirst("Numpad_Enter", "NP \u21A9");
+								format = format.replaceFirst("Enter", "\u21A9 ");
+								format = format.replaceFirst("PageUp", "\u21DE ");
+								format = format.replaceFirst("PageDown", "\u21DF ");
+								format = format.replaceFirst("Home", "\u2196 ");
+								format = format.replaceFirst("End", "\u2198 ");
+								format = format.replaceFirst("Left", "\u2190 ");
+								format = format.replaceFirst("Up", "\u2191 ");
+								format = format.replaceFirst("Right", "\u2192 ");
+								format = format.replaceFirst("Down", "\u2193 ");
+								format = format.replaceFirst("Backspace", "\u232B ");
+								format = format.replaceFirst("Delete", "\u2326 ");
+							}							
+							label.setText(format);
 						}
 						timer = new Timer(true);
 						timer.schedule(new TimerTask() {
@@ -124,6 +154,7 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 										public void run() {
 											if (!label.isDisposed()) {
 												label.setText("");
+												label.setToolTipText("");
 											}
 										}			
 									});
