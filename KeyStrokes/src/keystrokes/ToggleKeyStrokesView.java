@@ -52,7 +52,7 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			WIDTH = 200;
 			HEIGHT = 90;
 		} else if (Platform.OS_WIN32.equals(Platform.getOS())) {
-			WIDTH = 200;
+			WIDTH = 300;
 			HEIGHT = 100;
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
 			WIDTH = 360;
