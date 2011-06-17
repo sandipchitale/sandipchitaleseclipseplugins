@@ -2,19 +2,21 @@
 <feature
       id="KeyStrokesFeature"
       label="Key Strokes Feature"
-      version="1.0.2"
+      version="1.0.3"
       provider-name="Sandip Chitale">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      This is a simple Key Strokes display utility for Eclipse.
+It shows the every key stroke as it is typed in a small, always-on-top window.
+Useful for Eclipse screencasts.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      Copyright 2011, Sandip Chitale.
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license>
+      BSD
    </license>
 
    <plugin
