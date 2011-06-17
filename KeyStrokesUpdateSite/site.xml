@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/KeyStrokesFeature_1.0.2.jar" id="KeyStrokesFeature" version="1.0.2">
+   <description name="Key Strokes Update Site" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/KeyStrokesUpdateSite">
+      This is a simple Key Strokes display utility for Eclipse.
+It shows the every key stroke as it is typed in a small, always-on-top window.
+Useful for Eclipse screencasts.
+   </description>
+   <feature url="features/KeyStrokesFeature_1.0.3.jar" id="KeyStrokesFeature" version="1.0.3">
       <category name="Screencast Assistance"/>
    </feature>
    <category-def name="Screencast Assistance" label="Screencast Assistance"/>
