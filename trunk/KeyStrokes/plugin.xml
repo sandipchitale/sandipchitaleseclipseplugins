@@ -19,5 +19,17 @@
             sequence="M1+M2+M3+.">
       </key>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:window?after=showView">
+         <command
+               commandId="KeyStrokes.toggle"
+               label="Toggle KeyStrokes View"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
 
 </plugin>
