@@ -12,13 +12,17 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -90,6 +94,26 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			label.setBackground(BLACK);
 			label.setForeground(WHITE);
 			label.setText("");
+			
+			label.addMouseListener(new MouseListener() {
+				
+				public void mouseUp(MouseEvent e) {}
+				
+				public void mouseDown(MouseEvent e) {}
+				
+				public void mouseDoubleClick(MouseEvent e) {
+					FontDialog fontDialog = new FontDialog(label.getShell());
+					Font oldFont = label.getFont();
+					fontDialog.setFontList(oldFont.getFontData());
+					FontData fontData = fontDialog.open();
+					if (fontData != null) {
+						label.setFont(new Font(display, fontData));
+						// Dispose off old font
+						oldFont.dispose();
+					}
+				}
+			});
+
 			final Listener listener = new Listener() {
 				public void handleEvent(Event event) {
 					if (timer != null) {
