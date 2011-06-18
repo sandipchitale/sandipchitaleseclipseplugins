@@ -5,7 +5,7 @@
 It shows the every key stroke as it is typed in a small, always-on-top window.
 Useful for Eclipse screencasts.
    </description>
-   <feature url="features/KeyStrokesFeature_1.0.7.jar" id="KeyStrokesFeature" version="1.0.7">
+   <feature url="features/KeyStrokesFeature_1.0.8.jar" id="KeyStrokesFeature" version="1.0.8">
       <category name="Screencast Assistance"/>
    </feature>
    <category-def name="Screencast Assistance" label="Screencast Assistance"/>

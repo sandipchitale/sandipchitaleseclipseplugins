@@ -160,22 +160,23 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 								format = format.replaceFirst("Ctrl\\+", "\u2303 ");
 								format = format.replaceFirst("Alt\\+", "\u2325 ");
 								format = format.replaceFirst("Shift\\+", "\u21E7 ");
-								format = format.replaceFirst("Numpad_Add", "NP +");
 								format = format.replaceFirst("Numpad_Subtract", "NP -");
 								format = format.replaceFirst("Numpad_Multiply", "NP *");
 								format = format.replaceFirst("Numpad_Divide", "NP /");
 								format = format.replaceFirst("Numpad_Enter", "NP \u21A9");
-								format = format.replaceFirst("Enter", "\u21A9 ");
-								format = format.replaceFirst("PageUp", "\u21DE ");
-								format = format.replaceFirst("PageDown", "\u21DF ");
-								format = format.replaceFirst("Home", "\u2196 ");
-								format = format.replaceFirst("End", "\u2198 ");
-								format = format.replaceFirst("Left", "\u2190 ");
-								format = format.replaceFirst("Up", "\u2191 ");
-								format = format.replaceFirst("Right", "\u2192 ");
-								format = format.replaceFirst("Down", "\u2193 ");
+								format = format.replaceFirst("Numpad_Add", "NP +");
 								format = format.replaceFirst("Backspace", "\u232B ");
+								format = format.replaceFirst("PageDown", "\u21DF ");
 								format = format.replaceFirst("Delete", "\u2326 ");
+								format = format.replaceFirst("PageUp", "\u21DE ");
+								format = format.replaceFirst("Enter", "\u21A9 ");
+								format = format.replaceFirst("Right", "\u2192 ");
+								format = format.replaceFirst("Left", "\u2190 ");
+								format = format.replaceFirst("Home", "\u2196 ");
+								format = format.replaceFirst("Down", "\u2193 ");
+								format = format.replaceFirst("End", "\u2198 ");
+								format = format.replaceFirst("Esc", "\u238B ");
+								format = format.replaceFirst("Up", "\u2191 ");
 							}							
 							label.setText(format);
 						}
