@@ -72,6 +72,9 @@ public class ToggleKeyStrokesView extends AbstractHandler {
 			if (Platform.OS_WIN32.equals(Platform.getOS())) {
 				LARGE_FONT = new Font(display, "Segoe UI Symbol",
 						28, SWT.NORMAL);
+			} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
+				LARGE_FONT = new Font(display, JFaceResources.TEXT_FONT,
+						28, SWT.NORMAL);
 			} else {
 				LARGE_FONT = new Font(display, JFaceResources.TEXT_FONT,
 						32, SWT.NORMAL);
