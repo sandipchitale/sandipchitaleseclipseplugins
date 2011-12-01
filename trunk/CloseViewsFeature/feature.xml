@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="CloseViewsFeature"
+      label="CloseViewsFeature"
+      version="1.0.0"
+      provider-name="Sandip Chitale">
+
+   <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
+      This feature provides commands related to closing views:
+
+1. Window &gt; Close (active) View - This closes the active view.
+2. Window &gt; Close All Views - As such this closes all the open views. If all the views are already closed it offers to reset the perspectives.
+   </description>
+
+   <copyright>
+      Copyright 2011, Sandip Chitale, All Rights Reserved.
+   </copyright>
+
+   <license url="http://www.opensource.org/licenses/bsd-license.php">
+      BSD
+   </license>
+
+   <url>
+      <update url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/CloseViewsFeatureUpdateSite"/>
+   </url>
+
+   <plugin
+         id="CloseViews"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

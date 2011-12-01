@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="CloseViews.activeView"
+            name="Close View">
+      </command>
+      <command
+            id="CloseViews.allViews"
+            name="Close All Views">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="CloseViews.activeView"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+V">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="CloseViews.activeView"
+            icon="icons/close_active_view.gif">
+      </image>
+      <image
+            commandId="CloseViews.allViews"
+            icon="icons/close_all_views.gif">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="closeviews.CloseActiveViewHandler"
+            commandId="CloseViews.activeView">
+         <activeWhen>
+            <with
+                  variable="activePart">
+               <instanceof
+                     value="org.eclipse.ui.IViewPart">
+               </instanceof>
+            </with>
+         </activeWhen>
+      </handler>
+      <handler
+            class="closeviews.CloseAllViewsHandler"
+            commandId="CloseViews.allViews">
+         <activeWhen>
+            <with
+                  variable="activePart">
+               <instanceof
+                     value="org.eclipse.ui.IWorkbenchPart">
+               </instanceof>
+            </with>
+         </activeWhen>
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:window?after=additions">
+         <command
+               commandId="CloseViews.activeView"
+               label="Close View"
+               style="push">
+         </command>
+         <command
+               commandId="CloseViews.allViews"
+               label="Close All Views"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>
