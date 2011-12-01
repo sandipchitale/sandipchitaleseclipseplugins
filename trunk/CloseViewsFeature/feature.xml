@@ -2,7 +2,7 @@
 <feature
       id="CloseViewsFeature"
       label="CloseViewsFeature"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Sandip Chitale">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
@@ -21,7 +21,7 @@
    </license>
 
    <url>
-      <update url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/CloseViewsFeatureUpdateSite"/>
+      <update url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/CloseViewsFeatureUpdateSite/site.xml"/>
    </url>
 
    <plugin
