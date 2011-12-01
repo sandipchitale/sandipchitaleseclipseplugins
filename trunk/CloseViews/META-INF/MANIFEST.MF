@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Close Views
 Bundle-SymbolicName: CloseViews;singleton:=true
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Activator: closeviews.Activator
 Bundle-Vendor: Sandip Chitale
 Require-Bundle: org.eclipse.ui,

@@ -41,7 +41,7 @@
             <with
                   variable="activePart">
                <instanceof
-                     value="org.eclipse.ui.IViewPart">
+                     value="org.eclipse.ui.IWorkbenchPart">
                </instanceof>
             </with>
          </activeWhen>
