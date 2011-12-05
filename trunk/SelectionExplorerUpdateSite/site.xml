@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <description name="Selection Explorer Update Site" url="https://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SelectionExplorerUpdateSite">
+      This Selection Explorer feature shows information about:
+- Active Part
+- Active Selection
+- Active Contexts
+- Active ActionSet Contexts
+in the Selection Explorer view.
+   </description>
    <feature url="features/SelectionExplorerFeature_1.0.1.jar" id="SelectionExplorerFeature" version="1.0.1">
       <category name="Selection Explorer"/>
    </feature>
