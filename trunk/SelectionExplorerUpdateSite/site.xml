@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/SelectionExplorerFeature_1.0.0.jar" id="SelectionExplorerFeature" version="1.0.0">
+      <category name="Selection Explorer"/>
+   </feature>
+   <category-def name="Selection Explorer" label="Selection Explorer"/>
+</site>
