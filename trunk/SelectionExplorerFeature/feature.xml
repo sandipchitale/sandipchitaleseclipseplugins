@@ -2,19 +2,26 @@
 <feature
       id="SelectionExplorerFeature"
       label="Selection Explorer Feature"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Sandip Chitale">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="https://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SelectionExplorerUpdateSite">
+      This feature shows information about:
+
+- Active Part
+- Active Selection
+- Active Contexts
+- Active ActionSet Contexts
+
+in the Selection Explorer view.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      Copyright 2011, Sandip Chitale, All Rights Reserved
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="">
+      BSD
    </license>
 
    <plugin
