@@ -2,17 +2,15 @@
 <feature
       id="SelectionExplorerFeature"
       label="Selection Explorer Feature"
-      version="1.0.1"
+      version="1.0.2"
       provider-name="Sandip Chitale">
 
-   <description url="https://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SelectionExplorerUpdateSite">
+   <description url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/SelectionExplorerUpdateSite">
       This feature shows information about:
-
 - Active Part
 - Active Selection
 - Active Contexts
 - Active ActionSet Contexts
-
 in the Selection Explorer view.
    </description>
 
