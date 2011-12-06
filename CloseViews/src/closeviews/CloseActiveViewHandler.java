@@ -18,8 +18,7 @@ public class CloseActiveViewHandler extends AbstractHandler {
 		IWorkbenchWindow activeWorkbenchWindow = HandlerUtil
 				.getActiveWorkbenchWindow(event);
 		if (activeWorkbenchWindow != null) {
-			IWorkbenchPage activePage = activeWorkbenchWindow
-					.getActivePage();
+			IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
 			IWorkbenchPart activePart = HandlerUtil.getActivePart(event);
 			if (activePart instanceof IViewPart) {
 				IViewPart viewPart = (IViewPart) activePart;
@@ -27,28 +26,33 @@ public class CloseActiveViewHandler extends AbstractHandler {
 					if (activePage.isPageZoomed()) {
 						activePage.zoomOut();
 						if (!MessageDialog.openConfirm(
-								activeWorkbenchWindow.getShell(),
-								"Confirm Close Next View", "Close Next View?")) {
+								activeWorkbenchWindow.getShell(), "Close View",
+								"Close " + viewPart.getTitle() + " View ?")) {
 							return null;
 						}
 					}
-					activePage.hideView(viewPart);
+					hideView(activePage, viewPart);
 				}
 			} else {
 				if (activePage != null) {
 					IViewReference[] viewReferences = activePage
 							.getViewReferences();
 					if (viewReferences.length > 0) {
-						if (activePage.isPageZoomed()) {
-							activePage.zoomOut();
-							if (!MessageDialog.openConfirm(
-									activeWorkbenchWindow.getShell(),
-									"Confirm Close Next View",
-									"Close Next View?")) {
-								return null;
+						IViewPart viewPart = activePage
+								.findView(viewReferences[0].getId());
+						if (viewPart != null) {
+							if (activePage.isPageZoomed()) {
+								activePage.zoomOut();
+								if (!MessageDialog.openConfirm(
+										activeWorkbenchWindow.getShell(),
+										"Close View",
+										"Close " + viewPart.getTitle()
+												+ "View ?")) {
+									return null;
+								}
 							}
+							hideView(activePage, viewPart, true);
 						}
-						activePage.hideView(viewReferences[0]);
 					} else {
 						activeWorkbenchWindow.getShell().getDisplay().beep();
 					}
@@ -56,6 +60,22 @@ public class CloseActiveViewHandler extends AbstractHandler {
 			}
 		}
 		return null;
+	}
+
+	private static void hideView(IWorkbenchPage activePage, IViewPart viewPart) {
+		hideView(activePage, viewPart, false);
+	}
+
+	private static void hideView(IWorkbenchPage activePage, IViewPart viewPart,
+			final boolean showMessage) {
+		if (activePage == null || viewPart == null) {
+			return;
+		}
+		final String viewTitle = viewPart.getTitle();
+		activePage.hideView(viewPart);
+		if (showMessage) {
+			Activator.showMessage(activePage, "Closed " + viewTitle + " View.");
+		}
 	}
 
 }
