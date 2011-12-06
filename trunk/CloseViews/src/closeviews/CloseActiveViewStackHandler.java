@@ -33,8 +33,8 @@ public class CloseActiveViewStackHandler extends AbstractHandler {
 						activePage.zoomOut();
 						if (!MessageDialog.openConfirm(
 								activeWorkbenchWindow.getShell(),
-								"Close All Views in tab",
-								"Close All Views in tab containing " + viewPart.getTitle() + " View ?")) {
+								"Close all Views in tab",
+								"Close all Views in tab containing " + viewPart.getTitle() + " View ?")) {
 							return null;
 						}
 					}
@@ -52,8 +52,8 @@ public class CloseActiveViewStackHandler extends AbstractHandler {
 						if (viewPart != null) {
 							if (!MessageDialog.openConfirm(
 									activeWorkbenchWindow.getShell(),
-									"Close All Views in Tab",
-									"Close All Views in tab containing " + viewPart.getTitle() + " View ?")) {
+									"Close all Views in Tab",
+									"Close all Views in tab containing " + viewPart.getTitle() + " View ?")) {
 								return null;
 							}
 							closeActiveViewStack(activePage, viewPart);
