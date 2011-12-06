@@ -3,7 +3,7 @@
    <description name="Close Views Feature Update Site" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/CloseViewsFeatureUpdateSite/site.xml">
       This is the update site for Close Views Feature.
    </description>
-   <feature url="features/CloseViewsFeature_1.0.3.jar" id="CloseViewsFeature" version="1.0.3">
+   <feature url="features/CloseViewsFeature_1.0.4.jar" id="CloseViewsFeature" version="1.0.4">
       <category name="Views"/>
    </feature>
    <category-def name="Views" label="Views"/>
