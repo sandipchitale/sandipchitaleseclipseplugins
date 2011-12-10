@@ -120,6 +120,10 @@
                label="Close All Views"
                style="push">
          </command>
+         <separator
+               name="CloseViews.separator"
+               visible="true">
+         </separator>
       </menuContribution>
    </extension>
 
