@@ -12,6 +12,10 @@
             name="Close All Views in Tab">
       </command>
       <command
+            id="CloseViews.otherViewsActiveViewStack"
+            name="Close Other Views in Tab">
+      </command>
+      <command
             id="CloseViews.otherViews"
             name="Close Other Views">
       </command>
@@ -40,6 +44,14 @@
             icon="icons/close_active_view_stack.gif">
       </image>
       <image
+            commandId="CloseViews.otherViewsActiveViewStack"
+            icon="icons/close_other_views_active_view_stack.gif">
+      </image>
+      <image
+            commandId="CloseViews.otherViews"
+            icon="icons/close_other_views.gif">
+      </image>
+      <image
             commandId="CloseViews.allViews"
             icon="icons/close_all_views.gif">
       </image>
@@ -61,6 +73,18 @@
       <handler
             class="closeviews.CloseActiveViewStackHandler"
             commandId="CloseViews.activeViewStack">
+         <activeWhen>
+            <with
+                  variable="activePart">
+               <instanceof
+                     value="org.eclipse.ui.IWorkbenchPart">
+               </instanceof>
+            </with>
+         </activeWhen>
+      </handler>
+      <handler
+            class="closeviews.CloseOtherViewsActiveViewStackHandler"
+            commandId="CloseViews.otherViewsActiveViewStack">
          <activeWhen>
             <with
                   variable="activePart">
@@ -108,6 +132,11 @@
          <command
                commandId="CloseViews.activeViewStack"
                label="Close All Views in Tab"
+               style="push">
+         </command>
+         <command
+               commandId="CloseViews.otherViewsActiveViewStack"
+               label="Close Other Views in Tab"
                style="push">
          </command>
          <command
