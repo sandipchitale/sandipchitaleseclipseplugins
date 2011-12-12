@@ -30,7 +30,25 @@
             commandId="CloseViews.activeView"
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+M2+V">
+            sequence="M1+M3+W">
+      </key>
+      <key
+            commandId="CloseViews.allViews"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+M3+W">
+      </key>
+      <key
+            commandId="CloseViews.activeView"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M3+F4">
+      </key>
+      <key
+            commandId="CloseViews.allViews"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+M3+F4">
       </key>
    </extension>
    <extension
@@ -38,6 +56,10 @@
       <image
             commandId="CloseViews.activeView"
             icon="icons/close_active_view.gif">
+      </image>
+      <image
+            commandId="CloseViews.allViews"
+            icon="icons/close_all_views.gif">
       </image>
       <image
             commandId="CloseViews.activeViewStack"
@@ -50,10 +72,6 @@
       <image
             commandId="CloseViews.otherViews"
             icon="icons/close_other_views.gif">
-      </image>
-      <image
-            commandId="CloseViews.allViews"
-            icon="icons/close_all_views.gif">
       </image>
    </extension>
    <extension
@@ -130,16 +148,6 @@
                style="push">
          </command>
          <command
-               commandId="CloseViews.activeViewStack"
-               label="Close All Views in Tab"
-               style="push">
-         </command>
-         <command
-               commandId="CloseViews.otherViewsActiveViewStack"
-               label="Close Other Views in Tab"
-               style="push">
-         </command>
-         <command
                commandId="CloseViews.otherViews"
                label="Close Other Views"
                style="push">
@@ -150,7 +158,21 @@
                style="push">
          </command>
          <separator
-               name="CloseViews.separator"
+               name="CloseViews.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="CloseViews.activeViewStack"
+               label="Close All Views in Tab"
+               style="push">
+         </command>
+         <command
+               commandId="CloseViews.otherViewsActiveViewStack"
+               label="Close Other Views in Tab"
+               style="push">
+         </command>
+         <separator
+               name="CloseViews.separator2"
                visible="true">
          </separator>
       </menuContribution>
