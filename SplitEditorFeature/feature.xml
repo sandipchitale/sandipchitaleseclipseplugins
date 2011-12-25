@@ -2,11 +2,13 @@
 <feature
       id="SplitEditorFeature"
       label="Split Editor Feature"
-      version="1.0.4"
+      version="1.0.5"
       provider-name="Sandip Chitale">
 
    <description url="https://code.google.com/p/sandipchitaleseclipseplugins/">
-      This feature adds actions to split active editor horizontally and vertically.
+      This feature adds actions to split active editor horizontally
+and vertically. The dropdown allows splitting the editor with
+other editors in the stack.
    </description>
 
    <copyright>

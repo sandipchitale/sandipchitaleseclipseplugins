@@ -71,36 +71,8 @@ public class Handler extends AbstractHandler {
 						if (part instanceof IEditorPart) {
 							IEditorPart editorPart = (IEditorPart) part;
 							if (activeEditorId.equals(editorPart.getSite().getId())) {
-								// The following code is based on article
-								// http://eclipse.dzone.com/tips/programmatically-split-editor-
-								// By: Dimitri Missoh
-								// Modified to suite our purpose
-								// Get PartPane that correspond to the active editor
-								PartPane currentEditorPartPane = ((PartSite) editorPart.getSite()).getPane();
-								LayoutPart layoutPart = currentEditorPartPane.getPart();
-								EditorSashContainer editorSashContainer = null;
-								ILayoutContainer layoutPartContainer = layoutPart.getContainer();
-								if (layoutPartContainer instanceof LayoutPart) {
-									ILayoutContainer editorSashLayoutContainer = ((LayoutPart) layoutPartContainer).getContainer();
-									if (editorSashLayoutContainer instanceof EditorSashContainer) {
-										editorSashContainer = (EditorSashContainer) editorSashLayoutContainer;
-										/*
-										 * Create a new part stack (i.e. a workbook) to home the
-										 * currentEditorPartPane which hold the active editor
-										 */
-										PartStack newPart = createStack(activePage, editorSashContainer);
-										editorSashContainer.stack(currentEditorPartPane, newPart);
-										// "Split" the editor area by adding the new part
-										String orientation = event.getParameter(OrientationParameterValues.ORIENTATION);
-										if (OrientationParameterValues.HORIZONTALLY.equals(orientation)) {
-											editorSashContainer.add(newPart, PageLayout.BOTTOM, 0.5f, (LayoutPart) layoutPartContainer);
-										} else if (OrientationParameterValues.VERTICALLY.equals(orientation)) {
-											editorSashContainer.add(newPart, PageLayout.RIGHT, 0.5f, (LayoutPart) layoutPartContainer);
-										}
-									}
-								}
+								Helper.splitEditor(editorPart, event.getParameter(OrientationParameterValues.ORIENTATION));
 							}
-							
 						}
 						
 					}
@@ -118,15 +90,5 @@ public class Handler extends AbstractHandler {
 			}
 		}
 		return null;
-	}
-	
-	/**
-	* A method to create a part stack container (a new workbook)
-	*
-	* @param editorSashContainer the <code>EditorSashContainer</code> to set for the returned <code>PartStack</code>
-	* @return a new part stack container
-	*/
-	private PartStack createStack(IWorkbenchPage workbenchPage, EditorSashContainer editorSashContainer) {
-		return EditorStack.newEditorWorkbook(editorSashContainer, (WorkbenchPage) workbenchPage);
 	}
 }

@@ -44,8 +44,9 @@
          <command
                commandId="SpiltEditor.command"
                icon="icons/splithorizontally.png"
+               id="SpiltEditor.command.horizontally"
                label="%command.spliteditor.horizontally"
-               style="push"
+               style="pulldown"
                tooltip="%command.spliteditor.horizontally">
             <parameter
                   name="orientation"
@@ -55,8 +56,9 @@
          <command
                commandId="SpiltEditor.command"
                icon="icons/splitvertically.png"
+               id="SpiltEditor.command.vertically"
                label="%command.spliteditor.vertically"
-               style="push"
+               style="pulldown"
                tooltip="%command.spliteditor.vertically">
             <parameter
                   name="orientation"
@@ -86,6 +88,22 @@
                   value="vertically">
             </parameter>
          </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:SpiltEditor.command.horizontally">
+         <dynamic
+               class="spliteditor.SplitEditorHorizontallyMenu"
+               id="SpiltEditorHorizontally.dynamic">
+         </dynamic>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:SpiltEditor.command.vertically">
+         <dynamic
+               class="spliteditor.SplitEditorVeticallyMenu"
+               id="SpiltEditorVerically.dynamic">
+         </dynamic>
       </menuContribution>
    </extension>
    <!--
