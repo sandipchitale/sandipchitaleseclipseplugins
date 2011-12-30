@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="jdt.ui.fragment.feature"
+      label="Feature"
+      version="1.0.1"
+      provider-name="Sandip Chitale">
+
+   <description url="https://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/jdt.ui.fragment.feature.updatesite">
+      This feature adds a new quick fix to Java editor for splitting
+a reference type variable declration and initializing it to null.
+   </description>
+
+   <copyright>
+      Copyright 2011, Sandip V Chitale, All rights reserved.
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <plugin
+         id="jdt.ui.fragment"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+</feature>
