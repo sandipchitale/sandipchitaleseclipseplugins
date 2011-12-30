@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.eclipse.jdt.ui.quickAssistProcessors">
+      <quickAssistProcessor
+            class="org.eclipse.jdt.internal.ui.text.correction.SplitVariableDeclarationAndInitializeQuickAssistProcessor"
+            id="SplitVariableDeclarationAndInitializeQuickAssist.quickAssistProcessor"
+            name="Split Variable Declaration And Initialize">
+      </quickAssistProcessor>
+   </extension>
+</fragment>
