@@ -7,7 +7,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.ui.PlatformUI;
 
 public class ClipboardVariableResolver extends TemplateVariableResolver {
-	
+
 	/** Name of the cursor variable, value= {@value} */
 	public static final String NAME= "clipboard"; //$NON-NLS-1$
 

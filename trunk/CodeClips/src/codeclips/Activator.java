@@ -22,20 +22,20 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	private static class CodeClipsTemplateStore extends TemplateStore {
 
 		public CodeClipsTemplateStore(IPreferenceStore store, String key) {
 			super(store, key);
 		}
-		
+
 		protected void internalAdd(TemplatePersistenceData data) {
 			super.internalAdd(data);
 		}
 	}
-	
+
 	private static CodeClipsTemplateStore templateStore;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -49,7 +49,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
+
 		templateStore = new CodeClipsTemplateStore(getPreferenceStore(), PreferenceInitializer.TEMPLATES_KEY);
 		templateStore.load();
 	}
@@ -71,11 +71,11 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-	
+
 	public TemplateStore getTemplateStore() {
 		return templateStore;
 	}
-	
+
 	public void persistTemplate(String abbrev, String description, String expansion) {
 		// fake
 		Template template = new Template(abbrev, description+" ", "", expansion, true);
@@ -91,7 +91,7 @@ public class Activator extends AbstractUIPlugin {
 	public void persistTemplatePersistenceData(TemplatePersistenceData templatePersistenceData) {
 		persistTemplatePersistenceData(templatePersistenceData, true);
 	}
-	
+
 	public void persistTemplatePersistenceData(TemplatePersistenceData templatePersistenceData, boolean save) {
 		templateStore.internalAdd(templatePersistenceData);
 		if (save) {
@@ -102,14 +102,14 @@ public class Activator extends AbstractUIPlugin {
 			}
 		}
 	}
-	
+
 	public static final String CODECLIP = "/icons/codeclip.gif"; //$NON-NLS-1$
-	
+
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		reg.put(CODECLIP, imageDescriptorFromPlugin(PLUGIN_ID, CODECLIP));
 	}
-	
+
 	public Image getImage(String imageID) {
 		return getImageRegistry().get(imageID);
 	}

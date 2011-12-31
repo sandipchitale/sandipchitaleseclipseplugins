@@ -2,7 +2,7 @@
 <feature
       id="CodeClipsFeature"
       label="CodeClipsFeature"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Sandip Chitale">
 
    <description>
@@ -13,7 +13,7 @@
       Copyright 2011, Sandip Chitale, All Rights Reserved
    </copyright>
 
-   <license>
+   <license url="http://code.google.com/p/sandipchitaleseclipseplugins/wiki/License">
       BSD
    </license>
 

@@ -36,7 +36,7 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 			IRegion region, Image image, int relevance) {
 		super(template, context, region, image, relevance);
 	}
-	
+
 	@Override
 	public void apply(final ITextViewer viewer, char trigger, int stateMask, final int offset) {
 		final IDocument document = viewer.getDocument();
@@ -60,12 +60,12 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 									}
 								}
 							};
-							
+
 							final MouseListener mouseListener = new MouseListener() {
-								
+
 								public void mouseUp(MouseEvent e) {
 								}
-								
+
 								public void mouseDown(MouseEvent e) {
 									Point selection= viewer.getSelectedRange();
 									int offset= selection.x;
@@ -75,14 +75,14 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 										linkedModeModel.exit(ILinkedModeListener.EXIT_ALL);
 									}
 								}
-								
+
 								public void mouseDoubleClick(MouseEvent e) {
-									
+
 								}
 							};
 							textWidget.addVerifyKeyListener(keyListener);
 							textWidget.addMouseListener(mouseListener);
-							linkedModeModel.addLinkingListener(new ILinkedModeListener() {								
+							linkedModeModel.addLinkingListener(new ILinkedModeListener() {
 								public void suspend(LinkedModeModel model) {
 								}
 								public void resume(LinkedModeModel model, int flags) {
@@ -117,12 +117,12 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 			document.removeDocumentListener(documentListener);
 		}
 	}
-	
+
 	@Override
 	public char[] getTriggerCharacters() {
 		return triggerChars;
 	}
-	
+
 	@Override
 	public String getDisplayString() {
 		Template template = getTemplate();
@@ -132,11 +132,11 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 	public StyledString getStyledDisplayString() {
 		return styledDisplayString;
 	}
-	
+
 	Template getTemplateSuper() {
 		return super.getTemplate();
 	}
-	
+
 	void setStyledDisplayString(StyledString styledDisplayString) {
 		this.styledDisplayString = styledDisplayString;
 	}
@@ -144,15 +144,15 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 	void setTriggerChar(char triggerChar) {
 		this.triggerChar = triggerChar;
 	}
-	
+
 	private static final String TRIGGER_CHARS = "123456789"; //$NON-NLS-1$
-	
+
 	void setTemplateProposals(ICompletionProposal[] templateProposals) {
 		this.templateProposals = templateProposals;
 		triggerChars = new char[Math.min(templateProposals.length, TRIGGER_CHARS.length())];
 		TRIGGER_CHARS.getChars(0, triggerChars.length, triggerChars, 0);
 	}
-	
+
 	private static boolean contains(char[] characters, char c) {
 		if (characters == null)
 			return false;

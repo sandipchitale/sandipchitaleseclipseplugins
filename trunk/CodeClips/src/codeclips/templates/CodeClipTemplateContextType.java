@@ -15,7 +15,7 @@ class CodeClipTemplateContextType extends TemplateContextType {
 		super(scope);
 		addGlobalResolvers();
 	}
-	
+
 	private static class SysProp extends TemplateVariableResolver {
 		/**
 		 * Creates a new user name variable
@@ -23,7 +23,7 @@ class CodeClipTemplateContextType extends TemplateContextType {
 		public SysProp() {
 			super("sysprop", "System property template variable."); //$NON-NLS-1$
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		@Override
 		public void resolve(TemplateVariable variable, TemplateContext context) {
@@ -44,29 +44,29 @@ class CodeClipTemplateContextType extends TemplateContextType {
 				variable.setValues(new String[] { System.getProperty(name, name) });
 			}
 		}
-		
+
 		@Override
 		protected String resolve(TemplateContext context) {
 			String value = super.resolve(context);
 			return System.getProperty(value, value);
 		}
-		
+
 		@Override
 		protected boolean isUnambiguous(TemplateContext context) {
 			return false;
 		}
 	}
-	
+
 	private static class SysPropName extends TemplateVariableResolver {
 		public SysPropName() {
 			super("syspropname", "System property name template variable."); //$NON-NLS-1$
 		}
-		
+
 		@Override
 		public void resolve(TemplateVariable variable, TemplateContext context) {
 			variable.setValues(System.getProperties().keySet().toArray(new String[0])); //$NON-NLS-1$
 		}
-		
+
 		@Override
 		protected boolean isUnambiguous(TemplateContext context) {
 			return false;
@@ -86,7 +86,7 @@ class CodeClipTemplateContextType extends TemplateContextType {
 		addResolver(new ClipboardVariableResolver());
 		addResolver(new SysProp());
 		addResolver(new SysPropName());
-		
+
 		// Tab stops
 		addResolver(new TabStopVariableResolver("1", "1st tab stop")); //$NON-NLS-1$ //$NON-NLS-2$
 		addResolver(new TabStopVariableResolver("2", "2nd tab stop")); //$NON-NLS-1$ //$NON-NLS-2$
