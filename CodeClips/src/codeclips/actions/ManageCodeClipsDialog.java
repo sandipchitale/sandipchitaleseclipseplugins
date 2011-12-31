@@ -40,9 +40,9 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeclips.Activator;
 
-public class ManageCodesClipsDialog extends TitleAreaDialog{
+public class ManageCodeClipsDialog extends TitleAreaDialog{
 
-	private final ITextEditor textEditor;
+	private final Shell contextShell;
 
 	private static final int ADD_ID = IDialogConstants.CLIENT_ID;
 	private static final int MODIFY_ID = ADD_ID+1;
@@ -54,7 +54,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	private TemplateStore templateStore;
 
 	private TableViewer tableViewer;
-	
+
 	private static class CodeClipsProvider implements IStructuredContentProvider {
 
 		public Object[] getElements(Object inputElement) {
@@ -83,7 +83,7 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
 		}
-		
+
 		public String getColumnText(Object element, int columnIndex) {
 			TemplatePersistenceData templatePersistenceData = (TemplatePersistenceData) element;
 			Template template = templatePersistenceData.getTemplate();
@@ -99,9 +99,9 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		}
 	}
 
-	public ManageCodesClipsDialog(Shell shell, ITextEditor textEditor) {
-		super(shell);
-		this.textEditor = textEditor;
+	public ManageCodeClipsDialog(Shell parentShell, Shell contextShell) {
+		super(parentShell);
+		this.contextShell = contextShell;
 		templateStore = Activator.getDefault().getTemplateStore();
 		setHelpAvailable(false);
 	}
@@ -110,40 +110,40 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	protected boolean isResizable() {
 		return true;
 	}
-	
+
 	@Override
 	protected Control createContents(Composite parent) {
 		Control contents = super.createContents(parent);
 
 		tableViewer.setInput(templateStore);
 		adjustButtonState();
-		
+
 		return contents;
 	}
-	
+
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		setTitle("Manage Code Clips");
         Composite parentComposite = (Composite) super.createDialogArea(parent);
         GridLayout gridLayout = (GridLayout) parentComposite.getLayout();
-		
+
 		gridLayout.marginWidth = 10;
 		gridLayout.marginHeight = 10;
 		gridLayout.horizontalSpacing = 5;
 		gridLayout.verticalSpacing = 5;
-        
+
         Label abbrevLabel = new Label(parentComposite, SWT.NONE);
         abbrevLabel.setText("Code Clips:");
 		GridData abbrevLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		abbrevLabel.setLayoutData(abbrevLabelGridData);
-		
+
 		tableViewer = new TableViewer(parentComposite);
-		
+
 		Table table = tableViewer.getTable();
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.heightHint = 200;
 		table.setLayoutData(data);
-		
+
 	    TableLayout layout = new TableLayout();
 	    layout.addColumnData(new ColumnWeightData(20, 75, true));
 	    layout.addColumnData(new ColumnWeightData(80, 75, true));
@@ -153,22 +153,22 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 	    abbrevColumn.getColumn().setText("Abbreviation");
 	    TableViewerColumn descriptionColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
 	    descriptionColumn.getColumn().setText("Description");
-	    
+
 	    table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-	    
+
 	    tableViewer.setContentProvider(new CodeClipsProvider());
 	    tableViewer.setLabelProvider(new CodeClipLabelProvider());
-	    
+
 	    tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				adjustButtonState();
 			}
 		});
-	    
+
 		return parentComposite;
 	}
-	
+
 	protected void adjustButtonState() {
 		modifyButton.setEnabled(true);
 		deleteButton.setEnabled(true);
@@ -192,18 +192,18 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 		newButton = createButton(parent, ADD_ID, "Add...", false);
 		newButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor);
-				if (Window.OK == codeClipDialog.open()) {			
+				CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), contextShell);
+				if (Window.OK == codeClipDialog.open()) {
 					Activator.getDefault().persistTemplate(codeClipDialog.getAbbrev(), codeClipDialog.getDescription(), codeClipDialog.getExpansion());
 					tableViewer.setInput(templateStore);
 				}
-			} 
-			
+			}
+
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
 		});
-		
+
 		modifyButton = createButton(parent,MODIFY_ID, "Modify...", true);
 		modifyButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -212,8 +212,8 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 					if (!structuredSelection.isEmpty()) {
 						TemplatePersistenceData templatePersistenceData = (TemplatePersistenceData) structuredSelection.getFirstElement();
-						CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), textEditor, templatePersistenceData);
-						if (Window.OK == codeClipDialog.open()) {	
+						CodeClipDialog codeClipDialog = new CodeClipDialog(getShell(), contextShell, templatePersistenceData);
+						if (Window.OK == codeClipDialog.open()) {
 							Template modifiedTemplate = new Template(codeClipDialog.getAbbrev(),
 									codeClipDialog.getDescription(),
 									codeClipDialog.getContentType(),
@@ -226,12 +226,12 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 					}
 				}
 			}
-			
+
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
 		});
-		
+
 		deleteButton = createButton(parent, DELETE_ID, "Delete", false);
 		deleteButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -243,18 +243,18 @@ public class ManageCodesClipsDialog extends TitleAreaDialog{
 						try {
 							templateStore.save();
 						} catch (IOException e1) {
-							e1.printStackTrace();
+							Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e1.getMessage(), e1));
 						}
 						tableViewer.setInput(templateStore);
 					}
 				}
 			}
-			
+
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
 		});
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
 	}
-	
+
 }

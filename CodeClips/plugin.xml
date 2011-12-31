@@ -11,6 +11,12 @@
       </command>
       <command
             categoryId="org.eclipse.ui.category.edit"
+            description="Manage Code Clips"
+            id="CodeClips.manage.command"
+            name="Manage Code Clips">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.edit"
             description="Tab complete Code Clips"
             id="CodeClips.tabcomplete.command"
             name="Tab complete Code Clips">
@@ -37,6 +43,12 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+5">
       </key>
+      <key
+            commandId="CodeClips.manage.command"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+5">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -54,6 +66,18 @@
                         value="org.eclipse.ui.part.MultiPageEditorPart">
                   </instanceof>
                </or>
+            </with>
+         </activeWhen>
+      </handler>
+      <handler
+            class="codeclips.actions.ManageCodeClipsCommandHandler"
+            commandId="CodeClips.manage.command">
+         <activeWhen>
+            <with
+                  variable="activePart">
+               <instanceof
+                     value="org.eclipse.ui.IWorkbenchPart">
+               </instanceof>
             </with>
          </activeWhen>
       </handler>
@@ -89,6 +113,11 @@
          <command
                commandId="CodeClips.create.command"
                label="Create Code Clip"
+               style="push">
+         </command>
+         <command
+               commandId="CodeClips.manage.command"
+               label="Manage Code Clips"
                style="push">
          </command>
       </menuContribution>

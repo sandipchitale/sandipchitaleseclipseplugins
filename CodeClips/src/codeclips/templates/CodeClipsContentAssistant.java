@@ -15,16 +15,16 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class CodeClipsContentAssistant extends ContentAssistant {
-	
+
 	private IContentAssistProcessor contentAssistProcessor;
-	
+
 	private static class StringInformationPresenter implements IInformationPresenter {
 		public String updatePresentation(Display display, String hoverInfo,
 				TextPresentation presentation, int maxWidth, int maxHeight) {
 			return hoverInfo;
 		}
 	}
-	
+
 	private static class DefaultInformationControlCreator extends AbstractReusableInformationControlCreator {
 		public IInformationControl doCreateInformationControl(Shell shell) {
 			DefaultInformationControl defaultInformationControl = new DefaultInformationControl(shell, new StringInformationPresenter()) {
@@ -54,7 +54,7 @@ public class CodeClipsContentAssistant extends ContentAssistant {
 		setStatusMessage("Type 1..9 to select nth snippet");
 		setInformationControlCreator(new DefaultInformationControlCreator());
 	}
-	
+
 	@Override
 	public IContentAssistProcessor getContentAssistProcessor(
 			String contentType) {
@@ -63,5 +63,5 @@ public class CodeClipsContentAssistant extends ContentAssistant {
 		}
 		return contentAssistProcessor;
 	}
-	
+
 }

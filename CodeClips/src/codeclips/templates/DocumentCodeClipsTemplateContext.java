@@ -24,9 +24,9 @@ public class DocumentCodeClipsTemplateContext extends DocumentTemplateContext {
 	public DocumentCodeClipsTemplateContext(TemplateContextType type, IDocument document, Position position) {
 		super( type, document, position);
 	}
-	
+
 	static final String TAB_STOP_TYPES = "123456789"; //$NON-NLS-1$
-	
+
 	@Override
 	public TemplateBuffer evaluate(Template template)
 			throws BadLocationException, TemplateException {

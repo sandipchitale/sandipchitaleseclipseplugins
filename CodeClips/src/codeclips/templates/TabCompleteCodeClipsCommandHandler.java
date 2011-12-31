@@ -18,11 +18,11 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 	private static Map<ITextViewer, Boolean> overrideNotHandled = new WeakHashMap<ITextViewer, Boolean>();
-	
+
 	static void setOverrideNotHandled(ITextViewer textViewer, boolean overrideNotHandled) {
 		TabCompleteCodeClipsCommandHandler.overrideNotHandled.put(textViewer, overrideNotHandled);
 	}
-	
+
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchPart activePart = HandlerUtil.getActivePart(event);
 		ITextEditor textEditor = null;
@@ -70,7 +70,7 @@ public class TabCompleteCodeClipsCommandHandler extends AbstractHandler {
 			Object adapter = abstractTextEditor.getAdapter(ITextOperationTarget.class);
 			if (adapter instanceof ITextViewer) {
 				ITextViewer textViewer = (ITextViewer) adapter;
-				
+
 				Boolean overrideNotHandled = TabCompleteCodeClipsCommandHandler.overrideNotHandled.get(textViewer);
 				if (overrideNotHandled != null && overrideNotHandled) {
 					return false;

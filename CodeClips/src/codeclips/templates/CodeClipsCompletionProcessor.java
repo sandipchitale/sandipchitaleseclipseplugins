@@ -28,7 +28,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 
 	public CodeClipsCompletionProcessor() {
 	}
-	
+
 	@Override
 	protected TemplateContextType getContextType(ITextViewer viewer, IRegion region) {
 		return new CodeClipTemplateContextType("");
@@ -38,7 +38,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 	protected Image getImage(Template template) {
 		return Activator.getDefault().getImage(Activator.CODECLIP);
 	}
-	
+
 	@Override
 	protected Template[] getTemplates(String contextTypeId) {
 		Template[] templates = Activator.getDefault().getTemplateStore().getTemplates();
@@ -48,15 +48,15 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 		}
 		return codeClipTemplates.toArray(templates);
 	}
-	
+
 	private static final String SPACES= "\\s*+"; //$NON-NLS-1$
-	
+
 	@SuppressWarnings("unused")
 	private static String processExpansion(String expansion) {
 		// cursor $ or ${0} to ${cursor}
 		expansion = expansion.replaceAll(Pattern.quote("$0"), Matcher.quoteReplacement("${cursor}")); //$NON-NLS-1$  //$NON-NLS-2$
 		expansion = expansion.replaceAll(Pattern.quote("${0}"), Matcher.quoteReplacement("${cursor}")); //$NON-NLS-1$  //$NON-NLS-2$
-		
+
 		// transform ${n:default value} to ${default value:n} where n is a digit
 		expansion = expansion.replaceAll(
 				  "\\$\\{"        //$NON-NLS-1$
@@ -70,7 +70,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 				,"\\${$2:$1}");   //$NON-NLS-1$
 		return expansion;
 	}
-	
+
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
 			int offset) {
@@ -82,7 +82,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 				Template template = snippetTemplateProposal.getTemplateSuper();
 				StyledString styledString =
 					new StyledString(String.format("%1$-20.20s", template.getName() + " - " + template.getDescription()), FIXED_WIDTH_STYLER); //$NON-NLS-1$
-				
+
 				styledString.append(new StyledString(String.format("%1$10.10s ", template.getName() + "\u21E5"), FIXED_WIDTH_STYLER)); //$NON-NLS-1$
 
 				if (i < 9) {
@@ -95,12 +95,12 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 		}
 		return completionProposals;
 	}
-	
+
 	@Override
 	protected ICompletionProposal createProposal(Template template, TemplateContext context, IRegion region, int relevance) {
 		return new CodeClipTemplateProposal(template, context, region, getImage(template), relevance);
 	}
-	
+
 	@Override
 	protected TemplateContext createContext(ITextViewer viewer, IRegion region) {
 		TemplateContextType contextType= getContextType(viewer, region);
@@ -110,7 +110,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 		}
 		return null;
 	}
-	
+
 	// Allow any non-whitespace as a prefix.
 	protected String extractPrefix(ITextViewer viewer, int offset) {
 		int i= offset;
@@ -131,14 +131,14 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 			return ""; //$NON-NLS-1$
 		}
 	}
-	
+
 	private static class CustomStyler extends Styler {
 		private static String fForegroundColorName;
 
 		CustomStyler() {
 			this(null);
 		}
-		
+
 		CustomStyler(String foregroundColorName) {
 			fForegroundColorName = foregroundColorName;
 		}
@@ -147,10 +147,10 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 			if (fForegroundColorName != null) {
 				textStyle.foreground = JFaceResources.getColorRegistry().get(fForegroundColorName);
 			}
-			
+
 			textStyle.font = JFaceResources.getFontRegistry().get("org.eclipse.jface.textfont"); //$NON-NLS-1$
 		}
 	}
-	
+
 	private static Styler FIXED_WIDTH_STYLER = new CustomStyler();
 }

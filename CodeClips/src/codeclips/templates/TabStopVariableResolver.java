@@ -9,7 +9,7 @@ class TabStopVariableResolver extends SimpleTemplateVariableResolver {
 	TabStopVariableResolver(String type, String description) {
 		super(type, description);
 	}
-	
+
 	@Override
 	public void resolve(TemplateVariable variable, TemplateContext context) {
 		super.resolve(variable, context);
@@ -17,7 +17,7 @@ class TabStopVariableResolver extends SimpleTemplateVariableResolver {
 			variable.setValues(new String[] {""}); //$NON-NLS-1$
 			setEvaluationString(""); //$NON-NLS-1$
 		} else {
-			setEvaluationString(variable.getName());			
+			setEvaluationString(variable.getName());
 		}
 	}
 
