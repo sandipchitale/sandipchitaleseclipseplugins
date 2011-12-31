@@ -31,12 +31,10 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 	private char triggerChar;
 	private char[] triggerChars;
 	private StyledString styledDisplayString;
-	private final TabCompleteCodeClipsAction tabCompleteCodeClipsAction;
 
 	public CodeClipTemplateProposal(Template template, TemplateContext context,
-			IRegion region, Image image, int relevance, TabCompleteCodeClipsAction tabCompleteCodeClipsAction) {
+			IRegion region, Image image, int relevance) {
 		super(template, context, region, image, relevance);
-		this.tabCompleteCodeClipsAction = tabCompleteCodeClipsAction;
 	}
 	
 	@Override
@@ -49,7 +47,7 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 				Display.getCurrent().asyncExec(new Runnable() {
 					public void run() {
 						if (LinkedModeModel.hasInstalledModel(document)) {
-							tabCompleteCodeClipsAction.setDeactivated(true);
+							TabCompleteCodeClipsCommandHandler.setOverrideNotHandled(viewer, Boolean.TRUE);
 							final LinkedModeModel linkedModeModel = LinkedModeModel.getModel(document, offset);
 							final VerifyKeyListener keyListener = new VerifyKeyListener() {
 								public void verifyKey(VerifyEvent event) {
@@ -92,7 +90,7 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 								public void left(LinkedModeModel model, int flags) {
 									textWidget.removeVerifyKeyListener(keyListener);
 									textWidget.removeMouseListener(mouseListener);
-									tabCompleteCodeClipsAction.setDeactivated(false);
+									TabCompleteCodeClipsCommandHandler.setOverrideNotHandled(viewer, Boolean.FALSE);
 								}
 							});
 						}
@@ -116,7 +114,7 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 				super.apply(viewer, trigger, stateMask, offset);
 			}
 		} finally {
-			document.removeDocumentListener(documentListener);			
+			document.removeDocumentListener(documentListener);
 		}
 	}
 	

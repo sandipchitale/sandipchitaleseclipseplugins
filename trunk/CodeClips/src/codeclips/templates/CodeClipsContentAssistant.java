@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Shell;
 public class CodeClipsContentAssistant extends ContentAssistant {
 	
 	private IContentAssistProcessor contentAssistProcessor;
-	private final TabCompleteCodeClipsAction tabCompleteCodeClipsAction;
 	
 	private static class StringInformationPresenter implements IInformationPresenter {
 		public String updatePresentation(Display display, String hoverInfo,
@@ -45,9 +44,8 @@ public class CodeClipsContentAssistant extends ContentAssistant {
 		}
 	}
 
-	public CodeClipsContentAssistant(TabCompleteCodeClipsAction tabCompleteCodeClipsAction) {
+	public CodeClipsContentAssistant() {
 		super();
-		this.tabCompleteCodeClipsAction = tabCompleteCodeClipsAction;
 		enableAutoActivation(false);
 		enablePrefixCompletion(true);
 		enableAutoInsert(true);
@@ -61,7 +59,7 @@ public class CodeClipsContentAssistant extends ContentAssistant {
 	public IContentAssistProcessor getContentAssistProcessor(
 			String contentType) {
 		if (contentAssistProcessor == null) {
-			contentAssistProcessor = new CodeClipsCompletionProcessor(tabCompleteCodeClipsAction);
+			contentAssistProcessor = new CodeClipsCompletionProcessor();
 		}
 		return contentAssistProcessor;
 	}
