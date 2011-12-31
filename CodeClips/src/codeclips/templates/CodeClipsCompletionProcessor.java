@@ -25,10 +25,8 @@ import codeclips.Activator;
 
 class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 
-	private final TabCompleteCodeClipsAction tabCompleteCodeClipsAction;
 
-	public CodeClipsCompletionProcessor(TabCompleteCodeClipsAction tabCompleteCodeClipsAction) {
-		this.tabCompleteCodeClipsAction = tabCompleteCodeClipsAction;
+	public CodeClipsCompletionProcessor() {
 	}
 	
 	@Override
@@ -100,7 +98,7 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 	
 	@Override
 	protected ICompletionProposal createProposal(Template template, TemplateContext context, IRegion region, int relevance) {
-		return new CodeClipTemplateProposal(template, context, region, getImage(template), relevance, tabCompleteCodeClipsAction);
+		return new CodeClipTemplateProposal(template, context, region, getImage(template), relevance);
 	}
 	
 	@Override
