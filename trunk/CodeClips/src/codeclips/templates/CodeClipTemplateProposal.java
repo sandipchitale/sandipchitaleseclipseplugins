@@ -126,7 +126,7 @@ public class CodeClipTemplateProposal extends TemplateProposal implements ICompl
 	@Override
 	public String getDisplayString() {
 		Template template = getTemplate();
-		return template.getDescription() + " [ " + template.getName() + "\u21E5 ]"; //$NON-NLS-1$ //$NON-NLS-2$
+		return template.getDescription() + " [ " + template.getName() + "\u00BB ]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public StyledString getStyledDisplayString() {
