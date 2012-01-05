@@ -17,6 +17,8 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 
@@ -86,8 +88,19 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 					snippetTemplateProposal.setTriggerChar(triggerChar);
 				}
 				StyledString styledString =
-					new StyledString(String.valueOf(triggerChar) + " " + template.getName() + " - " + String.format("%1$-25.25s ",template.getDescription()) + template.getName() + "\u00BB          ", FIXED_WIDTH_STYLER); //$NON-NLS-1$
-
+					new StyledString(String.format("%1$-25.25s ", String.valueOf(triggerChar) + " " + template.getName() + " - " + template.getDescription()), FIXED_WIDTH_STYLER); //$NON-NLS-1$
+				if (FIXED_WIDTH_STYLER_WITH_FOREGROUND_COLOR == null) {
+					Color foregroundColor = viewer.getTextWidget().getDisplay().getSystemColor(SWT.COLOR_WHITE);
+					Color backgroundColor = viewer.getTextWidget().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
+					FIXED_WIDTH_STYLER_WITH_FOREGROUND_COLOR = new CustomStyler(foregroundColor, backgroundColor);
+				}
+				String suffix = template.getName() + "\u00BB";
+				int leadingSpaces = 10 - suffix.length();
+				if (leadingSpaces > 0) {
+					styledString.append(new StyledString(String.format("%1$" + leadingSpaces + "." + leadingSpaces + "s", " "), FIXED_WIDTH_STYLER)); //$NON-NLS-1$);
+				}
+				styledString.append(new StyledString(" " + suffix + " ", FIXED_WIDTH_STYLER_WITH_FOREGROUND_COLOR)); //$NON-NLS-1$);
+				styledString.append(new StyledString("      ", FIXED_WIDTH_STYLER)); //$NON-NLS-1$);
 				snippetTemplateProposal.setStyledDisplayString(styledString);
 			}
 		}
@@ -131,19 +144,24 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 	}
 
 	private static class CustomStyler extends Styler {
-		private static String fForegroundColorName;
+		private Color foregroundColor;
+		private Color backgroundColor;
 
 		CustomStyler() {
-			this(null);
+			this(null, null);
 		}
 
-		CustomStyler(String foregroundColorName) {
-			fForegroundColorName = foregroundColorName;
+		CustomStyler(Color foregroundColor, Color backgroundColor) {
+			this.foregroundColor = foregroundColor;
+			this.backgroundColor = backgroundColor;
 		}
 
 		public void applyStyles(TextStyle textStyle) {
-			if (fForegroundColorName != null) {
-				textStyle.foreground = JFaceResources.getColorRegistry().get(fForegroundColorName);
+			if (foregroundColor != null) {
+				textStyle.foreground = foregroundColor;
+			}
+			if (backgroundColor != null) {
+				textStyle.background = backgroundColor;
 			}
 
 			textStyle.font = JFaceResources.getFontRegistry().get("org.eclipse.jface.textfont"); //$NON-NLS-1$
@@ -151,4 +169,5 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 	}
 
 	private static Styler FIXED_WIDTH_STYLER = new CustomStyler();
+	private static Styler FIXED_WIDTH_STYLER_WITH_FOREGROUND_COLOR;
 }
