@@ -80,16 +80,14 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 				CodeClipTemplateProposal snippetTemplateProposal = (CodeClipTemplateProposal) completionProposals[i];
 				snippetTemplateProposal.setTemplateProposals(completionProposals);
 				Template template = snippetTemplateProposal.getTemplateSuper();
-				StyledString styledString =
-					new StyledString(String.format("%1$-20.20s", template.getName() + " - " + template.getDescription()), FIXED_WIDTH_STYLER); //$NON-NLS-1$
-
-				styledString.append(new StyledString(String.format("%1$10.10s ", template.getName() + "\u21E5"), FIXED_WIDTH_STYLER)); //$NON-NLS-1$
-
+				char triggerChar = ' ';
 				if (i < 9) {
-					char triggerChar = (char)('1'+i);
+					triggerChar = (char)('1'+i);
 					snippetTemplateProposal.setTriggerChar(triggerChar);
-					styledString.append(new StyledString(String.valueOf(triggerChar), FIXED_WIDTH_STYLER));
 				}
+				StyledString styledString =
+					new StyledString(String.valueOf(triggerChar) + " " + template.getName() + " - " + String.format("%1$-25.25s ",template.getDescription()) + template.getName() + "\u00BB          ", FIXED_WIDTH_STYLER); //$NON-NLS-1$
+
 				snippetTemplateProposal.setStyledDisplayString(styledString);
 			}
 		}

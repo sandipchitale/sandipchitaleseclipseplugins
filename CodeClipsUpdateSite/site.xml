@@ -3,7 +3,7 @@
    <description name="Code Clips Update Site" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/CodeClipsUpdateSite">
       This update site provides Code Clips feature.
    </description>
-   <feature url="features/CodeClipsFeature_1.0.1.jar" id="CodeClipsFeature" version="1.0.1">
+   <feature url="features/CodeClipsFeature_1.0.2.jar" id="CodeClipsFeature" version="1.0.2">
       <category name="Code Clips"/>
    </feature>
    <category-def name="Code Clips" label="Code Clips"/>
