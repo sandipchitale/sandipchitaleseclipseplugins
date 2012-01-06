@@ -87,20 +87,19 @@ class CodeClipsCompletionProcessor extends TemplateCompletionProcessor {
 					triggerChar = (char)('1'+i);
 					snippetTemplateProposal.setTriggerChar(triggerChar);
 				}
-				StyledString styledString =
-					new StyledString(String.format("%1$-25.25s ", String.valueOf(triggerChar) + " " + template.getName() + " - " + template.getDescription()), FIXED_WIDTH_STYLER); //$NON-NLS-1$
 				if (FIXED_WIDTH_STYLER_WITH_FOREGROUND_COLOR == null) {
 					Color foregroundColor = viewer.getTextWidget().getDisplay().getSystemColor(SWT.COLOR_WHITE);
 					Color backgroundColor = viewer.getTextWidget().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
 					FIXED_WIDTH_STYLER_WITH_FOREGROUND_COLOR = new CustomStyler(foregroundColor, backgroundColor);
 				}
-				String suffix = template.getName() + "\u00BB";
-				int leadingSpaces = 10 - suffix.length();
-				if (leadingSpaces > 0) {
-					styledString.append(new StyledString(String.format("%1$" + leadingSpaces + "." + leadingSpaces + "s", " "), FIXED_WIDTH_STYLER)); //$NON-NLS-1$);
-				}
+				StyledString styledString = new StyledString(" " + String.valueOf(triggerChar) + " (", FIXED_WIDTH_STYLER);
+				String suffix = template.getName() + " \u00BB";
 				styledString.append(new StyledString(" " + suffix + " ", FIXED_WIDTH_STYLER_WITH_FOREGROUND_COLOR)); //$NON-NLS-1$);
-				styledString.append(new StyledString("      ", FIXED_WIDTH_STYLER)); //$NON-NLS-1$);
+//				int trailingSpaces = 10 - suffix.length();
+//				if (trailingSpaces > 0) {
+//					styledString.append(new StyledString(String.format("%1$" + trailingSpaces + "." + trailingSpaces + "s", " "), FIXED_WIDTH_STYLER)); //$NON-NLS-1$);
+//				}
+				styledString.append(new StyledString(") - " + template.getDescription() + "            ", FIXED_WIDTH_STYLER)); //$NON-NLS-1$
 				snippetTemplateProposal.setStyledDisplayString(styledString);
 			}
 		}
