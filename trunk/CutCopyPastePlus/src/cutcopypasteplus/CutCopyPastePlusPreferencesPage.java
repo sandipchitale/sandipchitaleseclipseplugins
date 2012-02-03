@@ -7,7 +7,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 /**
- * This page manages the Clips plug-in preferences .
+ * This page manages the Cut Copy Paste Plus plug-in preferences .
  *
  * @author Sandip V. Chitale
  *
@@ -26,7 +26,7 @@ public class CutCopyPastePlusPreferencesPage extends FieldEditorPreferencePage i
     @Override
     protected void createFieldEditors() {
         BooleanFieldEditor booleanENHANCED_CUT_COPY_PASTEFieldEditor = new BooleanFieldEditor(
-                Activator.ENHANCED_CUT_COPY_PASTE, "Enhanced Cut, Copy, Paste",
+                Activator.IS_CUT_AND_COPY_HISTORY_ENABLED, "Enable Cut and Copy History",
                 getFieldEditorParent());
         addField(booleanENHANCED_CUT_COPY_PASTEFieldEditor);
 
@@ -36,7 +36,7 @@ public class CutCopyPastePlusPreferencesPage extends FieldEditorPreferencePage i
         addField(integerMAX_HISTORY_COUNTFieldEditor);
         
         IntegerFieldEditor integerPASTE_NEXT_DELAYFieldEditor = new IntegerFieldEditor(
-        		Activator.PASTE_NEXT_DELAY, "Paste next delay (milli seconds):",
+        		Activator.PASTE_NEXT_DELAY, "Paste next delay (milliseconds):",
         		getFieldEditorParent());
         addField(integerPASTE_NEXT_DELAYFieldEditor);
     }

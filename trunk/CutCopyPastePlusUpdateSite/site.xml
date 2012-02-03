@@ -3,7 +3,7 @@
    <description name="Cut Copy Paste Plus Update Site" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/CutCopyPastePlusUpdateSite">
       This provides Cut/Copy text history and enhanced Paste functionality.
    </description>
-   <feature url="features/CutCopyPastePlusFeature_1.0.0.jar" id="CutCopyPastePlusFeature" version="1.0.0">
+   <feature url="features/CutCopyPastePlusFeature_1.0.1.jar" id="CutCopyPastePlusFeature" version="1.0.1">
       <category name="Cut Copy Paste"/>
    </feature>
    <category-def name="Cut Copy Paste" label="Cut Copy Paste"/>

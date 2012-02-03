@@ -42,12 +42,13 @@ public class CutCopyHistory {
 		history.clear();
 	}
 
+	public void reset() {
+		index = -1;
+	}
+	
 	public String getFirstTextToPaste() {
-		index = 0;
-		if (history.size() > 0) {
-			return history.get(index);
-		}
-		return null;
+		reset();
+		return getNextTextToPaste();
 	}
 
 	public String getNextTextToPaste() {
