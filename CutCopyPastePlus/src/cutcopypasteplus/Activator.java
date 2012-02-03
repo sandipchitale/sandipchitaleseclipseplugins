@@ -21,11 +21,11 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "CutCopyPastePlus"; //$NON-NLS-1$
 
-	public static final String ENHANCED_CUT_COPY_PASTE = "cutcopypasteplus.autoClipCutAndCopy";
+	public static final String IS_CUT_AND_COPY_HISTORY_ENABLED = "cutcopypasteplus.autoClipCutAndCopy";
 	public static final String MAX_HISTORY_COUNT = "cutcopypasteplus.maxHistoryCount";
 	public static final String PASTE_NEXT_DELAY = "cutcopypasteplus.pasteNextDelay";
 
-	private static final boolean defaultENHANCED_CUT_COPY_PASTE = true;
+	private static final boolean defaultIS_CUT_AND_COPY_HISTORY_ENABLED = true;
 	private static final int defaultMAX_HISTORY_COUNT = 64;
 	private static final int defaultPASTE_NEXT_DELAY = 1000;
 
@@ -74,13 +74,13 @@ public class Activator extends AbstractUIPlugin {
 
 	@Override
 	protected void initializeDefaultPreferences(IPreferenceStore store) {
-		store.setDefault(ENHANCED_CUT_COPY_PASTE, defaultENHANCED_CUT_COPY_PASTE);
+		store.setDefault(IS_CUT_AND_COPY_HISTORY_ENABLED, defaultIS_CUT_AND_COPY_HISTORY_ENABLED);
 		store.setDefault(MAX_HISTORY_COUNT, defaultMAX_HISTORY_COUNT);
 		store.setDefault(PASTE_NEXT_DELAY, defaultPASTE_NEXT_DELAY);
 	}
 
-	public boolean isEnhancedCutCopyPaste() {
-		return getPreferenceStore().getBoolean(ENHANCED_CUT_COPY_PASTE);
+	public boolean isCutAndCopyHistoryEnabled() {
+		return getPreferenceStore().getBoolean(IS_CUT_AND_COPY_HISTORY_ENABLED);
 	}
 	
 	public int getMaxHistoryCount() {
@@ -104,7 +104,7 @@ public class Activator extends AbstractUIPlugin {
 				}
 
 				public void preExecute(String commandId, ExecutionEvent event) {
-					if (Activator.getDefault().isEnhancedCutCopyPaste()) {
+					if (Activator.getDefault().isCutAndCopyHistoryEnabled()) {
 						// Is it a Paste command
 						if (org.eclipse.ui.IWorkbenchCommandConstants.EDIT_PASTE.equals(commandId)) {
 						}
@@ -112,7 +112,7 @@ public class Activator extends AbstractUIPlugin {
 				}
 
 				public void postExecuteSuccess(String commandId, Object returnValue) {
-					if (Activator.getDefault().isEnhancedCutCopyPaste()) {
+					if (Activator.getDefault().isCutAndCopyHistoryEnabled()) {
 						// Is it a Cut or Copy command
 						if (org.eclipse.ui.IWorkbenchCommandConstants.EDIT_COPY.equals(commandId)
 								|| org.eclipse.ui.IWorkbenchCommandConstants.EDIT_CUT.equals(commandId)) {
