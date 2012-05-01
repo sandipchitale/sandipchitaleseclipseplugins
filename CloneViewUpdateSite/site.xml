@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Clone View Update Site" url="http://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/CloneViewUpdateSite">
+      This feature lets you clone the Remote Systems view as many times
+as you like. You may further rename the clone to your liking.
+   </description>
+   <feature url="features/CloneViewFeature_1.0.0.jar" id="CloneViewFeature" version="1.0.0">
+      <category name="Clone View"/>
+   </feature>
+   <category-def name="Clone View" label="Clone View"/>
+</site>

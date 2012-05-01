@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="cloneview.CloneViewHandler"
+            id="cloneview.Clone"
+            name="Clone View">
+      </command>
+      <command
+            defaultHandler="cloneview.RenameCloneViewHandler"
+            id="cloneview.RenameClone"
+            name="Rename Clone">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="cloneview.Clone"
+            icon="icons/org.eclipse.rse.ui.view.systemView.clone.png">
+      </image>
+      <image
+            commandId="cloneview.RenameClone"
+            icon="icons/org.eclipse.rse.ui.view.systemView.renameClone.png">            
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.rse.ui.view.systemView?after=additions">
+         <command
+               commandId="cloneview.Clone"
+               label="Clone view"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.rse.ui.view.systemView.clone?after=additions">
+         <command
+               commandId="cloneview.Clone"
+               style="push"
+               tooltip="Clone Remote Systems View">
+            <visibleWhen
+                  checkEnabled="true">
+            </visibleWhen>
+         </command>
+         <command
+               commandId="cloneview.RenameClone"
+               label="Rename this Clone"
+               style="push"
+               tooltip="Rename this view">
+            <visibleWhen
+                  checkEnabled="true">
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            class="cloneview.SystemViewPartClone"
+            icon="icons/org.eclipse.rse.ui.view.systemView.clone.png"
+            id="org.eclipse.rse.ui.view.systemView.clone"
+            name="Remote Systems Clone"
+            restorable="true">
+      </view>
+   </extension>
+
+</plugin>

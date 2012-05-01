@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Clone View (Remote Systems)
+Bundle-SymbolicName: CloneView;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: cloneview.Activator
+Bundle-Vendor: Sandip Chitale
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.rse.services,
+ org.eclipse.rse.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
