@@ -46,6 +46,10 @@ public class CutCopyHistory {
 		index = -1;
 	}
 	
+	int size() {
+		return history.size();
+	}
+	
 	public String getFirstTextToPaste() {
 		reset();
 		return getNextTextToPaste();

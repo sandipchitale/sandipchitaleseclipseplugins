@@ -24,10 +24,12 @@ public class Activator extends AbstractUIPlugin {
 	public static final String IS_CUT_AND_COPY_HISTORY_ENABLED = "cutcopypasteplus.autoClipCutAndCopy";
 	public static final String MAX_HISTORY_COUNT = "cutcopypasteplus.maxHistoryCount";
 	public static final String PASTE_NEXT_DELAY = "cutcopypasteplus.pasteNextDelay";
+	public static final String IS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED = "cutcopypasteplus.quickPasteCyclesThroughHistory";
 
 	private static final boolean defaultIS_CUT_AND_COPY_HISTORY_ENABLED = true;
 	private static final int defaultMAX_HISTORY_COUNT = 64;
 	private static final int defaultPASTE_NEXT_DELAY = 1000;
+	private static final boolean defaultIS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED = false;
 
 	// The shared instance
 	private static Activator plugin;
@@ -77,6 +79,7 @@ public class Activator extends AbstractUIPlugin {
 		store.setDefault(IS_CUT_AND_COPY_HISTORY_ENABLED, defaultIS_CUT_AND_COPY_HISTORY_ENABLED);
 		store.setDefault(MAX_HISTORY_COUNT, defaultMAX_HISTORY_COUNT);
 		store.setDefault(PASTE_NEXT_DELAY, defaultPASTE_NEXT_DELAY);
+		store.setDefault(IS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED, defaultIS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED);
 	}
 
 	public boolean isCutAndCopyHistoryEnabled() {
@@ -91,6 +94,10 @@ public class Activator extends AbstractUIPlugin {
 		return  getPreferenceStore().getInt(PASTE_NEXT_DELAY);
 	}
 	
+	public boolean isQuickPasteCyclesThroughHistory() {
+		return getPreferenceStore().getBoolean(IS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED);
+	}
+	
 	void addExecutionListener() {
 		// Add listener to monitor Cut and Copy commands
 		ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getAdapter(ICommandService.class);
@@ -98,13 +105,15 @@ public class Activator extends AbstractUIPlugin {
 			commandService.addExecutionListener(new IExecutionListener() {
 
 				public void notHandled(String commandId, NotHandledException exception) {
+					clearAfter();
 				}
 
 				public void postExecuteFailure(String commandId, ExecutionException exception) {
+					clearAfter();
 				}
 
 				public void preExecute(String commandId, ExecutionEvent event) {
-					if (Activator.getDefault().isCutAndCopyHistoryEnabled()) {
+					if (Activator.getDefault().isQuickPasteCyclesThroughHistory() && CutCopyHistory.getInstance().size() > 1) {
 						// Is it a Paste command
 						if (org.eclipse.ui.IWorkbenchCommandConstants.EDIT_PASTE.equals(commandId)) {
 						}
@@ -123,9 +132,17 @@ public class Activator extends AbstractUIPlugin {
 									CutCopyHistory.getInstance().add((String) contents);
 								}
 							}
-						} else if (org.eclipse.ui.IWorkbenchCommandConstants.EDIT_PASTE.equals(commandId)) {
 						}
 					}
+					if (Activator.getDefault().isQuickPasteCyclesThroughHistory() && CutCopyHistory.getInstance().size() > 1) {
+						// Is it a Paste command
+						if (org.eclipse.ui.IWorkbenchCommandConstants.EDIT_PASTE.equals(commandId)) {
+						}
+					}
+				}
+				
+				private void clearAfter() {
+					
 				}
 
 			});
