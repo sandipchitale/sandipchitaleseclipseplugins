@@ -39,6 +39,11 @@ public class CutCopyPastePlusPreferencesPage extends FieldEditorPreferencePage i
         		Activator.PASTE_NEXT_DELAY, "Paste next delay (milliseconds):",
         		getFieldEditorParent());
         addField(integerPASTE_NEXT_DELAYFieldEditor);
+
+        BooleanFieldEditor booleanQUICK_PASTE_CYCLES_THROUGH_HISTORYFieldEditor = new BooleanFieldEditor(
+                Activator.IS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED, "Quick Paste cycles through History",
+                getFieldEditorParent());
+        addField(booleanQUICK_PASTE_CYCLES_THROUGH_HISTORYFieldEditor);
     }
 
 }
