@@ -20,21 +20,19 @@ public class PasteCommandHandler extends AbstractHandler {
 			Control focusedControl = IsFocusedInTextPropertyTester.getFocusControl();
 			if (focusedControl instanceof Text || focusedControl instanceof StyledText) {
 				String textToPaste = null;
-
-				if ((currentTimeMillis - lastPasteInMillis) > Activator.getDefault().getPasteNextDelay()) {
-					if (Activator.getDefault().isCutAndCopyHistoryEnabled()) {
-						textToPaste = CutCopyHistory.getInstance().getFirstTextToPaste();
-					} else {
-						CutCopyHistory.getInstance().reset();
-						Clipboard clipboard = Activator.getDefault().getClipboard();
-						if (clipboard != null) {
-							Object contents = clipboard.getContents(TextTransfer.getInstance());
-							if (contents instanceof String) {
-								textToPaste = (String) contents;
-							}
-						}
+				Clipboard clipboard = Activator.getDefault().getClipboard();
+				if (clipboard != null) {
+					Object contents = clipboard.getContents(TextTransfer.getInstance());
+					if (contents instanceof String) {
+						textToPaste = (String) contents;
+					}
+				}
+				if (Activator.getDefault().isCutAndCopyHistoryEnabled()) {
+					if ((currentTimeMillis - lastPasteInMillis) < Activator.getDefault().getPasteNextDelay()) {
+						textToPaste = CutCopyHistory.getInstance().getNextTextToPaste();
 					}
 				} else {
+					CutCopyHistory.getInstance().reset();
 					textToPaste = CutCopyHistory.getInstance().getNextTextToPaste();
 				}
 				if (textToPaste == null) {
