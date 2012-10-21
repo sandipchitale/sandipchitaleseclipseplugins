@@ -5,11 +5,16 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IExecutionListener;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -103,19 +108,77 @@ public class Activator extends AbstractUIPlugin {
 		ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getAdapter(ICommandService.class);
 		if (commandService != null) {
 			commandService.addExecutionListener(new IExecutionListener() {
-
+				private long lastPrePasteMillis = System.currentTimeMillis();
+				private String savedClipboardString = null;
+				private int quickPasteOrdinal = 0;
+				private String lastPastedString = null;
 				public void notHandled(String commandId, NotHandledException exception) {
-					clearAfter();
+					clearAfter(commandId);
 				}
 
 				public void postExecuteFailure(String commandId, ExecutionException exception) {
-					clearAfter();
+					clearAfter(commandId);
 				}
 
 				public void preExecute(String commandId, ExecutionEvent event) {
 					if (Activator.getDefault().isQuickPasteCyclesThroughHistory() && CutCopyHistory.getInstance().size() > 1) {
-						// Is it a Paste command
+						// Is it a Paste command ?
 						if (org.eclipse.ui.IWorkbenchCommandConstants.EDIT_PASTE.equals(commandId)) {
+							// Yes
+							try {
+								// Reset
+								savedClipboardString = null;
+								long currentPrePasteMillis = System.currentTimeMillis();
+								if ((currentPrePasteMillis - lastPrePasteMillis) < Activator.getDefault().getPasteNextDelay()) {
+									// User has pasted quickly enough
+									quickPasteOrdinal++;
+									// This is second paste, so preselect the text pasted in first paste
+									if (quickPasteOrdinal == 1) { // 0 == 1st, 1 == 2nd
+										Control focusedControl = IsFocusedInTextPropertyTester.getFocusControl();
+										if (focusedControl instanceof Text) {
+											final Text text = (Text) focusedControl;
+											final int caretOffset = text.getSelection().x;
+											PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+												@Override
+												public void run() {
+													text.setSelection(caretOffset - lastPastedString.length(), caretOffset);
+												}
+											});
+										} else if (focusedControl instanceof StyledText) {
+											StyledText styledText = (StyledText) focusedControl;
+											int caretOffset = styledText.getCaretOffset();
+											styledText.setSelection(caretOffset - lastPastedString.length(), caretOffset);
+										}
+									}
+									lastPastedString = null;
+									Object contents = getClipboard().getContents(TextTransfer.getInstance());
+									if (contents instanceof String) {
+										savedClipboardString = (String) contents;
+									}
+									String nextTextToPaste = CutCopyHistory.getInstance().getNextTextToPaste();
+									if (nextTextToPaste != null) {
+										getClipboard().setContents(new Object[] {nextTextToPaste}, new Transfer[] {TextTransfer.getInstance()});
+									}
+								} else {
+									quickPasteOrdinal = 0;
+									Object contents = getClipboard().getContents(TextTransfer.getInstance());
+									if (contents instanceof String) {
+										lastPastedString = (String) contents;
+									}
+									// User is not pasting quickly enough
+									CutCopyHistory.getInstance().reset();
+									// Is history stale
+									if (!CutCopyHistory.getInstance().isStale()) {
+										// No - therefore the clipboard and first item of
+										// CutCopyHistory are same so simply advance
+										// past it
+										CutCopyHistory.getInstance().getNextTextToPaste();
+									}
+								}
+							} finally {
+								// Remember the timestamp of this paste invocation
+								lastPrePasteMillis = System.currentTimeMillis();
+							}
 						}
 					}
 				}
@@ -127,9 +190,14 @@ public class Activator extends AbstractUIPlugin {
 								|| org.eclipse.ui.IWorkbenchCommandConstants.EDIT_CUT.equals(commandId)) {
 							Clipboard clipboard = getClipboard();
 							if (clipboard != null) {
-								Object contents = clipboard.getContents(TextTransfer.getInstance());
+								Object contents = getClipboard().getContents(TextTransfer.getInstance());
 								if (contents instanceof String) {
-									CutCopyHistory.getInstance().add((String) contents);
+									if (Activator.getDefault().isCutAndCopyHistoryEnabled()) {
+										CutCopyHistory.getInstance().setStale(false);
+										CutCopyHistory.getInstance().add((String) contents);
+									} else {
+										CutCopyHistory.getInstance().setStale(true);
+									}
 								}
 							}
 						}
@@ -137,12 +205,41 @@ public class Activator extends AbstractUIPlugin {
 					if (Activator.getDefault().isQuickPasteCyclesThroughHistory() && CutCopyHistory.getInstance().size() > 1) {
 						// Is it a Paste command
 						if (org.eclipse.ui.IWorkbenchCommandConstants.EDIT_PASTE.equals(commandId)) {
+							try {
+								// Select the just pasted text
+								if (quickPasteOrdinal > 0) {
+									Object contents = getClipboard().getContents(TextTransfer.getInstance());
+									if (contents instanceof String) {
+										final String string = (String) contents;
+										Control focusedControl = IsFocusedInTextPropertyTester.getFocusControl();
+										if (focusedControl instanceof Text) {
+											final Text text = (Text) focusedControl;
+											final int caretOffset = text.getSelection().x;
+											PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+												@Override
+												public void run() {
+													text.setSelection(caretOffset - string.length(), caretOffset);
+												}
+											});
+										} else if (focusedControl instanceof StyledText) {
+											StyledText styledText = (StyledText) focusedControl;
+											int caretOffset = styledText.getCaretOffset();
+											styledText.setSelection(caretOffset - string.length(), caretOffset);
+										}
+									}
+								}
+								// Restore clipboard
+								if (savedClipboardString != null) {
+									getClipboard().setContents(new Object[] {savedClipboardString}, new Transfer[] {TextTransfer.getInstance()});
+								}
+							} finally {
+								savedClipboardString = null;
+							}
 						}
 					}
 				}
 				
-				private void clearAfter() {
-					
+				private void clearAfter(String commandId) {
 				}
 
 			});

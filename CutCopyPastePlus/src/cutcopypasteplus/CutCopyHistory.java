@@ -16,6 +16,7 @@ public class CutCopyHistory {
 
 	private ArrayList<String> history;
 	private int index = -1;
+	private boolean stale;
 
 	private CutCopyHistory() {
 		this.history = new ArrayList<String>();
@@ -49,11 +50,6 @@ public class CutCopyHistory {
 	int size() {
 		return history.size();
 	}
-	
-	public String getFirstTextToPaste() {
-		reset();
-		return getNextTextToPaste();
-	}
 
 	public String getNextTextToPaste() {
 		if (history.size() > 0) {
@@ -66,4 +62,11 @@ public class CutCopyHistory {
 		return null;
 	}
 
+	public boolean isStale() {
+		return stale;
+	}
+	
+	public void setStale(boolean stale) {
+		this.stale = stale;
+	}
 }
