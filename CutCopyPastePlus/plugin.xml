@@ -19,6 +19,13 @@
             id="CutCopyPastePlus.PasteCommand"
             name="Paste Plus">
       </command>
+      <command
+            categoryId="org.eclipse.ui.category.edit"
+            defaultHandler="cutcopypasteplus.ToggleQuickPasteCyclesThroughHistoryCommandHandler"
+            description="Toggle Quick Paste Cycles Through History"
+            id="CutCopyPastePlus.ToggleQuickPasteCyclesThroughHistoryCommand"
+            name="Toggle Quick Paste Cycles Through History">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -36,7 +43,7 @@
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="CutCopyPastePlus.PasteCommand"
+            commandId="CutCopyPastePlus.ToggleQuickPasteCyclesThroughHistoryCommand"
             contextId="org.eclipse.ui.contexts.dialogAndWindow"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+V">
