@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -101,6 +100,10 @@ public class Activator extends AbstractUIPlugin {
 	
 	public boolean isQuickPasteCyclesThroughHistory() {
 		return getPreferenceStore().getBoolean(IS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED);
+	}
+	
+	public void setQuickPasteCyclesThroughHistory(boolean quickPasteCyclesThroughHistory) {
+		getPreferenceStore().setValue(IS_QUICK_PASTE_CYCLES_THROUGH_HISTORY_ENABLED, quickPasteCyclesThroughHistory);
 	}
 	
 	void addExecutionListener() {
