@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.debug.core.IJavaClassObject;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaFieldVariable;
+import org.eclipse.jdt.debug.core.IJavaInterfaceType;
 import org.eclipse.jdt.debug.core.IJavaObject;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaType;
@@ -32,6 +33,9 @@ import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.internal.debug.core.logicalstructures.JDIAllInstancesValue;
 import org.eclipse.jdt.internal.debug.core.model.JDIClassType;
 import org.eclipse.jdt.internal.debug.core.model.JDIDebugTarget;
+import org.eclipse.jdt.internal.debug.core.model.JDIInterfaceType;
+import org.eclipse.jdt.internal.debug.core.model.JDINullValue;
+import org.eclipse.jdt.internal.debug.core.model.JDIReferenceType;
 import org.eclipse.jdt.internal.debug.ui.IJDIPreferencesConstants;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jdt.internal.debug.ui.display.JavaInspectExpression;
@@ -95,7 +99,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 
 			// Prompt the user for a Java Class
 			SelectionDialog dialog = new OpenTypeSelectionDialog(shell, true, PlatformUI.getWorkbench()
-					.getProgressService(), null, IJavaSearchConstants.CLASS) {
+					.getProgressService(), null, IJavaSearchConstants.CLASS_AND_INTERFACE) {
 				protected Control createDialogArea(Composite parent) {
 					Composite dialogArea = (Composite) super.createDialogArea(parent);
 					final Button showInstancesOfSubclassesButton = new Button(dialogArea, SWT.CHECK);
@@ -153,7 +157,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 				}
 			};
 			dialog.setTitle(JavaUIMessages.OpenTypeAction_dialogTitle);
-			dialog.setMessage("Select Java Class to show instances of:");
+			dialog.setMessage("Select Java Class(Interface) to show instances(implementors) of:");
 			if (dialog.open() == IDialogConstants.OK_ID) {
 				// Show the instances of Java Class
 				final Object[] typesArray = dialog.getResult();
@@ -174,7 +178,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						return null;
 					}
 					final IType iType = (IType) typesArray[0];
-					Job job = new Job("Getting Instances of " + iType.getFullyQualifiedName()) {
+					Job job = new Job("Getting " + (iType instanceof JDIClassType ? "instances" : "implementors") + " of " + iType.getFullyQualifiedName()) {
 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
@@ -214,28 +218,48 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 									if (monitor.isCanceled()) {
 										return Status.CANCEL_STATUS;
 									}
-									if (type instanceof JDIClassType) {
-										JDIClassType classType = (JDIClassType) type;
-										Set<JDIClassType> typeAndSubTypes = new LinkedHashSet<JDIClassType>();
-										typeAndSubTypes.add(classType);
+									if (type instanceof JDIClassType || type instanceof JDIInterfaceType) {
+										JDIReferenceType referenceType = (JDIReferenceType) type;
+										Set<JDIReferenceType> typeAndSubTypes = new LinkedHashSet<JDIReferenceType>();
+										typeAndSubTypes.add(referenceType);
 										if (showInstancesOfSubclasses) {
 											// Skip over java.lang.Object to prevent loading all instances
 											// in the VM
-											if (!Object.class.getName().equals(classType.getName())) {
+											if (type instanceof JDIInterfaceType || (!Object.class.getName().equals(((JDIClassType) type).getName()))) {
 												for (IJavaClassObject allClassObject : allClassObjects) {
 													IJavaType instanceType = allClassObject.getInstanceType();
 													if (instanceType instanceof JDIClassType) {
 														JDIClassType jdiClassTypeSaved = (JDIClassType) instanceType;
 														JDIClassType jdiClassType = jdiClassTypeSaved;
-														boolean isSubClass = false;
-														do {
+														boolean isSubClassOrImplementor = false;
+														loop: do {
 															if (typeAndSubTypes.contains(jdiClassType)) {
-																isSubClass = true;
+																isSubClassOrImplementor = true;
 																break;
+															}
+															if (type instanceof JDIInterfaceType) {
+																try {
+																IJavaInterfaceType[] jdiInterfaceTypes = jdiClassType.getInterfaces();
+																for (IJavaInterfaceType jdiIterfaceType : jdiInterfaceTypes) {
+																	if (typeAndSubTypes.contains(jdiIterfaceType)) {
+																		isSubClassOrImplementor = true;
+																		break loop;
+																	}
+																	IJavaInterfaceType[] jdiSuperInterfacesTypes = jdiIterfaceType.getSuperInterfaces();
+																	for (IJavaInterfaceType jdiSuperInterfaceType : jdiSuperInterfacesTypes) {
+																		if (typeAndSubTypes.contains(jdiSuperInterfaceType)) {
+																			isSubClassOrImplementor = true;
+																			break loop;
+																		}
+																	}
+																}
+																} catch (Exception e) {
+																	// Ignore
+																}
 															}
 															jdiClassType = (JDIClassType)jdiClassType.getSuperclass();
 														} while (jdiClassType != null);
-														if (isSubClass) {
+														if (isSubClassOrImplementor) {
 															typeAndSubTypes.add(jdiClassTypeSaved);
 														}
 													}
@@ -244,9 +268,12 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 										}
 										
 										// TODO Topological sort - superclasses before subclasses
-										for (JDIClassType typeOrSubType : typeAndSubTypes) {
+										for (JDIReferenceType typeOrSubType : typeAndSubTypes) {
 											if (monitor.isCanceled()) {
 												return Status.CANCEL_STATUS;
+											}
+											if (typeOrSubType instanceof JDIInterfaceType) {
+												continue;
 											}
 											try {
 												if (!showInnerClasses) { 
@@ -283,7 +310,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 														IJavaValue javaValue = classObject.sendMessage("getProtectionDomain", "()Ljava/security/ProtectionDomain;", null, (IJavaThread) suspendedThread, null);
 														if (javaValue instanceof IJavaObject) {
 															javaValue = ((IJavaObject) javaValue).sendMessage("getCodeSource", "()Ljava/security/CodeSource;", null, (IJavaThread) suspendedThread, null);
-															if (javaValue instanceof IJavaObject) {
+															if (javaValue instanceof IJavaObject && !(javaValue instanceof JDINullValue)) {
 																IJavaObject classLoaderObject = typeOrSubType.getClassLoaderObject();
 																DebugPlugin
 																.getDefault()
