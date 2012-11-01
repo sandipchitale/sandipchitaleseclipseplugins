@@ -1,5 +1,6 @@
 package allinstances;
 
+import java.lang.annotation.Annotation;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +23,9 @@ import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.debug.core.IJavaArray;
 import org.eclipse.jdt.debug.core.IJavaClassObject;
+import org.eclipse.jdt.debug.core.IJavaClassType;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaFieldVariable;
 import org.eclipse.jdt.debug.core.IJavaInterfaceType;
@@ -99,7 +102,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 
 			// Prompt the user for a Java Class
 			SelectionDialog dialog = new OpenTypeSelectionDialog(shell, true, PlatformUI.getWorkbench()
-					.getProgressService(), null, IJavaSearchConstants.CLASS_AND_INTERFACE) {
+					.getProgressService(), null, IJavaSearchConstants.TYPE) {
 				protected Control createDialogArea(Composite parent) {
 					Composite dialogArea = (Composite) super.createDialogArea(parent);
 					final Button showInstancesOfSubclassesButton = new Button(dialogArea, SWT.CHECK);
@@ -184,7 +187,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						protected IStatus run(IProgressMonitor monitor) {
 							IJavaType[] types;
 							try {
-								types = target.getJavaTypes(iType.getFullyQualifiedName());
+							types = target.getJavaTypes(iType.getFullyQualifiedName());
 								if (types == null || types.length == 0) {
 									// If the type is not known the VM, open
 									// a pop-up dialog with 0 instances
@@ -219,10 +222,32 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 										return Status.CANCEL_STATUS;
 									}
 									if (type instanceof JDIClassType || type instanceof JDIInterfaceType) {
+										boolean isAnnotation = false;
 										JDIReferenceType referenceType = (JDIReferenceType) type;
+										if (referenceType instanceof JDIInterfaceType) {
+											JDIInterfaceType interfaceType = (JDIInterfaceType) referenceType;
+											IJavaInterfaceType[] superInterfaces = interfaceType.getSuperInterfaces();
+											for (int i = 0; i < superInterfaces.length; i++) {
+												IJavaInterfaceType superInterfaceType = superInterfaces[i];
+												if (Annotation.class.getName().equals(superInterfaceType.getName())) {
+													isAnnotation = true;
+												}
+											}
+										}
 										Set<JDIReferenceType> typeAndSubTypes = new LinkedHashSet<JDIReferenceType>();
 										typeAndSubTypes.add(referenceType);
 										if (showInstancesOfSubclasses) {
+											IThread suspendedThread = null;
+											if (isAnnotation) {
+												// find any thread that is suspended 
+												IThread[] threads = target.getThreads();
+												for (IThread thread : threads) {
+													if (thread.isSuspended()) {
+														suspendedThread = thread;
+														break;
+													}
+												}
+											}
 											// Skip over java.lang.Object to prevent loading all instances
 											// in the VM
 											if (type instanceof JDIInterfaceType || (!Object.class.getName().equals(((JDIClassType) type).getName()))) {
@@ -238,23 +263,52 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 																break;
 															}
 															if (type instanceof JDIInterfaceType) {
-																try {
-																IJavaInterfaceType[] jdiInterfaceTypes = jdiClassType.getInterfaces();
-																for (IJavaInterfaceType jdiIterfaceType : jdiInterfaceTypes) {
-																	if (typeAndSubTypes.contains(jdiIterfaceType)) {
-																		isSubClassOrImplementor = true;
-																		break loop;
+																if (isAnnotation) {
+																	if (suspendedThread != null) {
+																		// Get annotations of the class and see if has the selected annotation
+																		IJavaValue javaValue = allClassObject.sendMessage("getAnnotations", "()[Ljava/lang/annotation/Annotation;", null, (IJavaThread) suspendedThread, null);
+																		if (javaValue instanceof IJavaArray) {
+																			IJavaArray javaArray = (IJavaArray) javaValue;
+																			if (javaArray.getLength() > 0) {
+																				IJavaValue[] values = javaArray.getValues();
+																				for (IJavaValue value : values) {
+																					if (value instanceof IJavaObject) {
+																						IJavaObject javaObject = (IJavaObject) value;
+																						IJavaType javaType = javaObject.getJavaType();
+																						if (javaType instanceof IJavaClassType) {
+																							IJavaClassType javaClassType = (IJavaClassType) javaType;
+																							IJavaInterfaceType[] interfaces = javaClassType.getInterfaces();
+																							for (IJavaInterfaceType anInterface : interfaces) {
+																								// Found a matching Annotation
+																								if (anInterface.getName().equals(type.getName())) {
+																									isSubClassOrImplementor = true;
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
 																	}
-																	IJavaInterfaceType[] jdiSuperInterfacesTypes = jdiIterfaceType.getSuperInterfaces();
-																	for (IJavaInterfaceType jdiSuperInterfaceType : jdiSuperInterfacesTypes) {
-																		if (typeAndSubTypes.contains(jdiSuperInterfaceType)) {
+																} else {
+																	try {
+																	IJavaInterfaceType[] jdiInterfaceTypes = jdiClassType.getAllInterfaces();
+																	for (IJavaInterfaceType jdiIterfaceType : jdiInterfaceTypes) {
+																		if (typeAndSubTypes.contains(jdiIterfaceType)) {
 																			isSubClassOrImplementor = true;
 																			break loop;
 																		}
+																		IJavaInterfaceType[] jdiSuperInterfacesTypes = jdiIterfaceType.getSuperInterfaces();
+																		for (IJavaInterfaceType jdiSuperInterfaceType : jdiSuperInterfacesTypes) {
+																			if (typeAndSubTypes.contains(jdiSuperInterfaceType)) {
+																				isSubClassOrImplementor = true;
+																				break loop;
+																			}
+																		}
 																	}
-																}
-																} catch (Exception e) {
-																	// Ignore
+																	} catch (Exception e) {
+																		// Ignore
+																	}
 																}
 															}
 															jdiClassType = (JDIClassType)jdiClassType.getSuperclass();
