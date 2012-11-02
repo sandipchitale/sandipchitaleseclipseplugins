@@ -74,6 +74,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 	private static boolean showInstancesOfSubclasses = true;
 	private static boolean showInnerClasses = false;
 	private static boolean showAnonymousInnerClasses = false;
+	private static boolean showZeroInstances = true;
 	
 	private static Pattern dollarNumber = Pattern.compile(Pattern.quote("$") + "\\d");
 
@@ -119,7 +120,6 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 					showInnerClassesButton.setSelection(showInnerClasses);
 					showInnerClassesButton.setEnabled(showInstancesOfSubclasses);
 
-					
 					final Button showAnonymousInnerClassesButton = new Button(dialogArea, SWT.CHECK);
 					showAnonymousInnerClassesButton.setText("Include anonymous inner classes");
 					gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -136,11 +136,24 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						}
 					});
 					
+					final Button showZeroInstancesButton = new Button(dialogArea, SWT.CHECK);
+					showZeroInstancesButton.setText("Show even if there are zero instances");
+					gd = new GridData(GridData.FILL_HORIZONTAL);
+					showZeroInstancesButton.setLayoutData(gd);
+					showZeroInstancesButton.setSelection(showZeroInstances);
+					showZeroInstancesButton.addSelectionListener(new SelectionListener() {
+						public void widgetSelected(SelectionEvent e) {
+							showZeroInstances = showZeroInstancesButton.getSelection();
+						}
+
+						public void widgetDefaultSelected(SelectionEvent e) {
+						}
+					});
+					
 					showInnerClassesButton.addSelectionListener(new SelectionListener() {
 						public void widgetSelected(SelectionEvent e) {
 							showInnerClasses = showInnerClassesButton.getSelection();
 							showAnonymousInnerClassesButton.setEnabled(showInnerClasses);
-							
 						}
 
 						public void widgetDefaultSelected(SelectionEvent e) {
@@ -344,12 +357,15 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 												IJavaClassObject classObject = typeOrSubType.getClassObject();
 												JDIAllInstancesValue aiv = new JDIAllInstancesValue(
 														(JDIDebugTarget) typeOrSubType.getDebugTarget(), typeOrSubType);
-												DebugPlugin
+												if (showZeroInstances || typeOrSubType.getInstanceCount() > 0) {
+													DebugPlugin
 														.getDefault()
 														.getExpressionManager()
 														.addExpression(
 																new JavaInspectExpression(typeOrSubType.getName() + " Instances (" + typeOrSubType.getInstanceCount() + ")", aiv));
-
+												} else {
+													continue;
+												}
 												try {
 													IThread suspendedThread = null;
 													IThread[] threads = target.getThreads();
