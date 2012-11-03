@@ -200,7 +200,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						protected IStatus run(IProgressMonitor monitor) {
 							IJavaType[] types;
 							try {
-							types = target.getJavaTypes(iType.getFullyQualifiedName());
+								types = target.getJavaTypes(iType.getFullyQualifiedName());
 								if (types == null || types.length == 0) {
 									// If the type is not known the VM, open
 									// a pop-up dialog with 0 instances
@@ -295,6 +295,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 																								// Found a matching Annotation
 																								if (anInterface.getName().equals(type.getName())) {
 																									isSubClassOrImplementor = true;
+																									break;
 																								}
 																							}
 																						}
@@ -342,6 +343,9 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 											if (typeOrSubType instanceof JDIInterfaceType) {
 												continue;
 											}
+											if (!showZeroInstances && typeOrSubType.getInstanceCount() <= 0) {
+												continue;
+											}
 											try {
 												if (!showInnerClasses) { 
 													if (typeOrSubType.getName().indexOf('$') != -1) {
@@ -357,15 +361,11 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 												IJavaClassObject classObject = typeOrSubType.getClassObject();
 												JDIAllInstancesValue aiv = new JDIAllInstancesValue(
 														(JDIDebugTarget) typeOrSubType.getDebugTarget(), typeOrSubType);
-												if (showZeroInstances || typeOrSubType.getInstanceCount() > 0) {
-													DebugPlugin
-														.getDefault()
-														.getExpressionManager()
-														.addExpression(
-																new JavaInspectExpression(typeOrSubType.getName() + " Instances (" + typeOrSubType.getInstanceCount() + ")", aiv));
-												} else {
-													continue;
-												}
+												DebugPlugin
+													.getDefault()
+													.getExpressionManager()
+													.addExpression(
+															new JavaInspectExpression(typeOrSubType.getName() + " Instances (" + typeOrSubType.getInstanceCount() + ")", aiv));
 												try {
 													IThread suspendedThread = null;
 													IThread[] threads = target.getThreads();
