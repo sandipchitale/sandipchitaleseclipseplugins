@@ -2,7 +2,7 @@
 <feature
       id="AllInstancesFeature"
       label="All Instances of Java Type Feature"
-      version="1.0.17"
+      version="1.0.18"
       provider-name="Sandip Chitale">
 
    <description url="http://code.google.com/p/sandipchitaleseclipseplugins/">
