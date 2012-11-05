@@ -172,8 +172,11 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 					return dialogArea;
 				}
 			};
-			dialog.setTitle(JavaUIMessages.OpenTypeAction_dialogTitle);
-			dialog.setMessage("Select Java Class(Interface) to show instances(implementors) of:");
+			dialog.setTitle("Select Class, Interface or Annotation");
+			dialog.setMessage(
+					"Select the class to show all instances of or\n" +
+					"select the interface to show all implementors of or\n" +
+					"select the annotation to show all instances annotated with");
 			if (dialog.open() == IDialogConstants.OK_ID) {
 				// Show the instances of Java Class
 				final Object[] typesArray = dialog.getResult();
@@ -194,7 +197,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 						return null;
 					}
 					final IType iType = (IType) typesArray[0];
-					Job job = new Job("Getting " + (iType instanceof JDIClassType ? "instances" : "implementors") + " of " + iType.getFullyQualifiedName()) {
+					Job job = new Job("Getting all instances for " + iType.getFullyQualifiedName()) {
 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
@@ -230,6 +233,16 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 									}
 								}
 
+								IThread suspendedThread = null;
+								// find any thread that is suspended
+								IThread[] threads = target.getThreads();
+								for (IThread thread : threads) {
+									if (thread.isSuspended()) {
+										suspendedThread = thread;
+										break;
+									}
+								}
+
 								for (IJavaType type : types) {
 									if (monitor.isCanceled()) {
 										return Status.CANCEL_STATUS;
@@ -250,17 +263,6 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 										Set<JDIReferenceType> typeAndSubTypes = new LinkedHashSet<JDIReferenceType>();
 										typeAndSubTypes.add(referenceType);
 										if (showInstancesOfSubclasses) {
-											IThread suspendedThread = null;
-											if (isAnnotation) {
-												// find any thread that is suspended 
-												IThread[] threads = target.getThreads();
-												for (IThread thread : threads) {
-													if (thread.isSuspended()) {
-														suspendedThread = thread;
-														break;
-													}
-												}
-											}
 											// Skip over java.lang.Object to prevent loading all instances
 											// in the VM
 											if (type instanceof JDIInterfaceType || (!Object.class.getName().equals(((JDIClassType) type).getName()))) {
@@ -367,15 +369,6 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 													.addExpression(
 															new JavaInspectExpression(typeOrSubType.getName() + " Instances (" + typeOrSubType.getInstanceCount() + ")", aiv));
 												try {
-													IThread suspendedThread = null;
-													IThread[] threads = target.getThreads();
-													for (IThread thread : threads) {
-														if (thread.isSuspended()) {
-															suspendedThread = thread;
-															break;
-														}
-													}
-
 													if (suspendedThread != null) {
 														IJavaValue javaValue = classObject.sendMessage("getProtectionDomain", "()Ljava/security/ProtectionDomain;", null, (IJavaThread) suspendedThread, null);
 														if (javaValue instanceof IJavaObject) {
