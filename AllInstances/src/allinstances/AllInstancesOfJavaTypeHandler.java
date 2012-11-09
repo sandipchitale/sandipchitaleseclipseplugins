@@ -42,7 +42,6 @@ import org.eclipse.jdt.internal.debug.core.model.JDIReferenceType;
 import org.eclipse.jdt.internal.debug.ui.IJDIPreferencesConstants;
 import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
 import org.eclipse.jdt.internal.debug.ui.display.JavaInspectExpression;
-import org.eclipse.jdt.internal.ui.JavaUIMessages;
 import org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -57,6 +56,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.SelectionDialog;
@@ -80,7 +80,8 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final Shell shell = HandlerUtil.getActiveShell(event);
-		if (shell != null) {
+		IWorkbenchWindow activeWorkbenchWindow = HandlerUtil.getActiveWorkbenchWindow(event);
+		if (shell != null && activeWorkbenchWindow != null) {
 			// Is there a active debug context?
 			IAdaptable debugContext = DebugUITools.getDebugContext();
 			if (debugContext == null) {
@@ -182,7 +183,7 @@ public class AllInstancesOfJavaTypeHandler extends AbstractHandler {
 				final Object[] typesArray = dialog.getResult();
 				if (typesArray != null && typesArray.length > 0 && typesArray[0] instanceof IType) {
 					// Show the Expressions view
-					IWorkbenchPage page = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
+					IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
 					IViewPart part = page.findView(IDebugUIConstants.ID_EXPRESSION_VIEW);
 					if (part == null) {
 						try {
