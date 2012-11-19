@@ -50,6 +50,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 	
 	public static final String ADD_KEYSTROKE = "/icons/addkeystroke.png"; //$NON-NLS-1$
+	public static final String KEYS_PREFERENCE_PAGE = "/icons/keys.png"; //$NON-NLS-1$
 	public static final String WINDOWS = "/icons/windows.png"; //$NON-NLS-1$
 	public static final String LINUX = "/icons/linux.png"; //$NON-NLS-1$
 	public static final String MAC = "/icons/apple.png"; //$NON-NLS-1$
@@ -57,6 +58,7 @@ public class Activator extends AbstractUIPlugin {
 	
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		reg.put(ADD_KEYSTROKE, imageDescriptorFromPlugin(PLUGIN_ID, ADD_KEYSTROKE));
+		reg.put(KEYS_PREFERENCE_PAGE, imageDescriptorFromPlugin(PLUGIN_ID, KEYS_PREFERENCE_PAGE));
 		reg.put("win32", imageDescriptorFromPlugin(PLUGIN_ID, WINDOWS));
 		reg.put("wpf", imageDescriptorFromPlugin(PLUGIN_ID, WINDOWS));
 		reg.put("gtk", imageDescriptorFromPlugin(PLUGIN_ID, LINUX));
