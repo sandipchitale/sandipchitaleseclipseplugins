@@ -33,8 +33,12 @@ import org.eclipse.jface.bindings.keys.KeySequenceText;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.resource.DeviceResourceException;
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -76,8 +80,10 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandImageService;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.progress.UIJob;
@@ -87,6 +93,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 	private IBindingService bindingService;
 	private IContextService contextService;
+	private static ICommandImageService commandImageService;
 	private ICommandService commandService;
 
 	public static enum MODE {COMMAND, KEYSEQUENCE};
@@ -112,6 +119,7 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	private static class CommandKeybinding {
 
 		private String commandName;
+		private String id;
 		private String keySequence;
 		private String naturalKeySequence;
 		private String context;
@@ -126,12 +134,13 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		private REASON reason;
 
 		private CommandKeybinding(String commandName, Command command) {
-			this(commandName, null, null, null, "", "", null, true, null);
+			this(command.getId(), commandName, null, null, null, "", "", null, true, null);
 			this.command = command;
 		}
 
-		private CommandKeybinding(String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type, Binding binding, boolean executable, REASON reason) {
+		private CommandKeybinding(String id, String commandName, TriggerSequence keySequence, String context, String schemeId, String platform, String type, Binding binding, boolean executable, REASON reason) {
 			this.commandName = commandName;
+			this.id = id;
 			this.binding = binding;
 			this.keySequence = "";
 			this.naturalKeySequence = "";
@@ -159,6 +168,10 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 			}
 		}
 
+		public String getId() {
+			return id;
+		}
+		
 		private String getCommandName() {
 			return commandName;
 		}
@@ -421,7 +434,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 						String contextString = contextService.getContext(contextId).getName();
 						if (platform == null || SWT_PLATFORM.equals(platform)) {
 							commandKeybindingsForPlatform.add(
-									new CommandKeybinding(parameterizedCommand.getName(),
+									new CommandKeybinding(parameterizedCommand.getId(),
+											parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
 											contextString,
 											schemeName,
@@ -432,7 +446,8 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 											CommandKeybinding.REASON.CONTEXT));
 						} else {
 							commandKeybindingsForOtherPlatforms.add(
-									new CommandKeybinding(parameterizedCommand.getName(),
+									new CommandKeybinding(parameterizedCommand.getId(),
+											parameterizedCommand.getName(),
 											binding.getTriggerSequence(),
 											contextString,
 											schemeName,
@@ -477,15 +492,32 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		private final Color disabledForeground;
 		private final Font diabledFont;
+		
+		private final LocalResourceManager localResourceManager = new LocalResourceManager(
+				JFaceResources.getResources());
 
 		public CommandKeybindingXREFLabelProvider(Color disabledForeground, Font diabledFont) {
 			this.disabledForeground = disabledForeground;
 			this.diabledFont = diabledFont;
 		}
-
+		
 		public Image getColumnImage(Object element, int columnIndex) {
 			CommandKeybinding commandKeybinding = (CommandKeybinding) element;
 			switch (columnIndex) {
+			case 0:
+				final String commandId = commandKeybinding.getId();
+				if (commandId != null) {
+					final ImageDescriptor imageDescriptor = commandImageService
+							.getImageDescriptor(commandId);
+					if (imageDescriptor == null) {
+						return null;
+					}
+					try {
+						return localResourceManager.createImage(imageDescriptor);
+					} catch (final DeviceResourceException e) {
+					}
+				}
+				break;
 			case 3:
 				return Activator.getDefault().getImage(commandKeybinding.getPlatform());
 			case 4:
@@ -513,7 +545,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 
 		public void addListener(ILabelProviderListener listener) {}
 
-		public void dispose() {}
+		public void dispose() {
+			localResourceManager.dispose();
+		}
 
 		public boolean isLabelProperty(Object element, String property) {
 			return false;
@@ -593,6 +627,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		bindingService = (IBindingService) workbench.getService(IBindingService.class);
 		contextService = (IContextService) workbench.getService(IContextService.class);
 		commandService = (ICommandService) workbench.getService(ICommandService.class);
+		if (commandImageService == null) {
+			commandImageService = (ICommandImageService) workbench.getService(ICommandImageService.class);
+		}
 
 		return super.createContents(parent);
 	}
@@ -904,6 +941,18 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 				menuButtonAddKey.setVisible(true);
 			}
 		});
+		
+		ToolItem keysPreferencesButton = new ToolItem(toolBar, SWT.PUSH);
+		keysPreferencesButton.setImage(
+				Activator.getDefault().getImage(Activator.KEYS_PREFERENCE_PAGE));
+		keysPreferencesButton.setToolTipText("Keys Preferences");
+		keysPreferencesButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent selectionEvent) {
+				showKeysPreferences();
+			}
+		});
+		
+		new ToolItem(toolBar, SWT.SEPARATOR);
 
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IBindingService bindingService = (IBindingService) workbench.getService(IBindingService.class);
@@ -1078,8 +1127,9 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		switch (mode) {
 			case KEYSEQUENCE:
 				return keySequenceSearchText;
+			default:
+				return commandSearchText;
 		}
-		return commandSearchText;
 	}
 
 	private void setFilters(ViewerFilter viewFilter) {
@@ -1095,5 +1145,15 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 	@Override
 	protected Point getDefaultSize() {
 		return INITIAL_SIZE;
+	}
+	
+	private static void showKeysPreferences() {
+		String[] displayedIds = new String[] {"org.eclipse.ui.preferencePages.Keys"};
+		PreferenceDialog keysPreferenceDialog = PreferencesUtil.createPreferenceDialogOn(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				displayedIds[0],
+				displayedIds,
+				null);
+		keysPreferenceDialog.open();
 	}
 }

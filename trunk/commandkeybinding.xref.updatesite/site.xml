@@ -3,7 +3,7 @@
    <description name="Command Keybinding XREF Update Site">
       This is an update site for Command Keybinding XREF.
    </description>
-   <feature url="features/commandkeybinding.xref.feature_1.0.3.jar" id="commandkeybinding.xref.feature" version="1.0.3">
+   <feature url="features/commandkeybinding.xref.feature_1.0.4.jar" id="commandkeybinding.xref.feature" version="1.0.4">
       <category name="Keybindings"/>
    </feature>
    <category-def name="Keybindings" label="Keybindings"/>
