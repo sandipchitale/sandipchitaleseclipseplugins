@@ -2,7 +2,7 @@
 <feature
       id="commandkeybinding.xref.feature"
       label="Command Keybinding XREF Feature"
-      version="1.0.4"
+      version="1.0.5"
       provider-name="Sandip Chitale">
 
    <description url="http://www.example.com/description">

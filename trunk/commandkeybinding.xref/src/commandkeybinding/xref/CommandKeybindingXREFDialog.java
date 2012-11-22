@@ -1,5 +1,8 @@
 package commandkeybinding.xref;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,13 +37,16 @@ import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.DeviceResourceException;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -59,6 +65,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -73,6 +81,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -83,6 +92,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandImageService;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.keys.IBindingService;
@@ -1147,13 +1157,52 @@ public class CommandKeybindingXREFDialog extends PopupDialog {
 		return INITIAL_SIZE;
 	}
 	
-	private static void showKeysPreferences() {
+	private void showKeysPreferences() {
 		String[] displayedIds = new String[] {"org.eclipse.ui.preferencePages.Keys"};
-		PreferenceDialog keysPreferenceDialog = PreferencesUtil.createPreferenceDialogOn(
+		final PreferenceDialog keysPreferenceDialog = PreferencesUtil.createPreferenceDialogOn(
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
 				displayedIds[0],
 				displayedIds,
 				null);
+
+		ISelection selection = tableViewer.getSelection();
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+			Object firstElement = structuredSelection.getFirstElement();
+			if (firstElement instanceof CommandKeybinding) {
+				// a command selected in the table
+				final CommandKeybinding commandKeybinding = (CommandKeybinding) firstElement;
+				final Shell shell = keysPreferenceDialog.getShell();
+				shell.addShellListener(new ShellAdapter() {
+					public void shellActivated(ShellEvent e) {
+						shell.removeShellListener(this);
+						shell.getDisplay().asyncExec(new Runnable() {
+							public void run() {
+								Object selectedPage = keysPreferenceDialog.getSelectedPage();
+								if (selectedPage instanceof PreferencePage) {
+									PreferencePage newKeysPreferencePage = (PreferencePage) selectedPage;
+									try {
+										Field declaredField = newKeysPreferencePage.getClass().getDeclaredField("fFilteredTree");
+										declaredField.setAccessible(true);
+										FilteredTree filteredTree = (FilteredTree) declaredField.get(newKeysPreferencePage);
+										Method setFilterText = FilteredTree.class.getDeclaredMethod("setFilterText", String.class);
+										setFilterText.setAccessible(true);
+										setFilterText.invoke(filteredTree, commandKeybinding.getCommandName());
+									} catch (SecurityException e) {
+									} catch (NoSuchFieldException e) {
+									} catch (IllegalArgumentException e) {
+									} catch (IllegalAccessException e) {
+									} catch (NoSuchMethodException e) {
+									} catch (InvocationTargetException e1) {
+									}
+								}
+							}
+						});
+					}
+				});
+			}
+		}
 		keysPreferenceDialog.open();
+		
 	}
 }
