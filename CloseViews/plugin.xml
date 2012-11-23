@@ -141,7 +141,11 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            locationURI="menu:window?after=additions">
+            locationURI="menu:window?after=closeAllPerspectives">
+         <separator
+               name="CloseViews.separator1"
+               visible="true">
+         </separator>
          <command
                commandId="CloseViews.activeView"
                label="Close View"
@@ -158,7 +162,7 @@
                style="push">
          </command>
          <separator
-               name="CloseViews.separator1"
+               name="CloseViews.separator2"
                visible="true">
          </separator>
          <command
@@ -172,7 +176,7 @@
                style="push">
          </command>
          <separator
-               name="CloseViews.separator2"
+               name="CloseViews.separator3"
                visible="true">
          </separator>
       </menuContribution>
