@@ -34,7 +34,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.eclipse.ui.workbench.file">
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.eclipse.ui.workbench.navigate">
          <toolbar
                id="SpiltEditor.toolbar">
          </toolbar>
@@ -52,6 +52,15 @@
                   name="orientation"
                   value="horizontally">
             </parameter>
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="activePart">
+                  <instanceof
+                        value="org.eclipse.ui.IEditorPart">
+                  </instanceof>
+               </with>
+            </visibleWhen>
          </command>
          <command
                commandId="SpiltEditor.command"
@@ -64,6 +73,15 @@
                   name="orientation"
                   value="vertically">
             </parameter>
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="activePart">
+                  <instanceof
+                        value="org.eclipse.ui.IEditorPart">
+                  </instanceof>
+               </with>
+            </visibleWhen>
          </command>
       </menuContribution>
       <menuContribution

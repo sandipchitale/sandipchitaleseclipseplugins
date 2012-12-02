@@ -24,15 +24,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.handlers.IHandlerService;
-import org.eclipse.ui.internal.EditorSashContainer;
-import org.eclipse.ui.internal.EditorStack;
-import org.eclipse.ui.internal.ILayoutContainer;
-import org.eclipse.ui.internal.LayoutPart;
-import org.eclipse.ui.internal.PageLayout;
-import org.eclipse.ui.internal.PartPane;
-import org.eclipse.ui.internal.PartSite;
-import org.eclipse.ui.internal.PartStack;
-import org.eclipse.ui.internal.WorkbenchPage;
 
 /**
  * This is command handler for splitting the active editor
@@ -40,7 +31,6 @@ import org.eclipse.ui.internal.WorkbenchPage;
  * 
  * @author Sandip Chitale
  */
-@SuppressWarnings("restriction")
 public class Handler extends AbstractHandler {
 
 	@Override
