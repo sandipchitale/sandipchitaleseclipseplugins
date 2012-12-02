@@ -52,15 +52,6 @@
                   name="orientation"
                   value="horizontally">
             </parameter>
-            <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activePart">
-                  <instanceof
-                        value="org.eclipse.ui.IEditorPart">
-                  </instanceof>
-               </with>
-            </visibleWhen>
          </command>
          <command
                commandId="SpiltEditor.command"
@@ -73,15 +64,6 @@
                   name="orientation"
                   value="vertically">
             </parameter>
-            <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activePart">
-                  <instanceof
-                        value="org.eclipse.ui.IEditorPart">
-                  </instanceof>
-               </with>
-            </visibleWhen>
          </command>
       </menuContribution>
       <menuContribution
