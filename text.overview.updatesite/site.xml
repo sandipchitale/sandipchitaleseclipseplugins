@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/text.overview.feature_1.0.0.jar" id="text.overview.feature" version="1.0.0">
+      <category name="Overview"/>
+   </feature>
+   <category-def name="Overview" label="Overview"/>
+</site>
