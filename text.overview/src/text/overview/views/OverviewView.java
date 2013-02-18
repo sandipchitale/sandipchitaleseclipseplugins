@@ -60,6 +60,12 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	@Override
 	public void dispose() {
+		if (lastOverviewedStyledText != null) {
+			lastOverviewedStyledText.removeCaretListener(caretListener);
+			lastOverviewedStyledText.removeControlListener(controlListener);
+			lastOverviewedStyledText.removeDisposeListener(disposeListener);
+			((Scrollable) lastOverviewedStyledText).getVerticalBar().removeSelectionListener(selectionListener);
+		}
 		overviewStyledText.getDisplay().removeFilter(SWT.FocusIn, listener);
 		lastOverviewedStyledText = null;
 		listener = null;
@@ -112,6 +118,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			lastScale = 1.0d / ((double) fontDatum.getHeight());
 			overviewStyledText.setFont(lastFont);
 		}
+		overviewStyledText.setBackground(lastOverviewedStyledText.getBackground());
+		overviewStyledText.setSelectionBackground(lastOverviewedStyledText.getSelectionBackground());
 		overviewStyledText.setText(lastOverviewedStyledText.getText());
 		overviewStyledText.setStyleRanges(lastOverviewedStyledText.getStyleRanges());
 		overviewStyledText.setSelection(lastOverviewedStyledText.getSelection());
@@ -143,8 +151,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			// The index of the last (possibly only partially) visible line of
 			// the widget
 			int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
-			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) + 1, overviewStyledText
-					.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) + 1, 
+					overviewStyledText.getSelectionBackground());
 			overviewStyledText.setTopIndex(Math.max(0, topIndex - 2));
 		}
 	}
