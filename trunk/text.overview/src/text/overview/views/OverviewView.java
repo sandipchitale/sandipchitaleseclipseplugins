@@ -80,6 +80,9 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 			@Override
 			public void caretMoved(CaretEvent event) {
+				if (suspendLastOverviewedStyledText.get() != null) {
+					return;
+				}
 				adjustTrackedStyledText();
 			}
 		});
@@ -144,6 +147,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		disposeListener = new DisposeListener() {
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
+				untrackLastOverviewedStyledText();
+				
 				lastOverviewedStyledText = null;
 				lastTopIndex = -1;
 
@@ -154,12 +159,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		focusListenerFilter = new Listener() {
 			@Override
 			public void handleEvent(final Event event) {
-				event.display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						OverviewView.this.handleEvent(event);
-					}
-				});
+				OverviewView.this.handleEvent(event);
 			}
 		};
 
@@ -187,65 +187,77 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		if (event.type == SWT.FocusIn) {
 			if (event.widget instanceof StyledText) {
 				StyledText styledText = (StyledText) event.widget;
+				if (styledText.isDisposed()) {
+					return;
+				}
 				if (styledText == overviewStyledText) {
 					return;
 				}
-				if (styledText.getShell() == overviewStyledText.getShell()) {
-					trackStyledText(styledText);
+				if (styledText.getShell() != overviewStyledText.getShell()) {
+					return;
 				}
+				System.out.println("In handle event: " + styledText);
+				trackStyledText(styledText);
 			}
 		}
 	}
 
 	@Override
 	public void dispose() {
+		getViewSite().getWorkbenchWindow().getShell().getDisplay().removeFilter(SWT.FocusIn, focusListenerFilter);
 
-		overviewStyledText.getDisplay().removeFilter(SWT.FocusIn, focusListenerFilter);
 		untrackLastOverviewedStyledText();
 		lastOverviewedStyledText = null;
 
 		lastFont.dispose();
 		lastFont = null;
+		lastFontName = null;
 
 		focusListenerFilter = null;
+
 		super.dispose();
 	}
 
 	private void trackStyledText(StyledText styledText) {
-		if (styledText == lastOverviewedStyledText) {
+		if (lastOverviewedStyledText == styledText) {
 			return;
 		}
+
 		untrackLastOverviewedStyledText();
 
-		lastOverviewedStyledText = styledText;
-
-		lastOverviewedStyledText.addCaretListener(lastOverviewedStyledTextCaretListener);
-		lastOverviewedStyledText.addControlListener(controlResizeListener);
-		lastOverviewedStyledText.addDisposeListener(disposeListener);
-		((Scrollable) lastOverviewedStyledText).getVerticalBar().addSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
-
-		Font font = lastOverviewedStyledText.getFont();
-		FontData[] fontData = font.getFontData();
-		FontData fontDatum = fontData[0];
-		if (fontDatum.getName().equals(lastFontName) && fontDatum.getStyle() == lastFontStyle) {
-			// nothing to do
-		} else {
-			lastFontName = fontDatum.getName();
-			lastFontStyle = fontDatum.getStyle();
-			if (lastFont != null) {
-				lastFont.dispose();
+		try {
+			suspendLastOverviewedStyledText.set(Boolean.TRUE);
+			lastOverviewedStyledText = styledText;
+			lastOverviewedStyledText.addCaretListener(lastOverviewedStyledTextCaretListener);
+			lastOverviewedStyledText.addControlListener(controlResizeListener);
+			lastOverviewedStyledText.addDisposeListener(disposeListener);
+			((Scrollable) lastOverviewedStyledText).getVerticalBar().addSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
+	
+			Font font = lastOverviewedStyledText.getFont();
+			FontData[] fontData = font.getFontData();
+			FontData fontDatum = fontData[0];
+			if (fontDatum.getName().equals(lastFontName) && fontDatum.getStyle() == lastFontStyle) {
+				// nothing to do
+			} else {
+				lastFontName = fontDatum.getName();
+				lastFontStyle = fontDatum.getStyle();
+				if (lastFont != null) {
+					lastFont.dispose();
+				}
+				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, 1, lastFontStyle);
+				lastScale = 1.0d / ((double) fontDatum.getHeight());
+				overviewStyledText.setFont(lastFont);
 			}
-			lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, 1, lastFontStyle);
-			lastScale = 1.0d / ((double) fontDatum.getHeight());
-			overviewStyledText.setFont(lastFont);
+			overviewStyledText.setBackground(lastOverviewedStyledText.getBackground());
+			overviewStyledText.setSelectionBackground(lastOverviewedStyledText.getSelectionBackground());
+			overviewStyledText.setText(lastOverviewedStyledText.getText());
+			overviewStyledText.setStyleRanges(lastOverviewedStyledText.getStyleRanges());
+			overviewStyledText.setSelection(lastOverviewedStyledText.getSelection());
+			adjustSize();
+			highlightViewport();
+		} finally {
+			suspendLastOverviewedStyledText.set(null);
 		}
-		overviewStyledText.setBackground(lastOverviewedStyledText.getBackground());
-		overviewStyledText.setSelectionBackground(lastOverviewedStyledText.getSelectionBackground());
-		overviewStyledText.setText(lastOverviewedStyledText.getText());
-		overviewStyledText.setStyleRanges(lastOverviewedStyledText.getStyleRanges());
-		overviewStyledText.setSelection(lastOverviewedStyledText.getSelection());
-		adjustSize();
-		highlightViewport();
 	}
 
 	private void untrackLastOverviewedStyledText() {
