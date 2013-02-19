@@ -27,6 +27,10 @@ import org.eclipse.ui.IViewLayout;
 import org.eclipse.ui.part.ViewPart;
 
 /**
+ * This implements a view that shows the overview of last focused StyledText in
+ * the parent workbench windows
+ * 
+ * @author Sandip Chitale
  */
 
 public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider {
@@ -45,12 +49,15 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	private double lastScale = 0.2d;
 	private int lastTopIndex = -1;
 
-	private Listener listener;
+	private Listener focusListenerFilter;
 
-	private CaretListener caretListener;
-	private ControlListener controlListener;
+	private CaretListener lastOverviewedStyledTextCaretListener;
+	private ControlListener controlResizeListener;
 	private DisposeListener disposeListener;
-	private SelectionListener selectionListener;
+	private SelectionListener lastOverviewedStyledTextScrollBarSelectionListener;
+
+	// private final ThreadLocal<Boolean> adjusting = new
+	// ThreadLocal<Boolean>();
 
 	/**
 	 * The constructor.
@@ -58,18 +65,130 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	public OverviewView() {
 	}
 
-	@Override
-	public void dispose() {
-		if (lastOverviewedStyledText != null) {
-			lastOverviewedStyledText.removeCaretListener(caretListener);
-			lastOverviewedStyledText.removeControlListener(controlListener);
-			lastOverviewedStyledText.removeDisposeListener(disposeListener);
-			((Scrollable) lastOverviewedStyledText).getVerticalBar().removeSelectionListener(selectionListener);
-		}
-		overviewStyledText.getDisplay().removeFilter(SWT.FocusIn, listener);
-		lastOverviewedStyledText = null;
-		listener = null;
-		super.dispose();
+	/**
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
+	 */
+	public void createPartControl(Composite parent) {
+		composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(null);
+
+		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL);
+		overviewStyledText.setEditable(false);
+
+		// overviewStyledText.addCaretListener(new CaretListener() {
+		//
+		// @Override
+		// public void caretMoved(CaretEvent event) {
+		// adjustTrackedStyledText();
+		// }
+		// });
+		// overviewStyledText.getVerticalBar().addSelectionListener(new
+		// SelectionAdapter() {
+		// @Override
+		// public void widgetSelected(SelectionEvent e) {
+		// super.widgetSelected(e);
+		// overviewStyledText.getDisplay().asyncExec(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// adjustTrackedStyledText();
+		// }
+		// });
+		// }
+		// });
+
+		controlResizeListener = new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				adjustSize();
+			}
+		};
+
+		overviewStyledText.getParent().addControlListener(controlResizeListener);
+
+		// listener to monitor if the carent movement changed the
+		// lines visible in the tracked StyledText due to scrolling
+		lastOverviewedStyledTextCaretListener = new CaretListener() {
+			@Override
+			public void caretMoved(CaretEvent event) {
+				int topIndex = -1;
+				try {
+					if (lastOverviewedStyledText != null) {
+						topIndex = lastOverviewedStyledText.getTopIndex();
+						if (topIndex != lastTopIndex) {
+							highlightViewport();
+						}
+					}
+				} finally {
+					lastTopIndex = topIndex;
+				}
+			}
+		};
+		
+		lastOverviewedStyledTextScrollBarSelectionListener = new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+			
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				int topIndex = -1;
+				try {
+					if (lastOverviewedStyledText != null) {
+						topIndex = lastOverviewedStyledText.getTopIndex();
+						if (topIndex != lastTopIndex) {
+							highlightViewport();
+						}
+					}
+				} finally {
+					lastTopIndex = topIndex;
+				}
+			}
+		};
+
+		// listener for dispose of tracked StyledText
+		disposeListener = new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				lastOverviewedStyledText = null;
+				lastTopIndex = -1;
+
+				blank();
+			}
+		};
+
+		focusListenerFilter = new Listener() {
+			@Override
+			public void handleEvent(final Event event) {
+				event.display.asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						OverviewView.this.handleEvent(event);
+					}
+				});
+			}
+		};
+
+		final Display display = parent.getDisplay();
+		display.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				// Track focus
+				display.addFilter(SWT.FocusIn, focusListenerFilter);
+
+				// Check if there is focused StyledText
+				// in this workbench window, if so track it
+				Control focusControl = display.getFocusControl();
+				if (focusControl instanceof StyledText) {
+					StyledText styledText = (StyledText) focusControl;
+					if (styledText.getShell() == overviewStyledText.getShell()) {
+						trackStyledText(styledText);
+					}
+				}
+			}
+		});
 	}
 
 	protected void handleEvent(Event event) {
@@ -79,29 +198,36 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				if (styledText == overviewStyledText) {
 					return;
 				}
-				if (overviewStyledText.getShell() != styledText.getShell()) {
-					return;
+				if (styledText.getShell() == overviewStyledText.getShell()) {
+					trackStyledText(styledText);
 				}
-
-				if (lastOverviewedStyledText != null) {
-					lastOverviewedStyledText.removeCaretListener(caretListener);
-					lastOverviewedStyledText.removeControlListener(controlListener);
-					lastOverviewedStyledText.removeDisposeListener(disposeListener);
-					((Scrollable) lastOverviewedStyledText).getVerticalBar().removeSelectionListener(selectionListener);
-				}
-
-				trackStyledText(styledText);
 			}
 		}
 	}
-	
+
+	@Override
+	public void dispose() {
+
+		overviewStyledText.getDisplay().removeFilter(SWT.FocusIn, focusListenerFilter);
+		untrackLastOverviewedStyledText();
+		lastOverviewedStyledText = null;
+
+		lastFont.dispose();
+		lastFont = null;
+
+		focusListenerFilter = null;
+		super.dispose();
+	}
+
 	private void trackStyledText(StyledText styledText) {
+		untrackLastOverviewedStyledText();
+
 		lastOverviewedStyledText = styledText;
 
-		lastOverviewedStyledText.addCaretListener(caretListener);
-		lastOverviewedStyledText.addControlListener(controlListener);
+		lastOverviewedStyledText.addCaretListener(lastOverviewedStyledTextCaretListener);
+		lastOverviewedStyledText.addControlListener(controlResizeListener);
 		lastOverviewedStyledText.addDisposeListener(disposeListener);
-		((Scrollable) lastOverviewedStyledText).getVerticalBar().addSelectionListener(selectionListener);
+		((Scrollable) lastOverviewedStyledText).getVerticalBar().addSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
 
 		Font font = lastOverviewedStyledText.getFont();
 		FontData[] fontData = font.getFontData();
@@ -127,6 +253,15 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		highlightViewport();
 	}
 
+	private void untrackLastOverviewedStyledText() {
+		if (lastOverviewedStyledText != null) {
+			lastOverviewedStyledText.removeCaretListener(lastOverviewedStyledTextCaretListener);
+			lastOverviewedStyledText.removeControlListener(controlResizeListener);
+			lastOverviewedStyledText.removeDisposeListener(disposeListener);
+			((Scrollable) lastOverviewedStyledText).getVerticalBar().removeSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
+		}
+	}
+
 	private void blank() {
 		overviewStyledText.setText("\n");
 		adjustSize();
@@ -142,95 +277,40 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	private void highlightViewport() {
 		overviewStyledText.setLineBackground(0, overviewStyledText.getLineCount() - 1, null);
-		lastTopIndex = -1;
 		if (lastOverviewedStyledText != null) {
 			// The index of the first (possibly only partially) visible line of
 			// the widget
 			int topIndex = JFaceTextUtil.getPartialTopIndex((StyledText) lastOverviewedStyledText);
-			lastTopIndex = topIndex;
 			// The index of the last (possibly only partially) visible line of
 			// the widget
 			int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
-			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) + 1, 
+			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) + 1,
 					overviewStyledText.getSelectionBackground());
-			overviewStyledText.setTopIndex(Math.max(0, topIndex - 2));
+			// if (adjusting.get() == null) {
+			if (topIndex == 0) {
+				overviewStyledText.setTopIndex(topIndex);
+			} else {
+				overviewStyledText.setTopIndex(Math.max(0, topIndex - 1));
+			}
+			// }
 		}
 	}
 
-	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
-	 */
-	public void createPartControl(Composite parent) {
-		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(null);
-
-		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL) {
-		};
-		overviewStyledText.setEditable(false);
-
-		controlListener = new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				adjustSize();
-			}
-		};
-		
-		caretListener = new CaretListener() {
-			@Override
-			public void caretMoved(CaretEvent event) {
-				if (lastOverviewedStyledText != null) {
-					int topIndex = lastOverviewedStyledText.getTopIndex();
-					if (topIndex != lastTopIndex) {
-						highlightViewport();
-					}
-				}
-			}
-		};
-
-		overviewStyledText.getParent().addControlListener(controlListener);
-
-		disposeListener = new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				lastOverviewedStyledText = null;
-				blank();
-			}
-		};
-
-		selectionListener = new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				highlightViewport();
-			}
-		};
-
-		listener = new Listener() {
-			@Override
-			public void handleEvent(final Event event) {
-				event.display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						OverviewView.this.handleEvent(event);
-					}
-				});
-			}
-		};
-
-		final Display display = parent.getDisplay();
-		display.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				display.addFilter(SWT.FocusIn, listener);
-				Control focusControl = display.getFocusControl();
-				if (focusControl instanceof StyledText) {
-					StyledText styledText = (StyledText) focusControl;
-					if (styledText.getShell() == overviewStyledText.getShell()) {
-						trackStyledText(styledText);
-					}
-				}
-			}
-		});
-	}
+	// private void adjustTrackedStyledText() {
+	// if (adjusting.get() != null) {
+	// return;
+	// }
+	// try {
+	// adjusting.set(lean.TRUE);
+	// if (lastOverviewedStyledText != null) {
+	// lastOverviewedStyledText.setCaretOffset(overviewStyledText.getCaretOffset());
+	// lastOverviewedStyledText.setTopIndex(Math.max(0,
+	// overviewStyledText.getTopIndex()));
+	// }
+	// } finally {
+	// adjusting.set(null);
+	// }
+	// }
 
 	/**
 	 * Passing the focus request to the viewer's control.
