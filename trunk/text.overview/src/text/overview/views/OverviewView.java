@@ -5,6 +5,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.TextChangeListener;
+import org.eclipse.swt.custom.TextChangedEvent;
+import org.eclipse.swt.custom.TextChangingEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -52,10 +55,13 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	private Listener focusListenerFilter;
 
+	private ControlListener parentResizeListener;
+	
+	private TextChangeListener lastOverviewedStyledTextTextChangeListener;
 	private CaretListener lastOverviewedStyledTextCaretListener;
-	private ControlListener controlResizeListener;
-	private DisposeListener disposeListener;
 	private SelectionListener lastOverviewedStyledTextScrollBarSelectionListener;
+	private ControlListener lastOverviewedStyledTextResizeListener;
+	private DisposeListener lastOverviewedStyledTextDisposeListener;
 
 	private final ThreadLocal<Boolean> suspendLastOverviewedStyledText = new ThreadLocal<Boolean>();
 
@@ -87,14 +93,31 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			}
 		});
 
-		controlResizeListener = new ControlAdapter() {
+		parentResizeListener = new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent e) {
 				adjustSize();
 			}
 		};
 
-		overviewStyledText.getParent().addControlListener(controlResizeListener);
+		overviewStyledText.getParent().addControlListener(parentResizeListener);
+		
+		lastOverviewedStyledTextTextChangeListener = new TextChangeListener() {
+			
+			@Override
+			public void textSet(TextChangedEvent event) {
+			}
+			
+			@Override
+			public void textChanging(TextChangingEvent event) {
+				blank();
+			}
+			
+			@Override
+			public void textChanged(TextChangedEvent event) {
+				blank();
+			}
+		};
 
 		// listener to monitor if the carent movement changed the
 		// lines visible in the tracked StyledText due to scrolling
@@ -142,20 +165,22 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				}
 			}
 		};
-
-		// listener for dispose of tracked StyledText
-		disposeListener = new DisposeListener() {
+		
+		lastOverviewedStyledTextResizeListener = new ControlAdapter() {
 			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				untrackLastOverviewedStyledText();
-				
-				lastOverviewedStyledText = null;
-				lastTopIndex = -1;
-
-				blank();
+			public void controlResized(ControlEvent e) {
+				adjustSize();
 			}
 		};
 
+		// listener for dispose of tracked StyledText
+		lastOverviewedStyledTextDisposeListener = new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				blank();
+			}
+		};
+		
 		focusListenerFilter = new Listener() {
 			@Override
 			public void handleEvent(final Event event) {
@@ -206,7 +231,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	public void dispose() {
 		getViewSite().getWorkbenchWindow().getShell().getDisplay().removeFilter(SWT.FocusIn, focusListenerFilter);
 
-		untrackLastOverviewedStyledText();
+		removeListenersLastOverviewedStyledText();
 		lastOverviewedStyledText = null;
 
 		lastFont.dispose();
@@ -223,16 +248,12 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			return;
 		}
 
-		untrackLastOverviewedStyledText();
+		removeListenersLastOverviewedStyledText();
 
 		try {
 			suspendLastOverviewedStyledText.set(Boolean.TRUE);
 			lastOverviewedStyledText = styledText;
-			lastOverviewedStyledText.addCaretListener(lastOverviewedStyledTextCaretListener);
-			lastOverviewedStyledText.addControlListener(controlResizeListener);
-			lastOverviewedStyledText.addDisposeListener(disposeListener);
-			((Scrollable) lastOverviewedStyledText).getVerticalBar().addSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
-	
+			addListenersLastOverviewedStyledText();
 			Font font = lastOverviewedStyledText.getFont();
 			FontData[] fontData = font.getFontData();
 			FontData fontDatum = fontData[0];
@@ -260,19 +281,33 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		}
 	}
 
-	private void untrackLastOverviewedStyledText() {
+	private void removeListenersLastOverviewedStyledText() {
 		if (lastOverviewedStyledText != null) {
+			lastOverviewedStyledText.getContent().removeTextChangeListener(lastOverviewedStyledTextTextChangeListener);
 			lastOverviewedStyledText.removeCaretListener(lastOverviewedStyledTextCaretListener);
-			lastOverviewedStyledText.removeControlListener(controlResizeListener);
-			lastOverviewedStyledText.removeDisposeListener(disposeListener);
+			lastOverviewedStyledText.removeControlListener(lastOverviewedStyledTextResizeListener);
+			lastOverviewedStyledText.removeDisposeListener(lastOverviewedStyledTextDisposeListener);
 			((Scrollable) lastOverviewedStyledText).getVerticalBar().removeSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
+		}
+	}
+	
+	private void addListenersLastOverviewedStyledText() {
+		if (lastOverviewedStyledText != null) {
+			lastOverviewedStyledText.getContent().addTextChangeListener(lastOverviewedStyledTextTextChangeListener);
+			lastOverviewedStyledText.addCaretListener(lastOverviewedStyledTextCaretListener);
+			lastOverviewedStyledText.addControlListener(lastOverviewedStyledTextResizeListener);
+			lastOverviewedStyledText.addDisposeListener(lastOverviewedStyledTextDisposeListener);
+			((Scrollable) lastOverviewedStyledText).getVerticalBar().addSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
 		}
 	}
 
 	private void blank() {
+		removeListenersLastOverviewedStyledText();
+		lastOverviewedStyledText = null;
+		lastTopIndex = -1;
 		overviewStyledText.setText("\n");
 		adjustSize();
-		highlightViewport();
+		unhighlightViewport();
 	}
 
 	private void adjustSize() {
@@ -282,8 +317,12 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		overviewStyledText.setSize(new Point(Math.max(parentSize.x, x), parentSize.y));
 	}
 
-	private void highlightViewport() {
+	private void unhighlightViewport() {
 		overviewStyledText.setLineBackground(0, overviewStyledText.getLineCount() - 1, null);
+	}
+	
+	private void highlightViewport() {
+		unhighlightViewport();
 		if (lastOverviewedStyledText != null) {
 			// The index of the first (possibly only partially) visible line of
 			// the widget
@@ -306,22 +345,22 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	}
 	
 	private void adjustTrackedStyledText() {
-		try {
-			suspendLastOverviewedStyledText.set(Boolean.TRUE);
-			if (lastOverviewedStyledText != null) {
-				int topIndex = JFaceTextUtil.getPartialTopIndex((StyledText) lastOverviewedStyledText);
-				// The index of the last (possibly only partially) visible line of
-				// the widget
-				int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
-				int visibleLinesCount = bottomIndex - topIndex;
-				int caretOffset = overviewStyledText.getCaretOffset();
-				int lineAtOffset = overviewStyledText.getLineAtOffset(caretOffset);
-				lastOverviewedStyledText.setTopIndex(Math.max(0, (lineAtOffset - (visibleLinesCount/2))));
-				lastOverviewedStyledText.setCaretOffset(caretOffset);
-				highlightViewport();
+		if (lastOverviewedStyledText != null) {
+			try {
+				suspendLastOverviewedStyledText.set(Boolean.TRUE);
+					int topIndex = JFaceTextUtil.getPartialTopIndex((StyledText) lastOverviewedStyledText);
+					// The index of the last (possibly only partially) visible line of
+					// the widget
+					int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
+					int visibleLinesCount = bottomIndex - topIndex;
+					int caretOffset = overviewStyledText.getCaretOffset();
+					int lineAtOffset = overviewStyledText.getLineAtOffset(caretOffset);
+					lastOverviewedStyledText.setTopIndex(Math.max(0, (lineAtOffset - (visibleLinesCount/2))));
+					lastOverviewedStyledText.setCaretOffset(caretOffset);
+					highlightViewport();
+			} finally {
+				suspendLastOverviewedStyledText.set(null);
 			}
-		} finally {
-			suspendLastOverviewedStyledText.set(null);
 		}
 	}
 
@@ -343,7 +382,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	public int computePreferredSize(boolean width, int availableParallel, int availablePerpendicular,
 			int preferredResult) {
 		if (width) {
-			return 120;
+			return 140;
 		}
 		return 0;
 	}
