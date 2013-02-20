@@ -291,7 +291,9 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			// The index of the last (possibly only partially) visible line of
 			// the widget
 			int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
-			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) + 1,
+			
+			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) +
+					(bottomIndex >= (overviewStyledText.getLineCount() - 1)? 0 : 1),
 					overviewStyledText.getSelectionBackground());
 			if (suspendLastOverviewedStyledText.get() == null) {
 				if (topIndex == 0) {
