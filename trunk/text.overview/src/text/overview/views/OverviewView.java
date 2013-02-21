@@ -253,7 +253,6 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				if (styledText.getShell() != overviewStyledText.getShell()) {
 					return;
 				}
-				System.out.println("In handle event: " + styledText);
 				trackStyledText(styledText);
 			}
 		}
