@@ -13,6 +13,9 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -82,6 +85,32 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL);
 		overviewStyledText.setEditable(false);
 
+		overviewStyledText.addMouseTrackListener(new MouseTrackAdapter() {
+			@Override
+			public void mouseHover(MouseEvent e) {
+				Point point = overviewStyledText.toControl(e.x, e.y);
+				int lineIndex = overviewStyledText.getLineIndex(e.y);
+				int fromLine = Math.max(0, lineIndex - 2);
+				int toLine = Math.min(overviewStyledText.getLineCount() - 1, lineIndex + 2);
+				StringBuilder tooltip = new StringBuilder();
+				for (int i = fromLine; i < toLine; i++) {
+					if (i > fromLine) {
+						tooltip.append("\n");
+					}
+					String line = overviewStyledText.getLine(i);
+					if (line != null) {
+						tooltip.append(line);
+					}
+				}
+				overviewStyledText.setToolTipText(tooltip.toString());
+			}
+			
+			@Override
+			public void mouseExit(MouseEvent e) {
+				overviewStyledText.setToolTipText(null);
+			}
+		});
+		
 		overviewStyledText.addCaretListener(new CaretListener() {
 
 			@Override
