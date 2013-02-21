@@ -1,5 +1,6 @@
 package text.overview.views;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
@@ -14,7 +15,6 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -46,6 +46,9 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	 */
 	public static final String ID = "text.overview.views.OverviewView";
 
+	// Mac needs the font size of at least 4
+	private static final int FONT_SIZE = (Platform.OS_MACOSX.equals(Platform.getOS()) ? 4 : 1);
+	
 	private Composite composite;
 	private StyledText overviewStyledText;
 	
@@ -294,8 +297,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				if (lastFont != null) {
 					lastFont.dispose();
 				}
-				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, 1, lastFontStyle);
-				lastScale = 1.0d / ((double) fontDatum.getHeight());
+				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, FONT_SIZE, lastFontStyle);
+				lastScale = ((double) FONT_SIZE) / ((double) fontDatum.getHeight());
 				overviewStyledText.setFont(lastFont);
 			}
 			overviewStyledText.setBackground(lastOverviewedStyledText.getBackground());
