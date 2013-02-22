@@ -91,18 +91,17 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		overviewStyledText.addMouseTrackListener(new MouseTrackAdapter() {
 			@Override
 			public void mouseHover(MouseEvent e) {
-				Point point = overviewStyledText.toControl(e.x, e.y);
 				int lineIndex = overviewStyledText.getLineIndex(e.y);
 				int fromLine = Math.max(0, lineIndex - 2);
 				int toLine = Math.min(overviewStyledText.getLineCount() - 1, lineIndex + 2);
 				StringBuilder tooltip = new StringBuilder();
-				for (int i = fromLine; i < toLine; i++) {
+				for (int i = fromLine; i <= toLine; i++) {
 					if (i > fromLine) {
 						tooltip.append("\n");
 					}
 					String line = overviewStyledText.getLine(i);
 					if (line != null) {
-						tooltip.append(line);
+						tooltip.append((i == lineIndex ? "\u00bb" : " ") + line);
 					}
 				}
 				overviewStyledText.setToolTipText(tooltip.toString());
