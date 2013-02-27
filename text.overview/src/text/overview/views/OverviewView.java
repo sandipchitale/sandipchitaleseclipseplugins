@@ -299,7 +299,9 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				lastScale = ((double) FONT_SIZE) / ((double) fontDatum.getHeight());
 				overviewStyledText.setFont(lastFont);
 			}
+			overviewStyledText.setForeground(lastOverviewedStyledText.getForeground());
 			overviewStyledText.setBackground(lastOverviewedStyledText.getBackground());
+			overviewStyledText.setSelectionForeground(lastOverviewedStyledText.getSelectionForeground());
 			overviewStyledText.setSelectionBackground(lastOverviewedStyledText.getSelectionBackground());
 			overviewStyledText.setText(lastOverviewedStyledText.getText());
 			overviewStyledText.setStyleRanges(lastOverviewedStyledText.getStyleRanges());
