@@ -99,6 +99,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 					if (i > fromLine) {
 						tooltip.append("\n");
 					}
+					tooltip.append(String.format("%" + ((int)(Math.log10(toLine) + 2)) + "d  ", i));
 					String line = overviewStyledText.getLine(i);
 					if (line != null) {
 						tooltip.append((i == lineIndex ? "\u00bb" : " ") + line);
