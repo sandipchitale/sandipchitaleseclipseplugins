@@ -6,6 +6,7 @@ import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.TextChangedEvent;
@@ -357,7 +358,14 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		removeListenersLastOverviewedStyledText();
 		lastOverviewedStyledText = null;
 		lastTopIndex = -1;
-		overviewStyledText.setText("\n");
+		overviewStyledText.setForeground(null);
+		overviewStyledText.setBackground(null);
+		overviewStyledTextToolTip.setForegroundColor(null);
+		overviewStyledTextToolTip.setBackgroundColor(null);
+		overviewStyledText.setSelectionForeground(null);
+		overviewStyledText.setSelectionBackground(null);
+		overviewStyledText.setText("");
+		overviewStyledText.setStyleRanges(new StyleRange[0]);
 		adjustSize();
 		unhighlightViewport();
 	}
