@@ -6,8 +6,7 @@
          point="org.eclipse.ui.views">
       <category
             id="text.overview"
-            name="Overview"
-            parentCategory="org.eclipse.ui">
+            name="Overview">
       </category>
       <view
       		allowMultiple="false"
@@ -22,7 +21,7 @@
             closeable="true"
             id="text.overview.views.OverviewView"
             location="RIGHT"
-            moveable="false">
+            moveable="true">
       </stickyView>
    </extension>
    <extension
@@ -33,7 +32,7 @@
                closeable="true"
                id="text.overview.views.OverviewView"
                minimized="false"
-               moveable="false"
+               moveable="true"
                ratio="0.1"
                relationship="right"
                relative="org.eclipse.ui.editorss"
