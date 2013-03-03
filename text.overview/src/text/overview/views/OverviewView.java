@@ -105,13 +105,13 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				int lineIndex = overviewStyledText.getLineIndex(e.y);
 				int fromLine = Math.max(0, lineIndex - 2);
 				int toLine = Math.min(overviewStyledText.getLineCount() - 1, lineIndex + 2);
-
+				int width = (int)(Math.log10(toLine+1) + 2);
 				StringBuilder tooltip = new StringBuilder();
 				for (int i = fromLine; i <= toLine; i++) {
 					if (i > fromLine) {
 						tooltip.append("\n");
 					}
-					tooltip.append(String.format("%" + ((int)(Math.log10(toLine) + 2)) + "d ", i));
+					tooltip.append(String.format("%" + width + "d ", i+1));
 					String line = overviewStyledText.getLine(i);
 					if (line != null) {
 						tooltip.append((i == lineIndex ? "\u00bb\t" : " \t") +
