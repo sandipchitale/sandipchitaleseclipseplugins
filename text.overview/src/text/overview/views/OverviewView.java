@@ -37,7 +37,7 @@ import org.eclipse.ui.part.ViewPart;
 /**
  * This implements a view that shows the overview of last focused StyledText in
  * the parent workbench windows
- * 
+ *
  * @author Sandip Chitale
  */
 
@@ -50,12 +50,12 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	// Mac needs the font size of at least 4
 	private static final int FONT_SIZE = (Platform.OS_MACOSX.equals(Platform.getOS()) ? 4 : 1);
-	
+
 	private Composite composite;
 	private StyledText overviewStyledText;
 	private Cursor overviewStyledTextCrosshairCursor;
 	private DefaultToolTip overviewStyledTextToolTip;
-	
+
 	private StyledText lastOverviewedStyledText;
 	private Font lastFont;
 	private String lastFontName;
@@ -66,7 +66,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	private Listener focusListenerFilter;
 
 	private ControlListener parentResizeListener;
-	
+
 	private TextChangeListener lastOverviewedStyledTextTextChangeListener;
 	private CaretListener lastOverviewedStyledTextCaretListener;
 	private SelectionListener lastOverviewedStyledTextScrollBarSelectionListener;
@@ -93,10 +93,10 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL);
 		overviewStyledText.setEditable(false);
-		
+
 		overviewStyledTextCrosshairCursor = new Cursor(display, SWT.CURSOR_CROSS);
 		overviewStyledText.setCursor(overviewStyledTextCrosshairCursor);
-		
+
 		overviewStyledTextToolTip = new DefaultToolTip(overviewStyledText, DefaultToolTip.RECREATE, true);
 
 		overviewStyledText.addMouseTrackListener(new MouseTrackAdapter() {
@@ -105,7 +105,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				int lineIndex = overviewStyledText.getLineIndex(e.y);
 				int fromLine = Math.max(0, lineIndex - 2);
 				int toLine = Math.min(overviewStyledText.getLineCount() - 1, lineIndex + 2);
-				
+
 				StringBuilder tooltip = new StringBuilder();
 				for (int i = fromLine; i <= toLine; i++) {
 					if (i > fromLine) {
@@ -114,20 +114,22 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 					tooltip.append(String.format("%" + ((int)(Math.log10(toLine) + 2)) + "d ", i));
 					String line = overviewStyledText.getLine(i);
 					if (line != null) {
-						tooltip.append((i == lineIndex ? "\u00bb\t" : " \t") + 
+						tooltip.append((i == lineIndex ? "\u00bb\t" : " \t") +
 								line.substring(0, Math.min(line.length(), 80)));
 					}
 				}
 				overviewStyledTextToolTip.setText(tooltip.toString());
+				overviewStyledTextToolTip.setPopupDelay(500);
+				overviewStyledTextToolTip.setHideDelay(3000);
 				overviewStyledTextToolTip.show(new Point(e.x, e.y + 10));
 			}
-			
+
 			@Override
 			public void mouseExit(MouseEvent e) {
 				overviewStyledTextToolTip.setText(null);
 			}
 		});
-		
+
 		overviewStyledText.addCaretListener(new CaretListener() {
 
 			@Override
@@ -147,18 +149,18 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		};
 
 		overviewStyledText.getParent().addControlListener(parentResizeListener);
-		
+
 		lastOverviewedStyledTextTextChangeListener = new TextChangeListener() {
-			
+
 			@Override
 			public void textSet(TextChangedEvent event) {
 			}
-			
+
 			@Override
 			public void textChanging(TextChangingEvent event) {
 				blank();
 			}
-			
+
 			@Override
 			public void textChanged(TextChangedEvent event) {
 				blank();
@@ -186,13 +188,13 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				}
 			}
 		};
-		
+
 		lastOverviewedStyledTextScrollBarSelectionListener = new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (suspendLastOverviewedStyledText.get() != null) {
@@ -211,7 +213,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				}
 			}
 		};
-		
+
 		lastOverviewedStyledTextResizeListener = new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent e) {
@@ -226,7 +228,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				blank();
 			}
 		};
-		
+
 		focusListenerFilter = new Listener() {
 			@Override
 			public void handleEvent(final Event event) {
@@ -340,7 +342,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			((Scrollable) lastOverviewedStyledText).getVerticalBar().removeSelectionListener(lastOverviewedStyledTextScrollBarSelectionListener);
 		}
 	}
-	
+
 	private void addListenersLastOverviewedStyledText() {
 		if (lastOverviewedStyledText != null) {
 			lastOverviewedStyledText.getContent().addTextChangeListener(lastOverviewedStyledTextTextChangeListener);
@@ -370,7 +372,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	private void unhighlightViewport() {
 		overviewStyledText.setLineBackground(0, overviewStyledText.getLineCount() - 1, null);
 	}
-	
+
 	private void highlightViewport() {
 		unhighlightViewport();
 		if (lastOverviewedStyledText != null) {
@@ -380,7 +382,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			// The index of the last (possibly only partially) visible line of
 			// the widget
 			int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
-			
+
 			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) +
 					(bottomIndex >= (overviewStyledText.getLineCount() - 1)? 0 : 1),
 					overviewStyledText.getSelectionBackground());
@@ -393,7 +395,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			}
 		}
 	}
-	
+
 	private void adjustTrackedStyledText() {
 		if (lastOverviewedStyledText != null) {
 			try {
