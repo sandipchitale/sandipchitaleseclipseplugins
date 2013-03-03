@@ -121,7 +121,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				overviewStyledTextToolTip.setText(tooltip.toString());
 				overviewStyledTextToolTip.setPopupDelay(500);
 				overviewStyledTextToolTip.setHideDelay(3000);
-				overviewStyledTextToolTip.show(new Point(e.x, e.y + 10));
+				overviewStyledTextToolTip.show(new Point(0, e.y + 10));
 			}
 
 			@Override
@@ -450,7 +450,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	@Override
 	public boolean isMoveable() {
-		return false;
+		return true;
 	}
 
 	@Override
