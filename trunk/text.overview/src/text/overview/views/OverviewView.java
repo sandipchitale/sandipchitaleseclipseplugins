@@ -2,6 +2,7 @@ package text.overview.views;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.text.JFaceTextUtil;
+import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
@@ -19,6 +20,7 @@ import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -51,6 +53,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	
 	private Composite composite;
 	private StyledText overviewStyledText;
+	private Cursor overviewStyledTextCrosshairCursor;
+	private DefaultToolTip overviewStyledTextToolTip;
 	
 	private StyledText lastOverviewedStyledText;
 	private Font lastFont;
@@ -82,11 +86,18 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		final Display display = parent.getDisplay();
+
 		composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(null);
 
 		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL);
 		overviewStyledText.setEditable(false);
+		
+		overviewStyledTextCrosshairCursor = new Cursor(display, SWT.CURSOR_CROSS);
+		overviewStyledText.setCursor(overviewStyledTextCrosshairCursor);
+		
+		overviewStyledTextToolTip = new DefaultToolTip(overviewStyledText, DefaultToolTip.RECREATE, true);
 
 		overviewStyledText.addMouseTrackListener(new MouseTrackAdapter() {
 			@Override
@@ -94,23 +105,26 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				int lineIndex = overviewStyledText.getLineIndex(e.y);
 				int fromLine = Math.max(0, lineIndex - 2);
 				int toLine = Math.min(overviewStyledText.getLineCount() - 1, lineIndex + 2);
+				
 				StringBuilder tooltip = new StringBuilder();
 				for (int i = fromLine; i <= toLine; i++) {
 					if (i > fromLine) {
 						tooltip.append("\n");
 					}
-					tooltip.append(String.format("%" + ((int)(Math.log10(toLine) + 2)) + "d  ", i));
+					tooltip.append(String.format("%" + ((int)(Math.log10(toLine) + 2)) + "d ", i));
 					String line = overviewStyledText.getLine(i);
 					if (line != null) {
-						tooltip.append((i == lineIndex ? "\u00bb" : " ") + line);
+						tooltip.append((i == lineIndex ? "\u00bb\t" : " \t") + 
+								line.substring(0, Math.min(line.length(), 80)));
 					}
 				}
-				overviewStyledText.setToolTipText(tooltip.toString());
+				overviewStyledTextToolTip.setText(tooltip.toString());
+				overviewStyledTextToolTip.show(new Point(e.x, e.y + 10));
 			}
 			
 			@Override
 			public void mouseExit(MouseEvent e) {
-				overviewStyledText.setToolTipText(null);
+				overviewStyledTextToolTip.setText(null);
 			}
 		});
 		
@@ -220,7 +234,6 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			}
 		};
 
-		final Display display = parent.getDisplay();
 		display.syncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -260,6 +273,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	@Override
 	public void dispose() {
+		overviewStyledTextCrosshairCursor.dispose();
 		getViewSite().getWorkbenchWindow().getShell().getDisplay().removeFilter(SWT.FocusIn, focusListenerFilter);
 
 		removeListenersLastOverviewedStyledText();
@@ -299,9 +313,12 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, FONT_SIZE, lastFontStyle);
 				lastScale = ((double) FONT_SIZE) / ((double) fontDatum.getHeight());
 				overviewStyledText.setFont(lastFont);
+				overviewStyledTextToolTip.setFont(font);
 			}
 			overviewStyledText.setForeground(lastOverviewedStyledText.getForeground());
 			overviewStyledText.setBackground(lastOverviewedStyledText.getBackground());
+			overviewStyledTextToolTip.setForegroundColor(lastOverviewedStyledText.getForeground());
+			overviewStyledTextToolTip.setBackgroundColor(lastOverviewedStyledText.getBackground());
 			overviewStyledText.setSelectionForeground(lastOverviewedStyledText.getSelectionForeground());
 			overviewStyledText.setSelectionBackground(lastOverviewedStyledText.getSelectionBackground());
 			overviewStyledText.setText(lastOverviewedStyledText.getText());
