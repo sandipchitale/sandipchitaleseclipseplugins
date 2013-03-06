@@ -92,7 +92,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(null);
 
-		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL);
+		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
 		overviewStyledText.setEditable(false);
 
 		overviewStyledTextCrosshairCursor = new Cursor(display, SWT.CURSOR_CROSS);
@@ -428,6 +428,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
+		overviewStyledText.setFocus();
 	}
 
 	@Override
