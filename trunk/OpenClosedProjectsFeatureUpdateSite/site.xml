@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/OpenClosedProjectsFeature_1.0.0.jar" id="OpenClosedProjectsFeature" version="1.0.0">
+      <category name="Open Closed Projects"/>
+   </feature>
+   <category-def name="Open Closed Projects" label="Open Closed Projects"/>
+</site>

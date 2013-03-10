@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="openclosedprojects.OpenClosedProjectsHandler"
+            id="OpenClosedProjects.command"
+            name="Open Closed Projects...">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:file?before=close">
+         <command
+               commandId="OpenClosedProjects.command"
+               id="OpenClosedProjects.commandMenu"
+               style="push">
+         </command>
+         <separator
+               name="OpenClosedProjects.separator"
+               visible="true">
+         </separator>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?after=additions">
+             <command
+               commandId="OpenClosedProjects.command"
+               id="OpenClosedProjects.commandMenu"
+               style="push">
+         </command>
+      </menuContribution>
+	  <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer?after=additions">
+             <command
+               commandId="OpenClosedProjects.command"
+               id="OpenClosedProjects.commandMenu"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>
