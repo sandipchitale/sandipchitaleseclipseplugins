@@ -35,7 +35,25 @@
       </menuContribution>
 	  <menuContribution
             allPopups="false"
-            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer?after=additions">
+            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+             <command
+               commandId="OpenClosedProjects.command"
+               id="OpenClosedProjects.commandMenu"
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.jdt.ui.PackageExplorer?after=additions">
+             <command
+               commandId="OpenClosedProjects.command"
+               id="OpenClosedProjects.commandMenu"
+               style="push">
+         </command>
+      </menuContribution>
+	  <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.navigator.ProjectExplorer?after=additions">
              <command
                commandId="OpenClosedProjects.command"
                id="OpenClosedProjects.commandMenu"
