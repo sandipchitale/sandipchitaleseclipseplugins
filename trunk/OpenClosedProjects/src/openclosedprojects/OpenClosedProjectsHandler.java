@@ -57,7 +57,7 @@ public class OpenClosedProjectsHandler extends AbstractHandler {
 			ListSelectionDialog closedProjectsSelectionDialog = new ListSelectionDialog(HandlerUtil.getActiveShell(event), 
 					ResourcesPlugin.getWorkspace().getRoot(), 
 					new ClosedProjectsContentProvider(),
-					new WorkbenchLabelProvider(), "Select the closedProjects to open:");
+					new WorkbenchLabelProvider(), "Select the closed Projects to open:");
 			closedProjectsSelectionDialog.setTitle("Select closed Projects");
 			if (closedProjectsSelectionDialog.open() == Window.OK) {
 				Object[] result = closedProjectsSelectionDialog.getResult();
