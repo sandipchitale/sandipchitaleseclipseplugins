@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="OpenClosedProjectsFeature"
+      label="Open Closed Projects Feature"
+      version="1.0.0"
+      provider-name="Sandip Chitale">
+
+   <description>
+      This plug-in allows you to select for opening from a list closed projects.
+
+I keep my closed projects filtered out of Package View or Project Explorer. However just to open the closed projects I do not want to remove the filter. Hence this plug-in.
+   </description>
+
+   <license url="https://code.google.com/p/sandipchitaleseclipseplugins/wiki/License">
+      BSD
+   </license>
+
+   <url>
+      <update url="https://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/OpenClosedProjectsFeatureUpdateSite"/>
+   </url>
+
+   <plugin
+         id="OpenClosedProjects"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
