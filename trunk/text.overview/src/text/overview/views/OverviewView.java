@@ -63,6 +63,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	private int lastFontStyle;
 	private double lastScale = 0.2d;
 	private int lastTopIndex = -1;
+	private int lastLineAtOffset = -1;
 
 	private Listener focusListenerFilter;
 
@@ -177,15 +178,19 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 					return;
 				}
 				int topIndex = -1;
+				int lineAtOffset = -1;
 				try {
 					if (lastOverviewedStyledText != null) {
 						topIndex = lastOverviewedStyledText.getTopIndex();
-						if (topIndex != lastTopIndex) {
-							highlightViewport();
+						int caretOffset = lastOverviewedStyledText.getCaretOffset();
+						lineAtOffset = lastOverviewedStyledText.getLineAtOffset(caretOffset);
+						if (topIndex != lastTopIndex || lineAtOffset != lastLineAtOffset) {
+							highlightViewport(topIndex != lastTopIndex);
 						}
 					}
 				} finally {
 					lastTopIndex = topIndex;
+					lastLineAtOffset = lineAtOffset;
 				}
 			}
 		};
@@ -202,15 +207,19 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 					return;
 				}
 				int topIndex = -1;
+				int lineAtOffset = -1;
 				try {
 					if (lastOverviewedStyledText != null) {
 						topIndex = lastOverviewedStyledText.getTopIndex();
-						if (topIndex != lastTopIndex) {
-							highlightViewport();
+						int caretOffset = lastOverviewedStyledText.getCaretOffset();
+						lineAtOffset = lastOverviewedStyledText.getLineAtOffset(caretOffset);
+						if (topIndex != lastTopIndex || lineAtOffset != lastLineAtOffset) {
+							highlightViewport(topIndex != lastTopIndex);
 						}
 					}
 				} finally {
 					lastTopIndex = topIndex;
+					lastLineAtOffset = lineAtOffset;
 				}
 			}
 		};
@@ -328,7 +337,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			overviewStyledText.setStyleRanges(lastOverviewedStyledText.getStyleRanges());
 			overviewStyledText.setSelection(lastOverviewedStyledText.getSelection());
 			adjustSize();
-			highlightViewport();
+			highlightViewport(true);
 		} finally {
 			suspendLastOverviewedStyledText.set(null);
 		}
@@ -358,6 +367,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		removeListenersLastOverviewedStyledText();
 		lastOverviewedStyledText = null;
 		lastTopIndex = -1;
+		lastLineAtOffset = -1;
 		overviewStyledText.setForeground(null);
 		overviewStyledText.setBackground(null);
 		overviewStyledTextToolTip.setForegroundColor(null);
@@ -381,8 +391,10 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		overviewStyledText.setLineBackground(0, overviewStyledText.getLineCount() - 1, null);
 	}
 
-	private void highlightViewport() {
-		unhighlightViewport();
+	private void highlightViewport(boolean topIndexChanged) {
+		if (topIndexChanged) {
+			unhighlightViewport();
+		}
 		if (lastOverviewedStyledText != null) {
 			// The index of the first (possibly only partially) visible line of
 			// the widget
@@ -390,10 +402,14 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			// The index of the last (possibly only partially) visible line of
 			// the widget
 			int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
+			
+			int caretOffset = lastOverviewedStyledText.getCaretOffset();
+			int lineAtOffset = lastOverviewedStyledText.getLineAtOffset(caretOffset);
 
 			overviewStyledText.setLineBackground(topIndex, (bottomIndex - topIndex) +
 					(bottomIndex >= (overviewStyledText.getLineCount() - 1)? 0 : 1),
 					overviewStyledText.getSelectionBackground());
+			overviewStyledText.setLineBackground(lineAtOffset, 1, null);
 			if (suspendLastOverviewedStyledText.get() == null) {
 				if (topIndex == 0) {
 					overviewStyledText.setTopIndex(topIndex);
@@ -408,16 +424,16 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		if (lastOverviewedStyledText != null) {
 			try {
 				suspendLastOverviewedStyledText.set(Boolean.TRUE);
-					int topIndex = JFaceTextUtil.getPartialTopIndex((StyledText) lastOverviewedStyledText);
-					// The index of the last (possibly only partially) visible line of
-					// the widget
-					int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
-					int visibleLinesCount = bottomIndex - topIndex;
-					int caretOffset = overviewStyledText.getCaretOffset();
-					int lineAtOffset = overviewStyledText.getLineAtOffset(caretOffset);
-					lastOverviewedStyledText.setTopIndex(Math.max(0, (lineAtOffset - (visibleLinesCount/2))));
-					lastOverviewedStyledText.setCaretOffset(caretOffset);
-					highlightViewport();
+				int topIndex = JFaceTextUtil.getPartialTopIndex((StyledText) lastOverviewedStyledText);
+				// The index of the last (possibly only partially) visible line of
+				// the widget
+				int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
+				int visibleLinesCount = bottomIndex - topIndex;
+				int caretOffset = overviewStyledText.getCaretOffset();
+				int lineAtOffset = overviewStyledText.getLineAtOffset(caretOffset);
+				lastOverviewedStyledText.setTopIndex(Math.max(0, (lineAtOffset - (visibleLinesCount/2))));
+				lastOverviewedStyledText.setCaretOffset(caretOffset);
+				highlightViewport(true);
 			} finally {
 				suspendLastOverviewedStyledText.set(null);
 			}
