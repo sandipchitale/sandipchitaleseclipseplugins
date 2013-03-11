@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Open Closed Projects
 Bundle-SymbolicName: OpenClosedProjects;singleton:=true
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.5
 Bundle-Activator: openclosedprojects.Activator
 Bundle-Vendor: Sandip Chitale
 Require-Bundle: org.eclipse.ui,
