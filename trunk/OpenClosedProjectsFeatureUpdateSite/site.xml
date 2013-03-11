@@ -7,7 +7,7 @@ I keep my closed projects filtered out of Package View or Project
 Explorer. However just to open the closed projects I do not want
 to remove the filter. Hence this plug-in.
    </description>
-   <feature url="features/OpenClosedProjectsFeature_1.0.2.jar" id="OpenClosedProjectsFeature" version="1.0.2">
+   <feature url="features/OpenClosedProjectsFeature_1.0.3.jar" id="OpenClosedProjectsFeature" version="1.0.3">
       <category name="Open Closed Projects"/>
    </feature>
    <category-def name="Open Closed Projects" label="Open Closed Projects"/>
