@@ -16,6 +16,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -100,6 +101,15 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		overviewStyledText.setCursor(overviewStyledTextCrosshairCursor);
 
 		overviewStyledTextToolTip = new DefaultToolTip(overviewStyledText, DefaultToolTip.RECREATE, true);
+
+		overviewStyledText.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				if (lastOverviewedStyledText != null) {
+					lastOverviewedStyledText.setFocus();
+				}
+			}
+		});
 
 		overviewStyledText.addMouseTrackListener(new MouseTrackAdapter() {
 			@Override
@@ -402,7 +412,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			// The index of the last (possibly only partially) visible line of
 			// the widget
 			int bottomIndex = JFaceTextUtil.getPartialBottomIndex((StyledText) lastOverviewedStyledText);
-			
+
 			int caretOffset = lastOverviewedStyledText.getCaretOffset();
 			int lineAtOffset = lastOverviewedStyledText.getLineAtOffset(caretOffset);
 
