@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/SplitEditorFeature_1.0.7.jar" id="SplitEditorFeature" version="1.0.7">
+      <category name="SplitEditor"/>
+   </feature>
+   <category-def name="SplitEditor" label="Split Editor"/>
+</site>
