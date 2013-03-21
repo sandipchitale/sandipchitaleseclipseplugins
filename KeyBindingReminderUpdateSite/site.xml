@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-   <feature url="features/KeyBindingReminderFeature_1.0.2.jar" id="KeyBindingReminderFeature" version="1.0.2">
-      <category name="Key Binding Reminder"/>
-   </feature>
-   <category-def name="Key Binding Reminder" label="Key Binding Reminder"/>
-</site>
