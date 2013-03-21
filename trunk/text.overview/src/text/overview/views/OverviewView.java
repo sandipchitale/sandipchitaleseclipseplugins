@@ -106,6 +106,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 				if (lastOverviewedStyledText != null) {
+					overviewStyledTextToolTip.hide();
 					lastOverviewedStyledText.setFocus();
 				}
 			}
