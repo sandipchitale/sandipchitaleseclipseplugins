@@ -58,4 +58,21 @@ public class Activator extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+	
+	public int getMinOverviewFontSize() {
+		return getPreferenceStore().getInt(OverviewPreferences.MIN_OVERVIEW_FONT_SIZE);
+	}
+	
+	public int getOverviewFontSize() {
+		return getPreferenceStore().getInt(OverviewPreferences.OVERVIEW_FONT_SIZE);
+	}
+
+	public void setOverviewFontSize(int fontSize) {
+		getPreferenceStore().setValue(OverviewPreferences.OVERVIEW_FONT_SIZE,
+				Math.min(getMaxOverviewFontSize(), Math.max(fontSize, getMinOverviewFontSize())));
+	}
+	
+	public int getMaxOverviewFontSize() {
+		return getPreferenceStore().getInt(OverviewPreferences.MAX_OVERVIEW_FONT_SIZE);
+	}
 }

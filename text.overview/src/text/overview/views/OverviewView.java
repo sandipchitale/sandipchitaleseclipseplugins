@@ -38,6 +38,8 @@ import org.eclipse.ui.ISizeProvider;
 import org.eclipse.ui.IViewLayout;
 import org.eclipse.ui.part.ViewPart;
 
+import text.overview.Activator;
+
 /**
  * This implements a view that shows the overview of last focused StyledText in
  * the parent workbench windows
@@ -51,10 +53,6 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "text.overview.views.OverviewView";
-
-	// Mac needs the font size of at least 4
-	private static final int FONT_SIZE = (Platform.OS_MACOSX.equals(Platform.getOS()) ? 4 : 1);
-	private static int fontSize = FONT_SIZE;
 
 	private StyledText overviewStyledText;
 	private Cursor overviewStyledTextCrosshairCursor;
@@ -205,18 +203,18 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		});
 
 		scale = new Scale(container, SWT.BORDER);
-		scale.setMinimum(FONT_SIZE);
-		scale.setMaximum(13);
+		scale.setMinimum(Activator.getDefault().getMinOverviewFontSize());
+		scale.setSelection(Activator.getDefault().getOverviewFontSize());
+		scale.setMaximum(Activator.getDefault().getMaxOverviewFontSize());
 		scale.setIncrement(1);
 		scale.setPageIncrement(1);
-		scale.setSelection(fontSize);
 		scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
 		scale.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				fontSize = scale.getSelection();
+				Activator.getDefault().setOverviewFontSize(scale.getSelection());
 				StyledText styledText = lastOverviewedStyledText;
 				blank();
 				lastFontName = null;
@@ -395,8 +393,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				if (lastFont != null) {
 					lastFont.dispose();
 				}
-				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, fontSize, lastFontStyle);
-				lastScale = ((double) fontSize) / ((double) fontDatum.getHeight());
+				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, Activator.getDefault().getOverviewFontSize(), lastFontStyle);
+				lastScale = ((double) Activator.getDefault().getOverviewFontSize()) / ((double) fontDatum.getHeight());
 				overviewStyledText.setFont(lastFont);
 				overviewStyledTextToolTip.setFont(font);
 			}
@@ -409,7 +407,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			overviewStyledText.setText(lastOverviewedStyledText.getText());
 			overviewStyledText.setStyleRanges(lastOverviewedStyledText.getStyleRanges());
 			overviewStyledText.setSelection(lastOverviewedStyledText.getSelection());
-			scale.setToolTipText("Overview font size: " + fontSize);
+			scale.setToolTipText("Overview font size: " + Activator.getDefault().getOverviewFontSize());
 			adjustSize();
 			highlightViewport(true);
 		} finally {
