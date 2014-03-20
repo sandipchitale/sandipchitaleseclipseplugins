@@ -26,11 +26,13 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.ui.ISizeProvider;
 import org.eclipse.ui.IViewLayout;
@@ -52,8 +54,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	// Mac needs the font size of at least 4
 	private static final int FONT_SIZE = (Platform.OS_MACOSX.equals(Platform.getOS()) ? 4 : 1);
+	private static int fontSize = FONT_SIZE;
 
-	private Composite composite;
 	private StyledText overviewStyledText;
 	private Cursor overviewStyledTextCrosshairCursor;
 	private DefaultToolTip overviewStyledTextToolTip;
@@ -78,6 +80,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 
 	private final ThreadLocal<Boolean> suspendLastOverviewedStyledText = new ThreadLocal<Boolean>();
 
+	private Scale scale;
+
 	/**
 	 * The constructor.
 	 */
@@ -90,78 +94,13 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 	 */
 	public void createPartControl(Composite parent) {
 		final Display display = parent.getDisplay();
+		
+		Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(new org.eclipse.swt.layout.GridLayout(1, true));
 
-		composite = new Composite(parent, SWT.NONE);
+		final Composite composite = new Composite(container, SWT.NONE);
 		composite.setLayout(null);
-
-		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
-		overviewStyledText.setEditable(false);
-
-		overviewStyledTextCrosshairCursor = new Cursor(display, SWT.CURSOR_CROSS);
-		overviewStyledText.setCursor(overviewStyledTextCrosshairCursor);
-
-		overviewStyledTextToolTip = new DefaultToolTip(overviewStyledText, DefaultToolTip.RECREATE, true);
-
-		overviewStyledText.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				if (lastOverviewedStyledText != null) {
-					overviewStyledTextToolTip.hide();
-					lastOverviewedStyledText.setFocus();
-				}
-			}
-		});
-
-		overviewStyledText.addMouseTrackListener(new MouseTrackAdapter() {
-			@Override
-			public void mouseHover(MouseEvent e) {
-				int lineIndex = overviewStyledText.getLineIndex(e.y);
-				int fromLine = Math.max(0, lineIndex - 2);
-				int toLine = Math.min(overviewStyledText.getLineCount() - 1, lineIndex + 2);
-				int width = (int)(Math.log10(toLine+1) + 2);
-				StringBuilder tooltip = new StringBuilder();
-				for (int i = fromLine; i <= toLine; i++) {
-					if (i > fromLine) {
-						tooltip.append("\n");
-					}
-					tooltip.append(String.format("%" + width + "d ", i+1));
-					String line = overviewStyledText.getLine(i);
-					if (line != null) {
-						tooltip.append((i == lineIndex ? "\u00bb\t" : " \t") +
-								line.substring(0, Math.min(line.length(), 80)));
-					}
-				}
-				overviewStyledTextToolTip.setText(tooltip.toString());
-				overviewStyledTextToolTip.setPopupDelay(500);
-				overviewStyledTextToolTip.setHideDelay(3000);
-				overviewStyledTextToolTip.show(new Point(0, e.y + 10));
-			}
-
-			@Override
-			public void mouseExit(MouseEvent e) {
-				overviewStyledTextToolTip.setText(null);
-			}
-		});
-
-		overviewStyledText.addCaretListener(new CaretListener() {
-
-			@Override
-			public void caretMoved(CaretEvent event) {
-				if (suspendLastOverviewedStyledText.get() != null) {
-					return;
-				}
-				adjustTrackedStyledText();
-			}
-		});
-
-		parentResizeListener = new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				adjustSize();
-			}
-		};
-
-		overviewStyledText.getParent().addControlListener(parentResizeListener);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		lastOverviewedStyledTextTextChangeListener = new TextChangeListener() {
 
@@ -256,13 +195,132 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				OverviewView.this.handleEvent(event);
 			}
 		};
-
+		
 		display.syncExec(new Runnable() {
 			@Override
 			public void run() {
 				// Track focus
 				display.addFilter(SWT.FocusIn, focusListenerFilter);
+			}
+		});
 
+		scale = new Scale(container, SWT.BORDER);
+		scale.setMinimum(FONT_SIZE);
+		scale.setMaximum(13);
+		scale.setIncrement(1);
+		scale.setPageIncrement(1);
+		scale.setSelection(fontSize);
+		scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		
+		scale.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				fontSize = scale.getSelection();
+				StyledText styledText = lastOverviewedStyledText;
+				blank();
+				lastFontName = null;
+				lastFontStyle = 0;
+				reconfigureOverviewStyledText(composite);
+				lastOverviewedStyledText = null;
+				trackStyledText(styledText);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+				
+			}
+		});
+		
+		reconfigureOverviewStyledText(composite);
+		
+	}
+	
+	private void reconfigureOverviewStyledText(Composite composite) {
+		final Display display = composite.getDisplay();
+
+		boolean layout = false;
+		if (overviewStyledText != null) {
+			overviewStyledTextToolTip.hide();
+			overviewStyledText.setToolTipText(null);
+			removeListenersLastOverviewedStyledText();
+			overviewStyledTextCrosshairCursor.dispose();
+			overviewStyledText.dispose();
+			layout = true;
+		}
+		overviewStyledText = new StyledText(composite, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
+		overviewStyledText.setEditable(false);
+
+		overviewStyledTextCrosshairCursor = new Cursor(display, SWT.CURSOR_CROSS);
+		overviewStyledText.setCursor(overviewStyledTextCrosshairCursor);
+
+		overviewStyledTextToolTip = new DefaultToolTip(overviewStyledText, DefaultToolTip.RECREATE, true);
+
+		overviewStyledText.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				if (lastOverviewedStyledText != null) {
+					overviewStyledTextToolTip.hide();
+					lastOverviewedStyledText.setFocus();
+				}
+			}
+		});
+
+		overviewStyledText.addMouseTrackListener(new MouseTrackAdapter() {
+			@Override
+			public void mouseHover(MouseEvent e) {
+				int lineIndex = overviewStyledText.getLineIndex(e.y);
+				int fromLine = Math.max(0, lineIndex - 2);
+				int toLine = Math.min(overviewStyledText.getLineCount() - 1, lineIndex + 2);
+				int width = (int)(Math.log10(toLine+1) + 2);
+				StringBuilder tooltip = new StringBuilder();
+				for (int i = fromLine; i <= toLine; i++) {
+					if (i > fromLine) {
+						tooltip.append("\n");
+					}
+					tooltip.append(String.format("%" + width + "d ", i+1));
+					String line = overviewStyledText.getLine(i);
+					if (line != null) {
+						tooltip.append((i == lineIndex ? "\u00bb\t" : " \t") +
+								line.substring(0, Math.min(line.length(), 80)));
+					}
+				}
+				overviewStyledTextToolTip.setText(tooltip.toString());
+				overviewStyledTextToolTip.setPopupDelay(500);
+				overviewStyledTextToolTip.setHideDelay(3000);
+				overviewStyledTextToolTip.show(new Point(0, e.y + 10));
+			}
+
+			@Override
+			public void mouseExit(MouseEvent e) {
+				overviewStyledTextToolTip.setText(null);
+			}
+		});
+
+		overviewStyledText.addCaretListener(new CaretListener() {
+
+			@Override
+			public void caretMoved(CaretEvent event) {
+				if (suspendLastOverviewedStyledText.get() != null) {
+					return;
+				}
+				adjustTrackedStyledText();
+			}
+		});
+
+		parentResizeListener = new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				adjustSize();
+			}
+		};
+
+		overviewStyledText.getParent().addControlListener(parentResizeListener);
+		
+		display.syncExec(new Runnable() {
+			@Override
+			public void run() {
 				// Check if there is focused StyledText
 				// in this workbench window, if so track it
 				Control focusControl = display.getFocusControl();
@@ -274,6 +332,10 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				}
 			}
 		});
+		
+		if (layout) {
+			composite.layout(true);
+		}
 	}
 
 	protected void handleEvent(Event event) {
@@ -333,8 +395,8 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 				if (lastFont != null) {
 					lastFont.dispose();
 				}
-				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, FONT_SIZE, lastFontStyle);
-				lastScale = ((double) FONT_SIZE) / ((double) fontDatum.getHeight());
+				lastFont = new Font(overviewStyledText.getDisplay(), lastFontName, fontSize, lastFontStyle);
+				lastScale = ((double) fontSize) / ((double) fontDatum.getHeight());
 				overviewStyledText.setFont(lastFont);
 				overviewStyledTextToolTip.setFont(font);
 			}
@@ -347,6 +409,7 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 			overviewStyledText.setText(lastOverviewedStyledText.getText());
 			overviewStyledText.setStyleRanges(lastOverviewedStyledText.getStyleRanges());
 			overviewStyledText.setSelection(lastOverviewedStyledText.getSelection());
+			scale.setToolTipText("Overview font size: " + fontSize);
 			adjustSize();
 			highlightViewport(true);
 		} finally {
