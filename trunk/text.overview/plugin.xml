@@ -42,4 +42,10 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="text.overview.OverviewPreferences">
+      </initializer>
+   </extension>
 </plugin>

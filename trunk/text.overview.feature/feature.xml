@@ -2,7 +2,7 @@
 <feature
       id="text.overview.feature"
       label="Overview Feature"
-      version="1.0.28"
+      version="1.0.29"
       provider-name="Sandip Chitale">
 
    <description url="https://sandipchitaleseclipseplugins.googlecode.com/svn/trunk/text.overview.feature">
