@@ -1,6 +1,7 @@
 package text.overview.views;
 
-import org.eclipse.core.runtime.Platform;
+import java.lang.ref.WeakReference;
+
 import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.swt.SWT;
@@ -336,6 +337,19 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 		}
 	}
 
+	private WeakReference<StyledText> lastNonOverviewStyledText = null;
+	
+	void refreshOverviewView() {
+		if (lastNonOverviewStyledText != null) {
+			StyledText st = lastNonOverviewStyledText.get();
+			if (st == null || st.isDisposed()) {
+				lastNonOverviewStyledText = null;
+				return;
+			}
+			trackStyledText(st);
+		}
+	}
+	
 	protected void handleEvent(Event event) {
 		if (event.type == SWT.FocusIn) {
 			if (event.widget instanceof StyledText) {
@@ -344,11 +358,15 @@ public class OverviewView extends ViewPart implements IViewLayout, ISizeProvider
 					return;
 				}
 				if (styledText == overviewStyledText) {
+					refreshOverviewView();
 					return;
 				}
+				
 				if (styledText.getShell() != overviewStyledText.getShell()) {
 					return;
 				}
+				
+				lastNonOverviewStyledText = new WeakReference<StyledText>(styledText);
 				trackStyledText(styledText);
 			}
 		}

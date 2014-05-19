@@ -48,4 +48,28 @@
             class="text.overview.OverviewPreferences">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="text.overview.views.RefreshOverviewViewHandler"
+            id="text.overview.refresh.command"
+            name="Refresh Overview">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="text.overview.refresh.command"
+            icon="icons/overview.gif">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="text.overview.refresh.command"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+M3+O">
+      </key>
+   </extension>
 </plugin>
