@@ -21,6 +21,12 @@
       </command>
       <command
             categoryId="org.eclipse.ui.category.edit"
+            description="Paste from history menu"
+            id="CutCopyPastePlus.PasteFromHistoryMenuCommand"
+            name="Paste from history menu">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.edit"
             defaultHandler="cutcopypasteplus.ToggleQuickPasteCyclesThroughHistoryCommandHandler"
             description="Toggle Quick Paste Cycles Through History"
             id="CutCopyPastePlus.ToggleQuickPasteCyclesThroughHistoryCommand"
@@ -39,6 +45,16 @@
             </test>
          </activeWhen>
       </handler>
+      <handler
+            class="cutcopypasteplus.PasteFromHistoryMenuCommandHandler"
+            commandId="CutCopyPastePlus.PasteFromHistoryMenuCommand">
+         <activeWhen>
+            <test
+                  forcePluginActivation="true"
+                  property="CutCopyPastePlus.isFocusedInText">
+            </test>
+         </activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -47,6 +63,12 @@
             contextId="org.eclipse.ui.contexts.dialogAndWindow"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+V">
+      </key>
+      <key
+            commandId="CutCopyPastePlus.PasteFromHistoryMenuCommand"
+            contextId="org.eclipse.ui.contexts.dialogAndWindow"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+M3+V">
       </key>
    </extension>
    

@@ -47,6 +47,10 @@ public class CutCopyHistory {
 		index = -1;
 	}
 	
+	String[] getHistory() {
+		return history.toArray(new String[0]);
+	}
+	
 	int size() {
 		return history.size();
 	}
